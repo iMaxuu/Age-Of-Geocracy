@@ -1,0 +1,1187 @@
+/* AGE OF GEOCRACY — PARTY: diseño funcional pre-alpha v0.0.1 */
+.party-page,.party-page * {
+  box-sizing:border-box
+}
+.party-page {
+  position:fixed;
+  inset:var(--header-height,176px) 0 0;
+  padding:12px 1.7% 18px;
+  background:#080808;
+  color:white;
+  overflow:hidden;
+  font-family:'Black Ops One',sans-serif
+}
+.party-panel {
+  height:100%;
+  width:100%;
+  min-height:0;
+  background:#202020;
+  border-radius:7px;
+  padding:16px;
+  overflow-y:auto;
+  scrollbar-color:#555 #202020
+}
+.party-panel.party-search-mode {
+  max-width:480px
+}
+.party-controls {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:8px
+}
+.party-button,.party-control {
+  font:inherit;
+  background:#555;
+  color:#050505;
+  border:0;
+  border-radius:12px;
+  padding:9px 8px;
+  cursor:pointer;
+  font-size:13px
+}
+.party-controls .party-button {
+  border-radius:0;
+  font-size:11px
+}
+.party-button:disabled {
+  opacity:.55;
+  cursor:not-allowed
+}
+.party-button:not(:disabled):hover {
+  background:#777
+}
+.party-gold {
+  color:#ffe23c
+}
+.party-search {
+  width:100%;
+  background:#151515;
+  border:1px solid #666;
+  color:white;
+  padding:9px;
+  margin-bottom:10px;
+  font:inherit
+}
+.party-result {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 0;
+  cursor:pointer;
+  min-height:68px
+}
+.party-result:hover {
+  background:#303030
+}
+.party-result-image {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  background:#555;
+  flex-shrink:0
+}
+.party-result-info {
+  font-size:14px;
+  line-height:1.35
+}
+.party-muted {
+  color:#8c8c8c
+}
+.party-detail {
+  display:grid;
+  grid-template-columns:232px minmax(0,1fr) 225px;
+  gap:14px;
+  align-items:start
+}
+.party-left {
+  min-width:0
+}
+.party-photo {
+  display:block;
+  width:232px;
+  max-width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+  background:#555
+}
+.party-level {
+  height:36px;
+  border-radius:25px;
+  background:#555;
+  overflow:hidden;
+  position:relative;
+  margin:10px 0;
+  display:grid;
+  place-items:center;
+  color:black
+}
+.party-level-bar {
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  background:#77d849;
+  width:50%
+}
+.party-level span {
+  z-index:1
+}
+.party-actions {
+  display:flex;
+  flex-direction:column;
+  gap:8px
+}
+.party-actions .party-button {
+  min-height:39px;
+  width:100%
+}
+.party-center h1 {
+  font-size:clamp(24px,2.8vw,42px);
+  margin:0;
+  font-weight:normal
+}
+.party-center .party-id {
+  font-size:27px
+}
+.party-center .party-members-count {
+  display:inline-block;
+  border:0;
+  background:none;
+  color:#fff;
+  font:inherit;
+  font-size:clamp(19px,2.1vw,30px);
+  padding:0;
+  cursor:pointer;
+  text-align:left
+}
+.party-center .party-members-count:hover {
+  color:#7ddf4e
+}
+.party-created {
+  font-size:21px
+}
+.party-description {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  margin-top:75px;
+  max-height:40vh;
+  overflow:auto;
+  font-size:17px
+}
+.party-leader {
+  display:flex;
+  gap:8px;
+  align-items:flex-start
+}
+.party-leader-image {
+  width:84px;
+  height:84px;
+  object-fit:cover;
+  background:#555
+}
+.party-leader-name {
+  font-size:20px
+}
+.party-card-portrait {
+  display:block;
+  width:84px;
+  height:84px;
+  background:#555
+}
+.party-leader a,.party-member a {
+  color:inherit;
+  text-decoration:none
+}
+.party-leader a:hover,.party-member a:hover {
+  outline:2px solid #77d849
+}
+.party-modal {
+  border:0;
+  border-radius:8px;
+  background:#202020;
+  color:#fff;
+  font:inherit;
+  width:min(760px,94vw);
+  max-height:85vh;
+  padding:22px;
+  overflow:auto
+}
+.party-modal::backdrop {
+  background:rgba(0,0,0,.8)
+}
+.party-modal h2 {
+  margin:0 0 12px;
+  font-size:20px;
+  font-weight:normal
+}
+.party-modal input,.party-modal textarea {
+  display:block;
+  width:100%;
+  background:#111;
+  border:1px solid #666;
+  color:white;
+  font:inherit;
+  padding:10px;
+  margin:8px 0 14px;
+  font-size:13px
+}
+.party-modal textarea {
+  min-height:100px;
+  resize:vertical
+}
+.party-modal-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px
+}
+.party-member {
+  display:flex;
+  gap:9px;
+  align-items:center;
+  margin:8px 0
+}
+.party-member img {
+  height:65px;
+  width:65px;
+  object-fit:cover;
+  background:#555
+}
+.party-member-info {
+  flex:1
+}
+.party-member-name {
+  font-size:15px
+}
+.party-member-id {
+  font-size:11px
+}
+.party-member .party-button {
+  font-size:10px
+}
+.party-message {
+  margin:8px 0;
+  color:#82e55a;
+  min-height:20px;
+  font-size:12px
+}
+.party-empty {
+  color:#999;
+  padding:16px
+}
+.party-top-return {
+  margin-bottom:12px
+}
+@media(max-width:850px) {
+  .party-detail {
+    grid-template-columns:160px minmax(0,1fr)
+  }
+  .party-photo {
+    width:160px
+  }
+  .party-leader {
+    grid-column:2;
+    grid-row:2
+  }
+  .party-description {
+    margin-top:30px
+  }
+}
+@media(max-width:620px) {
+  .party-page {
+    position:relative;
+    inset:auto;
+    padding:calc(var(--header-height,176px) + 10px) 10px 16px;
+    overflow:auto
+  }
+  .party-panel {
+    height:auto;
+    min-height:400px
+  }
+  .party-panel.party-search-mode {
+    max-width:none
+  }
+  .party-detail {
+    grid-template-columns:1fr
+  }
+  .party-left,.party-leader {
+    grid-column:auto;
+    grid-row:auto
+  }
+  .party-photo {
+    width:180px
+  }
+  .party-description {
+    margin-top:16px
+  }
+  .party-controls {
+    gap:5px
+  }
+  .party-controls .party-button {
+    font-size:9px
+  }
+}
+
+/* Editor cuadrado reutilizable para la foto del partido. */
+.party-photo-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  margin: 12px 0;
+}
+.party-photo-editor > label { width: 100%; text-align: left; font-size: 13px; }
+.party-modal .party-photo-picker { width: 100%; margin: 0; }
+.party-crop-filename { font-size: 11px; color: #b6b6b6; overflow-wrap: anywhere; }
+.party-crop-area {
+  width: min(235px, 100%);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  background: #555;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+  border: 1px solid #777;
+}
+.party-crop-area:active { cursor: grabbing; }
+.party-crop-image {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+.party-crop-image:not([src]) { display: none; }
+.party-crop-controls { width: min(235px, 100%); font-size: 11px; }
+.party-crop-controls[hidden] { display: none; }
+.party-modal .party-crop-zoom { width: 100%; margin: 4px 0; padding: 0; }
+.party-crop-help { font-size: 11px; color: #b8b8b8; text-align: center; }
+
+/* PARTY / COALITION — remake inspirado en bocetos */
+.party-panel.party-remake{width:min(100%,1100px);height:auto;min-height:500px;max-height:100%;margin:0 auto;padding:20px 24px 32px;overflow:auto;scrollbar-width:thin;scrollbar-color:#444 transparent}
+.pr-head{display:grid;grid-template-columns:158px minmax(0,1fr) 157px;gap:12px;align-items:start}
+.pr-left{min-width:0}.pr-photo{display:block;width:158px;height:158px;object-fit:cover;background:transparent}
+.pr-main{min-width:0;padding-top:2px}.pr-name{display:flex;flex-wrap:wrap;gap:5px;align-items:baseline;font-size:clamp(21px,2.5vw,32px);line-height:1.16;overflow-wrap:anywhere}.pr-id{font-size:12px;color:#aaa}
+.pr-meta,.pr-info-button{font:inherit;font-size:clamp(12px,1.35vw,17px);line-height:1.35;color:#b4b4b4}.pr-meta a{color:#ddd;text-decoration:none}.pr-meta a:hover{text-decoration:underline}
+.pr-info-button{display:block;border:0;background:none;padding:3px 0 0;text-align:left;cursor:pointer}.pr-info-button:hover{color:#8cdf5c}
+.pr-description{font-size:12px;line-height:1.4;margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere;max-width:55ch;color:#e3e3e3}
+.pr-actions{display:flex;flex-direction:column;gap:6px}.pr-actions .party-button{min-height:39px;border-radius:13px;font-size:11px;color:#080808}
+.pr-actions .pr-has-requests{background:#79d955;color:#111}.pr-actions .pr-has-requests:hover{background:#92ee69}
+.party-remake .party-level{height:22px;margin:7px 0;border-radius:20px;font-size:12px}.party-remake .party-level-bar{width:0}
+.pr-top{margin-top:20px}.pr-top h2{font-size:clamp(21px,2.5vw,31px);font-weight:normal;color:#696969;margin:0 0 8px}
+.pr-top-grid{display:grid;grid-template-columns:repeat(3,minmax(0,113px));gap:45px}
+.pr-top-card{display:flex;flex-direction:column;gap:4px;text-align:center;text-decoration:none;color:white;min-width:0}
+.pr-top-photo{width:113px;aspect-ratio:1;object-fit:cover;background:transparent;display:block}
+.pr-top-label{font-size:13px;overflow-wrap:anywhere}.pr-top-level{font-size:10px;color:#aaa}.pr-top-card:hover .pr-top-label{color:#79df4b}
+.party-remake .party-top-return{margin-bottom:15px}
+.party-result-image,.party-member-photo,.party-member img{background:transparent}
+@media(max-width:700px){.pr-head{grid-template-columns:120px 1fr}.pr-photo{width:120px;height:120px}.pr-actions{grid-column:1/-1;flex-direction:row;flex-wrap:wrap}.pr-actions .party-button{flex:1;min-width:105px}.pr-top-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.pr-top-photo{width:100%;max-width:113px}.party-panel.party-remake{padding:15px}}
+@media(max-width:420px){.pr-head{grid-template-columns:95px 1fr;gap:8px}.pr-photo{width:95px;height:95px}.pr-name{font-size:20px}.pr-description{font-size:11px}}
+
+/* ================================================
+   REMAKE LISTAS DE PARTIDOS Y COALICIONES
+   ================================================ */
+.party-panel.party-search-mode {
+  width:100%; max-width:none; min-width:0;
+  padding:16px 18px 24px;
+  overflow-y:auto; overflow-x:hidden;
+}
+.aog-list-toolbar {
+  display:grid;
+  grid-template-columns:minmax(0,3.2fr) repeat(2,minmax(0,1fr));
+  align-items:stretch; gap:12px; margin-bottom:22px;
+}
+.aog-list-search {
+  grid-column:1; width:100%; min-width:0; height:37px;
+  background:#535353; color:#fff; border:0; outline:0;
+  border-radius:7px; padding:0 12px; font:inherit; font-size:12px;
+}
+.aog-list-search::placeholder { color:#bdbdbd; }
+.aog-list-toolbar .aog-list-action {
+  min-width:0; width:100%; height:37px; padding:5px 8px;
+  border-radius:12px; background:#555; color:#050505;
+  font-size:12px; white-space:normal; line-height:1.15;
+}
+.aog-list-toolbar .aog-list-action:nth-child(2) { grid-column:2; }
+.aog-list-toolbar .aog-list-action:nth-child(3) { grid-column:3; }
+.aog-list-grid {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  column-gap:22px; row-gap:16px; align-items:start;
+}
+.aog-list-card {
+  display:flex; gap:10px; align-items:center; min-width:0;
+  min-height:82px; text-decoration:none; color:#fff;
+  border-radius:5px; transition:background-color .15s ease;
+}
+.aog-list-card:hover,.aog-list-card:focus-visible { background:#303030; outline:none; }
+.aog-list-photo {
+  display:block; width:82px; height:82px; flex:0 0 82px;
+  object-fit:cover; background:transparent;
+}
+.aog-list-info { display:flex; flex-direction:column; gap:3px; min-width:0; line-height:1.15; }
+.aog-list-name,.aog-list-id,.aog-list-count {
+  font-size:clamp(11px,1.35vw,18px); overflow-wrap:anywhere;
+}
+@media(max-width:1050px) {
+  .aog-list-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:650px) {
+  .party-panel.party-search-mode { padding:12px; }
+  .aog-list-toolbar { grid-template-columns:1fr 1fr; gap:8px; }
+  .aog-list-search { grid-column:1/-1; }
+  .aog-list-toolbar .aog-list-action:nth-child(2) { grid-column:1; }
+  .aog-list-toolbar .aog-list-action:nth-child(3) { grid-column:2; }
+  .aog-list-grid { grid-template-columns:1fr; row-gap:12px; }
+  .aog-list-photo { width:74px; height:74px; flex-basis:74px; }
+  .aog-list-name,.aog-list-id,.aog-list-count { font-size:14px; }
+}
+
+
+/* ==============================================
+   BOTONERA ÚNICA — PARTIDO Y COALICIÓN
+   Compacta, sin reglas superpuestas.
+   ============================================== */
+#party-root.party-remake .pr-head,
+#coalition-root.party-remake .coalition-detail-head {
+  display: grid;
+  grid-template-columns: 158px minmax(0, 1fr) 152px;
+  column-gap: 16px;
+  align-items: start;
+  width: 100%;
+}
+#party-root.party-remake .pr-head > .pr-left,
+#coalition-root.party-remake .coalition-detail-head > .pr-left { grid-column:1; grid-row:1; }
+#party-root.party-remake .pr-head > .pr-main,
+#coalition-root.party-remake .coalition-detail-head > .pr-main { grid-column:2; grid-row:1; min-width:0; }
+#party-root.party-remake .pr-head > .pr-actions,
+#coalition-root.party-remake .coalition-detail-head > .pr-actions {
+  grid-column:3;
+  grid-row:1;
+  justify-self:end;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  width:152px;
+  min-width:0;
+  gap:7px;
+  margin:0;
+  padding:0;
+}
+#party-root.party-remake .pr-head > .pr-actions > .party-button,
+#coalition-root.party-remake .coalition-detail-head > .pr-actions > .party-button {
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  width:100%;
+  height:36px;
+  min-height:36px;
+  max-height:36px;
+  padding:4px 9px;
+  margin:0;
+  border:0;
+  border-radius:10px;
+  background:#535353;
+  background-image:none;
+  box-shadow:none;
+  color:#fff;
+  font:normal 10px/1.2 'Black Ops One',sans-serif;
+  text-align:center;
+  overflow-wrap:normal;
+  white-space:normal;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+}
+#party-root.party-remake .pr-actions > .party-button:hover,
+#coalition-root.party-remake .pr-actions > .party-button:hover { background:#686868; }
+#party-root.party-remake .pr-actions > .party-button.pr-has-requests,
+#coalition-root.party-remake .pr-actions > .party-button.pr-has-requests { background:#79d955; color:#101010; }
+#party-root.party-remake .pr-actions > .party-button.pr-has-requests:hover,
+#coalition-root.party-remake .pr-actions > .party-button.pr-has-requests:hover { background:#8aec67; }
+#party-root.party-remake .pr-actions > .party-button::before,
+#party-root.party-remake .pr-actions > .party-button::after,
+#coalition-root.party-remake .pr-actions > .party-button::before,
+#coalition-root.party-remake .pr-actions > .party-button::after { content:none; display:none; }
+@media(max-width:700px) {
+  #party-root.party-remake .pr-head,
+  #coalition-root.party-remake .coalition-detail-head {
+    grid-template-columns:100px minmax(0,1fr);
+    gap:10px;
+  }
+  #party-root.party-remake .pr-head > .pr-actions,
+  #coalition-root.party-remake .coalition-detail-head > .pr-actions {
+    grid-column:1 / -1;
+    grid-row:2;
+    width:100%;
+    justify-self:stretch;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  #party-root.party-remake .pr-head > .pr-actions > .party-button,
+  #coalition-root.party-remake .coalition-detail-head > .pr-actions > .party-button {width:100%;}
+}
+
+
+/* Edición integrada a la ficha (como Profile) */
+#party-root.aog-editing .aog-inline-field,
+#coalition-root.aog-editing .aog-inline-field {
+ display:block;width:100%;min-width:0;max-width:520px;padding:8px 10px;
+ border:1px solid #777;border-radius:7px;background:#383838;color:#fff;
+ font:inherit;outline:none;box-sizing:border-box;
+}
+#party-root.aog-editing .aog-inline-field:focus,
+#coalition-root.aog-editing .aog-inline-field:focus {border-color:#79d955}
+#party-root.aog-editing textarea.aog-inline-field,
+#coalition-root.aog-editing textarea.aog-inline-field {min-height:94px;resize:vertical;font-size:14px;line-height:1.35}
+#party-root.aog-editing .aog-inline-tag {display:block;max-width:240px;margin-top:12px;font-size:12px;color:#bbb}
+#party-root.aog-editing .aog-inline-tag input{margin-top:5px}
+#party-root.aog-editing .aog-inline-photo,
+#coalition-root.aog-editing .aog-inline-photo {display:block;border:2px dashed #79d955;background:transparent;padding:0;cursor:pointer;border-radius:5px;max-width:100%}
+#party-root.aog-editing .aog-inline-photo .pr-photo,
+#coalition-root.aog-editing .aog-inline-photo .pr-photo {display:block;object-fit:cover;max-width:100%}
+#party-root.aog-editing .pr-actions>.aog-save,
+#coalition-root.aog-editing .pr-actions>.aog-save {background:#79d955!important;color:#111!important}
+#party-root.aog-editing .pr-actions>.aog-cancel,
+#coalition-root.aog-editing .pr-actions>.aog-cancel {background:#ff333b!important;color:#101010!important}
+.aog-inline-crop {background:#262626;color:#fff;border:1px solid #555;border-radius:12px;padding:18px;max-width:calc(100vw - 24px);font-family:'Black Ops One',sans-serif}
+.aog-inline-crop::backdrop{background:#000c}
+.aog-inline-crop canvas {display:block;max-width:100%;width:320px;aspect-ratio:1;touch-action:none;cursor:grab;margin:12px auto;background:#111}
+.aog-inline-crop input[type=range]{width:100%;display:block;margin:10px auto}
+.aog-inline-crop-actions{display:flex;gap:10px;justify-content:end}
+.aog-inline-crop-actions button{border:0;border-radius:8px;padding:10px 18px;background:#555;color:#fff;font:inherit;cursor:pointer}
+.aog-inline-crop-actions button:last-child{background:#79d955;color:#111}
+
+/* ============================================================
+   PARTY + COALITION — PLANTILLA DE ORGANIZACIÓN (BOCETO 4 COL.)
+   Base visual alineada con REGION: paneles #222, títulos #666,
+   separadores claros y espacios compactos.
+   ============================================================ */
+body[data-page="party"] .party-page,
+body[data-page="coalition"] .party-page {
+  position: fixed;
+  inset: var(--header-height, 164px) 0 0;
+  padding: 10px 2.9% 22px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #080808;
+}
+
+#party-root.aog-org-page,
+#coalition-root.aog-org-page {
+  width: 100%;
+  max-width: 1280px;
+  height: auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  scrollbar-width: auto;
+}
+
+.aog-org-page {
+  --aog-org-panel: #222222;
+  --aog-org-heading: #666666;
+  --aog-org-muted: #565656;
+  --aog-org-gap: 10px;
+  --aog-org-radius: 6px;
+  --aog-org-title: clamp(17px, 1.45vw, 22px);
+  color: #fff;
+}
+
+.aog-org-panel {
+  min-width: 0;
+  background: var(--aog-org-panel);
+  border-radius: var(--aog-org-radius);
+  overflow: hidden;
+}
+
+.aog-org-panel-title {
+  margin: 0;
+  color: var(--aog-org-heading);
+  font: normal var(--aog-org-title)/1.1 'Black Ops One', sans-serif;
+  text-align: center;
+}
+
+.aog-org-top {
+  display: grid;
+  grid-template-columns: minmax(215px, 1.02fr) minmax(170px, .76fr) minmax(230px, 1.03fr) minmax(235px, 1.06fr);
+  gap: var(--aog-org-gap);
+  align-items: stretch;
+  min-width: 0;
+  height: 340px;
+}
+
+/* Tarjeta principal: Partido / Coalición */
+.aog-org-identity {
+  padding: 14px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+}
+.aog-org-identity-photo {
+  display: block;
+  width: min(165px, 76%);
+  aspect-ratio: 1;
+  object-fit: cover;
+  margin: 10px auto 5px;
+  background: #555;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+.aog-org-identity-text {
+  width: 100%;
+  margin-top: auto;
+  text-align: center;
+  min-width: 0;
+  padding-top: 4px;
+}
+.aog-org-entity-name,
+.aog-org-member-name,
+.aog-org-principal-name,
+.aog-org-founder-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aog-org-entity-name {
+  font-size: clamp(13px, 1.05vw, 17px);
+  line-height: 1.18;
+}
+.aog-org-entity-id {
+  margin-top: 7px;
+  color: var(--aog-org-muted);
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Logros: por ahora vacío, como el boceto. */
+.aog-org-achievements {
+  padding: 14px 12px;
+}
+
+/* Columna central apilada */
+.aog-org-middle-stack {
+  display: grid;
+  grid-template-rows: 1.18fr 1fr 1fr;
+  gap: var(--aog-org-gap);
+  min-width: 0;
+  min-height: 0;
+}
+.aog-org-founder {
+  padding: 7px 10px 8px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.aog-org-founder .aog-org-panel-title {
+  margin-bottom: 5px;
+}
+.aog-org-founder-content {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  text-decoration: none;
+}
+.aog-org-founder-content:hover .aog-org-founder-name {
+  color: #79df4b;
+}
+.aog-org-founder-photo {
+  display: block;
+  width: 70px;
+  height: 70px;
+  flex: 0 0 70px;
+  object-fit: cover;
+  background: #555;
+}
+.aog-org-founder-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.05;
+}
+.aog-org-founder-name {
+  font-size: clamp(11px, .95vw, 15px);
+}
+.aog-org-founder-role {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(9px, .72vw, 11px);
+}
+.aog-org-founder-id {
+  font-size: 10px;
+}
+
+.aog-org-stat {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  color: #fff;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  font-family: inherit;
+  min-width: 0;
+}
+button.aog-org-stat { width: 100%; cursor: pointer; }
+.aog-org-stat.is-clickable:hover { background: #2c2c2c; }
+.aog-org-stat-value {
+  width: 100%;
+  min-width: 0;
+  margin: auto 0;
+  font-size: clamp(13px, 1.15vw, 18px);
+  line-height: 1.12;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Principales: lista compacta a la derecha */
+.aog-org-principals {
+  padding: 8px 11px 10px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.aog-org-principals .aog-org-panel-title {
+  margin-bottom: 7px;
+}
+.aog-org-principal-list {
+  display: grid;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+.aog-org-principal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #fff;
+  text-decoration: none;
+  overflow: hidden;
+}
+.aog-org-principal-row:hover .aog-org-principal-name { color: #79df4b; }
+.aog-org-principal-photo {
+  display: block;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 62px;
+  object-fit: cover;
+  background: #555;
+}
+.aog-org-principal-info {
+  min-width: 0;
+  line-height: 1.05;
+}
+.aog-org-principal-name {
+  font-size: clamp(10px, .9vw, 14px);
+}
+.aog-org-principal-sub,
+.aog-org-principal-id {
+  min-width: 0;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(8px, .65vw, 10px);
+}
+
+/* Miembros */
+.aog-org-members-section {
+  min-width: 0;
+}
+.aog-org-divider {
+  width: calc(100% - 28px);
+  height: 3px;
+  margin: 18px auto 16px;
+  background: #e9e9e9;
+}
+.aog-org-members-title {
+  margin: 0 0 18px;
+  color: var(--aog-org-heading);
+  text-align: center;
+  font: normal clamp(25px, 2.65vw, 38px)/1 'Black Ops One', sans-serif;
+}
+.aog-org-members-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px 38px;
+  align-items: start;
+  min-width: 0;
+  padding: 0 4px;
+}
+.aog-org-member-card {
+  height: 250px;
+  min-width: 0;
+  padding: 27px 14px 16px;
+  border-radius: var(--aog-org-radius);
+  background: var(--aog-org-panel);
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+.aog-org-member-card:hover .aog-org-member-name { color: #79df4b; }
+.aog-org-member-photo {
+  display: block;
+  width: 130px;
+  height: 130px;
+  max-width: 74%;
+  object-fit: cover;
+  background: #555;
+  margin-bottom: auto;
+}
+.aog-org-member-name {
+  width: 100%;
+  margin-top: 12px;
+  font-size: clamp(11px, .95vw, 14px);
+  line-height: 1.15;
+}
+.aog-org-member-id {
+  margin-top: 8px;
+  color: var(--aog-org-muted);
+  font-size: 12px;
+  line-height: 1;
+}
+.aog-org-empty {
+  color: #777;
+  font-size: 13px;
+  text-align: center;
+  align-self: center;
+}
+
+/* Botonera inferior */
+.aog-org-actions-section .aog-org-divider {
+  margin-top: 28px;
+  margin-bottom: 20px;
+}
+.aog-org-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+  padding: 0 5px 4px;
+}
+.aog-org-action {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 0;
+  min-height: 63px;
+  border: 0;
+  border-radius: 7px;
+  background: #5a5a5a;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: normal clamp(12px, 1.08vw, 16px)/1.15 'Black Ops One', sans-serif;
+}
+.aog-org-action:hover:not(:disabled) { filter: brightness(1.13); }
+.aog-org-action:disabled { opacity: .45; cursor: not-allowed; }
+.aog-org-action.aog-org-danger { background: #fb0d14; color: #770000; }
+.aog-org-action.aog-org-requests { color: #82df4f; }
+.aog-org-action.aog-org-requests.has-requests { background: #79d955; color: #173d0b; }
+
+/* Listados siguen usando la misma navegación, pero sin panel gigante envolvente. */
+body[data-page="party"] #party-root.party-search-mode,
+body[data-page="coalition"] #coalition-root.party-search-mode {
+  height: auto;
+  min-height: 220px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1050px) {
+  .aog-org-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+  }
+  .aog-org-identity, .aog-org-achievements, .aog-org-principals { min-height: 300px; }
+  .aog-org-middle-stack { min-height: 300px; }
+  .aog-org-members-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .aog-org-actions { gap: 14px; }
+}
+
+@media (max-width: 760px) {
+  body[data-page="party"] .party-page,
+  body[data-page="coalition"] .party-page { padding: 10px 12px 22px; }
+  .aog-org-top { grid-template-columns: 1fr; }
+  .aog-org-identity, .aog-org-achievements, .aog-org-principals { min-height: 260px; }
+  .aog-org-achievements { min-height: 150px; }
+  .aog-org-middle-stack { min-height: 310px; }
+  .aog-org-members-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .aog-org-member-card { height: 220px; }
+  .aog-org-member-photo { width: 115px; height: 115px; }
+  .aog-org-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+@media (max-width: 430px) {
+  .aog-org-members-grid { grid-template-columns: 1fr; }
+  .aog-org-member-card { height: 230px; }
+  .aog-org-actions { grid-template-columns: 1fr; }
+  .aog-org-divider { width: 100%; }
+}
+
+/* ============================================================
+   PARTY + COALITION — SCROLLBAR VISUAL
+   ============================================================ */
+body[data-page="party"] .party-page,
+body[data-page="coalition"] .party-page,
+body[data-page="party"] .party-panel,
+body[data-page="coalition"] .party-panel,
+body[data-page="party"] .aog-org-members-grid,
+body[data-page="coalition"] .aog-org-members-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #555555 #111111;
+}
+
+body[data-page="party"] .party-page::-webkit-scrollbar,
+body[data-page="coalition"] .party-page::-webkit-scrollbar,
+body[data-page="party"] .party-panel::-webkit-scrollbar,
+body[data-page="coalition"] .party-panel::-webkit-scrollbar,
+body[data-page="party"] .aog-org-members-grid::-webkit-scrollbar,
+body[data-page="coalition"] .aog-org-members-grid::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body[data-page="party"] .party-page::-webkit-scrollbar-track,
+body[data-page="coalition"] .party-page::-webkit-scrollbar-track,
+body[data-page="party"] .party-panel::-webkit-scrollbar-track,
+body[data-page="coalition"] .party-panel::-webkit-scrollbar-track,
+body[data-page="party"] .aog-org-members-grid::-webkit-scrollbar-track,
+body[data-page="coalition"] .aog-org-members-grid::-webkit-scrollbar-track {
+  background: #111111;
+  border-radius: 999px;
+}
+
+body[data-page="party"] .party-page::-webkit-scrollbar-thumb,
+body[data-page="coalition"] .party-page::-webkit-scrollbar-thumb,
+body[data-page="party"] .party-panel::-webkit-scrollbar-thumb,
+body[data-page="coalition"] .party-panel::-webkit-scrollbar-thumb,
+body[data-page="party"] .aog-org-members-grid::-webkit-scrollbar-thumb,
+body[data-page="coalition"] .aog-org-members-grid::-webkit-scrollbar-thumb {
+  background: #555555;
+  border: 2px solid #111111;
+  border-radius: 999px;
+}
+
+body[data-page="party"] .party-page::-webkit-scrollbar-thumb:hover,
+body[data-page="coalition"] .party-page::-webkit-scrollbar-thumb:hover,
+body[data-page="party"] .party-panel::-webkit-scrollbar-thumb:hover,
+body[data-page="coalition"] .party-panel::-webkit-scrollbar-thumb:hover,
+body[data-page="party"] .aog-org-members-grid::-webkit-scrollbar-thumb:hover,
+body[data-page="coalition"] .aog-org-members-grid::-webkit-scrollbar-thumb:hover {
+  background: #777777;
+}
+
+body[data-page="party"] .party-page::-webkit-scrollbar-thumb:active,
+body[data-page="coalition"] .party-page::-webkit-scrollbar-thumb:active,
+body[data-page="party"] .party-panel::-webkit-scrollbar-thumb:active,
+body[data-page="coalition"] .party-panel::-webkit-scrollbar-thumb:active,
+body[data-page="party"] .aog-org-members-grid::-webkit-scrollbar-thumb:active,
+body[data-page="coalition"] .aog-org-members-grid::-webkit-scrollbar-thumb:active {
+  background: #d9d000;
+}
+
+/* ============================================================
+   EDITOR INTEGRADO — PARTIDO / COALICIÓN (MISMO PATRÓN PROFILE)
+   ============================================================ */
+#party-root.aog-editing .aog-org-top,
+#coalition-root.aog-editing .aog-org-top {
+  height: 340px;
+}
+
+#party-root.aog-editing .aog-org-identity,
+#coalition-root.aog-editing .aog-org-identity,
+#party-root.aog-editing .aog-org-achievements,
+#coalition-root.aog-editing .aog-org-achievements {
+  overflow: hidden;
+}
+
+#party-root.aog-editing .aog-inline-photo,
+#coalition-root.aog-editing .aog-inline-photo {
+  display: block;
+  width: min(165px, 76%);
+  aspect-ratio: 1;
+  flex: 0 1 auto;
+  min-height: 0;
+  margin: 10px auto 5px;
+  padding: 0;
+  border: 2px dashed #79d955;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+#party-root.aog-editing .aog-inline-photo .aog-org-identity-photo,
+#coalition-root.aog-editing .aog-inline-photo .aog-org-identity-photo {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  object-fit: cover;
+}
+
+#party-root.aog-editing .aog-inline-identity,
+#coalition-root.aog-editing .aog-inline-identity {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+#party-root.aog-editing .aog-inline-field,
+#coalition-root.aog-editing .aog-inline-field {
+  display: block;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid #777;
+  border-radius: 5px;
+  background: #484848;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  font: normal 12px/1.2 'Black Ops One', sans-serif;
+}
+#party-root.aog-editing .aog-inline-field:focus,
+#coalition-root.aog-editing .aog-inline-field:focus {
+  border-color: #79d955;
+}
+
+#party-root.aog-editing .aog-inline-tag {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin-top: 6px;
+  color: #777;
+  text-align: left;
+  font-size: 9px;
+}
+#party-root.aog-editing .aog-inline-tag .aog-inline-field {
+  margin-top: 3px;
+}
+
+#party-root.aog-editing .aog-org-description-editor,
+#coalition-root.aog-editing .aog-org-description-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+#party-root.aog-editing .aog-org-description-editor .aog-org-panel-title,
+#coalition-root.aog-editing .aog-org-description-editor .aog-org-panel-title {
+  margin-bottom: 10px;
+}
+#party-root.aog-editing .aog-org-description-editor textarea,
+#coalition-root.aog-editing .aog-org-description-editor textarea {
+  flex: 1;
+  min-height: 0;
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.35;
+}
+.aog-inline-counter {
+  margin-top: 7px;
+  color: #777;
+  text-align: right;
+  font-size: 10px;
+}
+.aog-inline-message {
+  min-height: 18px;
+  margin: 8px 18px 0;
+  color: #ff7b7b;
+  text-align: center;
+  font-size: 11px;
+}
+
+#party-root .aog-org-actions.is-editing,
+#coalition-root .aog-org-actions.is-editing {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#party-root .aog-org-actions .aog-save,
+#coalition-root .aog-org-actions .aog-save {
+  background: #79d955;
+  color: #10220a;
+}
+#party-root .aog-org-actions .aog-cancel,
+#coalition-root .aog-org-actions .aog-cancel {
+  background: #5a5a5a;
+  color: #fff;
+}
+
+@media (max-width: 1050px) {
+  #party-root.aog-editing .aog-org-top,
+  #coalition-root.aog-editing .aog-org-top { height: auto; }
+}
+
+/* ==============================================
+   AJUSTE DE NOMBRES — PARTY / COALITION
+   Los nombres quedan pegados a la imagen y con mayor legibilidad.
+   ============================================== */
+.aog-org-identity-text {
+  margin-top: 7px;
+  padding-top: 0;
+}
+
+.aog-org-entity-name {
+  font-size: clamp(17px, 1.45vw, 21px);
+  line-height: 1.15;
+}
+
+.aog-org-member-photo {
+  margin-bottom: 0;
+}
+
+.aog-org-member-name {
+  margin-top: 10px;
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.15;
+}
+
+.aog-org-principal-name {
+  font-size: clamp(13px, 1.05vw, 16px);
+}
+
+.aog-org-founder-name {
+  font-size: clamp(13px, 1.05vw, 16px);
+}
+
+.aog-org-principal-sub,
+.aog-org-principal-id,
+.aog-org-founder-role,
+.aog-org-founder-id {
+  font-size: clamp(10px, .78vw, 12px);
+}
+
+/* ================================================
+   CONTENEDOR ESTABLE · listado Partido/Coalición
+   ================================================ */
+.party-panel.party-search-mode {
+  max-width: 1100px;
+  margin: 0 auto;
+}

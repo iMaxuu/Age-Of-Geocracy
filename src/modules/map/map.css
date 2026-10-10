@@ -1,0 +1,52 @@
+body:has(.aog-map-shell){min-height:0;overflow:hidden}
+.aog-map-shell{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+.aog-map-shell>header{flex:0 0 auto}
+.aog-map-root{--map-accent:var(--aog-accent,#ff2020);--map-dark:var(--aog-accent-dark,color-mix(in srgb,var(--map-accent) 15%,#080808));position:relative;flex:1 1 auto;width:100%;height:auto;min-height:0;overflow:hidden;background:#080808;color:var(--map-accent);isolation:isolate;font-family:'Black Ops One',system-ui,sans-serif}
+.aog-map-root *{box-sizing:border-box}
+.aog-world-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none;outline:0}
+.aog-world-canvas:active{cursor:grabbing}
+.aog-map-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--map-accent);background:#080808;font-size:clamp(16px,2vw,26px)}
+.aog-map-sidebar{position:absolute;z-index:3;top:12px;left:12px;width:340px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.aog-map-top-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;width:100%;gap:12px}
+.aog-map-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:clamp(90px,21dvh,146px);min-height:0;padding:32px 7px 10px;border:4px solid var(--map-accent);border-radius:29px;background:#080808;color:var(--map-accent);text-decoration:none;text-align:center;cursor:default}
+.aog-map-top-cards>.aog-map-card:last-child{height:clamp(62px,11dvh,75px);padding-top:30px;padding-bottom:5px}
+.aog-map-sidebar>.aog-map-card,.aog-map-sidebar>.aog-map-travel{width:calc((100% - 12px)/2)}
+button.aog-map-card{cursor:pointer}
+button.aog-map-card:hover{background:var(--map-dark)}
+.aog-map-tab{--home-accent:var(--map-accent);--home-dark:var(--map-dark);max-width:calc(100% - 10px);font-size:16px;transform:translateX(-50%) scale(.74);transform-origin:top center}
+.aog-map-card strong{max-width:100%;font-size:17px;overflow:hidden;text-overflow:ellipsis;line-height:1.08;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3}
+.aog-map-card .aog-map-card-small{font-size:15px}
+.aog-map-card-flag{display:block;width:84px;height:48px;object-fit:contain}
+.aog-map-travel{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:clamp(86px,17dvh,125px);min-height:0;padding:10px 7px;overflow:hidden;border:4px solid var(--map-accent);border-radius:29px;background:var(--map-dark);color:var(--map-accent);cursor:pointer}
+.aog-map-travel>*:not(.aog-map-progress){position:relative;z-index:1}
+.aog-map-travel strong{font-size:19px}
+.aog-map-travel span{font-size:18px}
+.aog-map-travel small{font-size:12px}
+.aog-map-travel:disabled{opacity:.7;cursor:default}
+.aog-map-progress{position:absolute;left:0;bottom:0;top:0;background:color-mix(in srgb,var(--map-accent) 24%,transparent);pointer-events:none;transition:width 1s linear}
+.aog-map-controls{position:absolute;z-index:2;bottom:14px;right:14px;display:flex;gap:6px;align-items:center}
+.aog-map-controls button,.aog-map-layer-tools button,.aog-map-layer-tools select{border:2px solid var(--map-accent);border-radius:20px;background:#080808ee;color:var(--map-accent);font:12px 'Black Ops One',system-ui;cursor:pointer}
+.aog-map-controls button{min-width:41px;height:40px;padding:4px 10px;font-size:18px}
+.aog-map-controls .aog-map-reset,.aog-map-controls button:last-child{font-size:11px}
+.aog-map-controls button.is-active{background:var(--map-accent);color:var(--map-dark)}
+.aog-map-layer-tools{position:absolute;z-index:5;top:12px;right:14px;display:flex;align-items:flex-start;gap:8px}
+.aog-map-layer-tools button,.aog-map-layer-tools select{padding:9px 12px}
+.aog-map-layers{position:absolute;right:0;top:43px;width:210px;max-height:min(410px,65vh);overflow:auto;background:#080808f5;border:2px solid var(--map-accent);border-radius:17px;display:flex;flex-direction:column;padding:5px;gap:3px;scrollbar-width:thin;scrollbar-color:var(--map-accent) transparent}
+.aog-map-layers button{border:0;text-align:left;border-radius:8px}
+.aog-map-layers button:hover{background:var(--map-dark)}
+.aog-map-legend{position:absolute;z-index:2;right:14px;bottom:64px;display:flex;flex-direction:column;gap:4px;padding:9px 12px;background:#080808e8;border:2px solid var(--map-accent);border-radius:16px;text-align:center;min-width:150px;font-size:11px}
+.aog-map-legend span{width:100%;height:12px;border-radius:8px}
+.aog-map-legend small{font-size:9px}
+.aog-map-warning{position:absolute;z-index:10;left:50%;top:15px;transform:translateX(-50%);max-width:min(700px,85vw);padding:12px;border:2px solid var(--map-accent);border-radius:15px;background:#150607f2;color:var(--map-accent);font-size:12px;cursor:pointer}
+@media(max-width:720px){
+  /* Móvil: mismos paneles y curvas de Home, apilados y reducidos al 50%. */
+  .aog-map-sidebar{width:290px;max-width:none;max-height:none;top:7px;left:7px;gap:12px;transform:scale(.5);transform-origin:top left}
+  .aog-map-top-cards{grid-template-columns:minmax(0,1fr);gap:12px}
+  .aog-map-sidebar>.aog-map-card,.aog-map-sidebar>.aog-map-travel{width:100%}
+  .aog-map-layer-tools{right:6px;top:6px;gap:4px}
+  .aog-map-layer-tools button{font-size:9px;padding:6px}
+  .aog-map-controls{right:6px;bottom:12px;gap:3px}
+  .aog-map-controls button{min-width:30px;height:31px;font-size:14px;padding:3px 5px}
+  .aog-map-controls .aog-map-reset,.aog-map-controls button:last-child{font-size:8px}
+  .aog-map-legend{bottom:49px;right:6px;min-width:118px;max-width:145px}
+}

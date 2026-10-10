@@ -1,0 +1,5 @@
+Age of Geocracy Remake Supabase v2 — distribución completa del código (no un parche).
+Ejecutar supabase/schema.sql desde Supabase SQL Editor ANTES de registrar usuarios.
+Iniciar con npm.cmd install y npm.cmd run dev; no existe servidor local adicional.
+ATENCIÓN: Login, Profile y Chat están integrados con Supabase; los demás módulos son todavía vistas visuales.
+Ver README.md para detalles.

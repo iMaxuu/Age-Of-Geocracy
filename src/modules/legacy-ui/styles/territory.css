@@ -1,0 +1,642 @@
+/* Age of Geocracy · TERRITORY · esquema visual compartido con REGION/NATION */
+body[data-page="territory"] .tp-page,body[data-page="territory"] .tp-page *{box-sizing:border-box}
+body[data-page="territory"] .tp-page.page-content{
+ position:fixed!important;inset:var(--header-height,210px) 0 0!important;width:100%;height:auto!important;min-height:0!important;
+ margin:0!important;padding:18px clamp(14px,3.5vw,65px) 44px!important;overflow-x:hidden!important;overflow-y:auto!important;
+ background:#080808;color:#fff;font-family:'Black Ops One',sans-serif;scrollbar-width:thin;scrollbar-color:#444 transparent}
+.tp-heading{color:#747474;text-align:center;font-size:clamp(25px,2.65vw,42px);font-weight:normal;line-height:1.2;margin:0 0 28px}
+.tp-government{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.tp-government-card{min-width:0;background:#212121;border-radius:8px;padding:14px;display:grid;grid-template-columns:46% minmax(0,1fr);gap:15px;min-height:248px}
+.tp-government-card.tp-clickable{cursor:pointer;transition:background .15s}
+.tp-government-card.tp-clickable:hover{background:#2b2b2b}
+.tp-government-card.tp-clickable:focus-visible{outline:2px solid #79df4b;outline-offset:3px}
+.tp-entity{min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:flex-start;gap:4px}
+.tp-entity h2,.tp-office h2,.tp-resources h2,.tp-stat h3{font-weight:normal;margin:0;color:#777;text-align:center;line-height:1.2}
+.tp-entity h2,.tp-office h2{font-size:clamp(12px,1.15vw,18px)}
+.tp-flag{height:145px;width:min(215px,100%);margin:6px auto 0;display:flex;justify-content:center;align-items:center}
+.tp-flag img{width:100%;height:100%;object-fit:contain;display:block}
+.tp-entity-name{font-size:clamp(12px,1.15vw,18px);line-height:1.22;overflow-wrap:anywhere}
+.tp-entity-id{font-size:12px}.tp-authorities{display:grid;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+.tp-office{min-width:0;display:flex;flex-direction:column;gap:8px}
+
+.tp-authorities.tp-is-capital{
+  display:flex;
+  align-items:stretch;
+  justify-content:stretch
+}
+.tp-authorities.tp-is-capital .tp-office{display:none!important}
+.tp-capital-status{
+  width:100%;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  border-radius:8px;
+  background:#282828;
+  color:#fff;
+  text-align:center
+}
+.tp-capital-status[hidden]{display:none!important}
+.tp-capital-star{
+  display:block;
+  color:#fff;
+  font-size:clamp(46px,5vw,76px);
+  line-height:1;
+  text-shadow:0 3px 0 rgba(0,0,0,.22)
+}
+.tp-capital-status strong{
+  color:#fff;
+  font-size:clamp(18px,1.8vw,28px);
+  line-height:1;
+  font-weight:normal
+}
+.tp-official{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.tp-official img{width:60px;height:60px;object-fit:cover;flex:0 0 60px}
+.tp-official-details{min-width:0;display:flex;flex-direction:column;gap:3px}
+.tp-person{font-size:clamp(12px,1.05vw,18px);line-height:1.15;overflow-wrap:anywhere}
+.tp-tag{color:#7bd54b}.tp-person-id,.tp-party,.tp-coalition{font-size:clamp(10px,.81vw,13px);line-height:1.25;overflow-wrap:anywhere}
+.tp-party{margin-top:5px}.tp-action-bar{display:flex;gap:12px;justify-content:center;align-items:center;min-height:0}
+.tp-action-bar:has([hidden]){min-height:0}.tp-action-bar button:not([hidden]){margin:10px 0 0;background:#495e4d;color:white;border:0;border-radius:12px;padding:9px 16px;font:12px 'Black Ops One',sans-serif;cursor:pointer}
+.tp-divider{border:0;border-top:3px solid #ddd;margin:24px 0 14px}
+.tp-divider-resources{margin-top:30px}
+.tp-section-heading{
+  margin:0 0 28px;
+  color:#747474;
+  text-align:center;
+  font-size:clamp(24px,2.4vw,40px);
+  line-height:1;
+  font-weight:normal
+}
+.tp-data-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px
+}
+.tp-stat{
+  min-height:112px;
+  padding:12px 8px;
+  background:#212121;
+  border-radius:8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  text-align:center
+}
+.tp-stat h3{
+  margin:0;
+  color:#777;
+  font-size:clamp(13px,1.45vw,21px);
+  line-height:1.15;
+  font-weight:normal
+}
+.tp-stat span{
+  color:#fff;
+  font:clamp(20px,1.8vw,28px) 'Black Ops One',sans-serif
+}
+.tp-resource-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px 12px;
+  padding-bottom:6px
+}
+.tp-resource-card{
+  min-width:0;
+  min-height:112px;
+  border-radius:8px;
+  padding:12px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  text-align:center
+}
+.tp-resource-card h3{
+  margin:0;
+  font-size:clamp(13px,1.35vw,20px);
+  line-height:1.1;
+  font-weight:normal
+}
+.tp-resource-card span{
+  color:#fff;
+  font:clamp(21px,1.9vw,30px) 'Black Ops One',sans-serif
+}
+.tp-resource-wood{background:#491301}.tp-resource-wood h3{color:#ba480d}
+.tp-resource-mineral{background:#424242}.tp-resource-mineral h3{color:#fff}
+.tp-resource-gold{background:#927d2a}.tp-resource-gold h3{color:#ffe55d}
+.tp-resource-diamond{background:#6fa3d2}.tp-resource-diamond h3{color:#d9ecff}
+.tp-resource-uranium{background:#109700}.tp-resource-uranium h3{color:#6ae64e}
+.tp-resource-oil{background:#202020}.tp-resource-oil h3{color:#444}
+.tp-resource-geocracyum{background:#00143b}.tp-resource-geocracyum h3{color:#0b4dc3}
+.tp-resource-aurexium{background:#71005c}.tp-resource-aurexium h3{color:#ee6ebf}
+.tp-legacy{display:none!important}.tp-page [hidden]{display:none!important}
+@media(max-width:1120px){.tp-government-card{grid-template-columns:1fr 1fr;gap:8px}.tp-official img{width:49px;height:49px;flex-basis:49px}}
+@media(max-width:800px){.tp-government{grid-template-columns:1fr}.tp-data-grid,.tp-resource-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tp-government-card{min-height:220px}}
+@media(max-width:440px){.tp-government-card{grid-template-columns:1fr}.tp-authorities{gap:16px}.tp-office{min-height:95px}.tp-stats-grid{gap:10px}}
+
+/* Enlaces individuales para Nación/Región y cargos; sin alterar medidas. */
+.tp-page .tp-link{color:inherit;text-decoration:none;cursor:pointer;border-radius:5px}
+.tp-page .tp-link:hover{background:rgba(255,255,255,.065)}
+.tp-page .tp-link:focus-visible{outline:2px solid #79df4b;outline-offset:3px}
+.tp-page .tp-link-disabled{cursor:default}
+.tp-page .tp-entity.tp-link{min-width:0}
+.tp-page .tp-official.tp-link{padding:3px;margin:-3px;min-width:0}
+
+/* ================================================
+   CONTENEDOR ESTABLE
+   ================================================ */
+body[data-page="territory"] .tp-page > * {
+  width: min(100%, 1100px);
+  margin-inline: auto;
+}
+
+
+/* =========================================================
+   TERRITORIO INDEPENDIENTE
+   ========================================================= */
+.tp-independent[hidden]{display:none!important}
+.tp-independent{
+  width:min(100%,1100px);
+  margin:0 auto;
+}
+.tp-independent-main{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(290px,1fr);
+  gap:18px;
+}
+.tp-independent-card,
+.tp-foundation-status,
+.tp-foundation-action{
+  background:#212121;
+  border-radius:8px;
+}
+.tp-independent-card{
+  min-height:285px;
+  padding:18px 22px 22px;
+}
+.tp-independent-card h2,
+.tp-foundation-status h2{
+  margin:0;
+  color:#777;
+  text-align:center;
+  font-size:clamp(16px,1.45vw,23px);
+  line-height:1.15;
+  font-weight:normal;
+}
+.tp-independent-content{
+  min-height:215px;
+  display:grid;
+  grid-template-columns:120px minmax(0,1fr);
+  align-items:center;
+  gap:24px;
+  margin-top:8px;
+}
+.tp-independent-symbol{
+  font-family:Arial,sans-serif;
+  font-size:82px;
+  line-height:1;
+  text-align:center;
+  filter:grayscale(1) brightness(4);
+}
+.tp-independent-content p{
+  margin:0;
+  max-width:650px;
+  color:#fff;
+  font-size:clamp(13px,1.18vw,18px);
+  line-height:1.45;
+}
+.tp-foundation-column{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:16px;
+}
+.tp-foundation-status{
+  min-height:104px;
+  padding:17px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.tp-foundation-status strong{
+  color:#777;
+  font-size:clamp(17px,1.65vw,25px);
+  line-height:1.15;
+  font-weight:normal;
+}
+.tp-foundation-status strong span{color:#fff}
+.tp-foundation-action{
+  min-height:164px;
+  padding:14px 18px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:12px;
+}
+.tp-foundation-action button{
+  width:100%;
+  min-height:70px;
+  border:0;
+  border-radius:8px;
+  background:#9a852f;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  cursor:not-allowed;
+  opacity:1;
+}
+.tp-foundation-action button span{
+  display:block;
+  font-size:clamp(14px,1.35vw,19px);
+}
+.tp-foundation-action button small{
+  display:block;
+  margin-top:4px;
+  color:#ffe05b;
+  font:clamp(13px,1.15vw,17px) 'Black Ops One',sans-serif;
+}
+.tp-foundation-action p{
+  margin:0;
+  color:#777;
+  text-align:center;
+  font-size:clamp(10px,.92vw,14px);
+  line-height:1.3;
+}
+.tp-page.tp-independent-mode .tp-data-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.tp-page.tp-independent-mode #tp-data-primary-players,
+.tp-page.tp-independent-mode #tp-data-primary-factories{
+  grid-column:auto;
+}
+.tp-page.tp-independent-mode #tp-data-secondary-players,
+.tp-page.tp-independent-mode #tp-data-secondary-factories{
+  display:none;
+}
+.tp-page.tp-independent-mode #tp-data-grid{
+  max-width:550px;
+  margin-inline:0;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+#territory-error{
+  width:min(100%,1100px);
+  min-height:260px;
+  margin:60px auto 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#777;
+  text-align:center;
+  font:clamp(24px,3vw,44px) 'Black Ops One',sans-serif;
+}
+#territory-error[hidden]{display:none!important}
+
+@media(max-width:850px){
+  .tp-independent-main{grid-template-columns:1fr}
+  .tp-independent-content{grid-template-columns:90px minmax(0,1fr)}
+  .tp-independent-symbol{font-size:66px}
+}
+@media(max-width:560px){
+  .tp-independent-content{grid-template-columns:1fr;text-align:center}
+  .tp-page.tp-independent-mode #tp-data-grid{grid-template-columns:1fr;max-width:none}
+}
+
+
+/* =========================================================
+   TERRITORIO INDEPENDIENTE — correcciones v1.1
+   ========================================================= */
+
+/* Nunca mostrar el contenido político antes de resolver pertenencia. */
+#territory-root[hidden]{display:none!important}
+
+.tp-unavailable{
+  position:fixed;
+  inset:var(--header-height,210px) 0 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:#080808;
+  color:#777;
+  text-align:center;
+  font:clamp(24px,3vw,44px) 'Black Ops One',sans-serif;
+}
+.tp-unavailable[hidden]{display:none!important}
+
+/* Imagen oficial de territorio independiente. */
+.tp-independent-symbol{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  font-size:0!important;
+  filter:none!important;
+}
+.tp-independent-symbol img{
+  display:block;
+  width:min(118px,100%);
+  height:150px;
+  object-fit:contain;
+}
+
+/* En independiente, DATOS ocupa el mismo ancho que el resto del contenido.
+   Dos tarjetas iguales, sin quedar cargadas hacia la izquierda. */
+.tp-page.tp-independent-mode #tp-data-grid{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.tp-page.tp-independent-mode #tp-data-primary-players,
+.tp-page.tp-independent-mode #tp-data-primary-factories{
+  width:100%;
+}
+.tp-page.tp-independent-mode .tp-stat{
+  min-height:128px;
+}
+
+@media(max-width:560px){
+  .tp-page.tp-independent-mode #tp-data-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+
+/* =========================================================
+   TERRITORIO INDEPENDIENTE — DATOS COMO EN EL CONCEPTO
+   ========================================================= */
+
+/* En el concepto, JUGADORES y FÁBRICAS son tarjetas compactas,
+   alineadas desde la izquierda, no dos paneles gigantes al 50%. */
+.tp-page.tp-independent-mode #tp-data-grid{
+  width:auto!important;
+  max-width:none!important;
+  margin:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,260px)!important;
+  justify-content:start!important;
+  gap:14px!important;
+}
+
+.tp-page.tp-independent-mode #tp-data-primary-players,
+.tp-page.tp-independent-mode #tp-data-primary-factories{
+  width:260px!important;
+  min-width:260px!important;
+  min-height:118px!important;
+  height:118px!important;
+  padding:12px 10px!important;
+}
+
+.tp-page.tp-independent-mode #tp-data-primary-players h3,
+.tp-page.tp-independent-mode #tp-data-primary-factories h3{
+  font-size:18px!important;
+}
+
+.tp-page.tp-independent-mode #tp-data-primary-players span,
+.tp-page.tp-independent-mode #tp-data-primary-factories span{
+  font-size:28px!important;
+}
+
+@media(max-width:650px){
+  .tp-page.tp-independent-mode #tp-data-grid{
+    grid-template-columns:1fr!important;
+    width:100%!important;
+  }
+
+  .tp-page.tp-independent-mode #tp-data-primary-players,
+  .tp-page.tp-independent-mode #tp-data-primary-factories{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+
+
+/* =========================================================
+   TERRITORIO INDEPENDIENTE — ALINEACIÓN HORIZONTAL v1.3
+   ========================================================= */
+
+/* DATOS usa exactamente el mismo ancho/contenedor que RECURSOS
+   y las tarjetas ocupan las dos primeras columnas de una grilla de 4. */
+.tp-page.tp-independent-mode #tp-data-grid{
+  width:min(100%,1100px)!important;
+  max-width:1100px!important;
+  margin:0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:14px!important;
+  justify-content:stretch!important;
+}
+
+.tp-page.tp-independent-mode #tp-data-primary-players,
+.tp-page.tp-independent-mode #tp-data-primary-factories{
+  width:auto!important;
+  min-width:0!important;
+  height:118px!important;
+  min-height:118px!important;
+}
+
+@media(max-width:900px){
+  .tp-page.tp-independent-mode #tp-data-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:560px){
+  .tp-page.tp-independent-mode #tp-data-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+
+/* =========================================================
+   FUNDACIÓN DE NACIÓN — ESTADOS DE MEMBRESÍA
+   ========================================================= */
+
+.tp-foundation-action button[hidden],
+.tp-foundation-away[hidden]{
+  display:none!important;
+}
+
+.tp-foundation-action button{
+  cursor:pointer;
+}
+
+.tp-foundation-action button:disabled{
+  cursor:not-allowed;
+}
+
+.tp-foundation-action button.is-member{
+  background:#119b00!important;
+  min-height:98px;
+}
+
+.tp-foundation-action button.is-member span{
+  color:#67e449;
+  font-size:clamp(19px,1.55vw,28px);
+}
+
+.tp-foundation-action button.is-member small{
+  display:none;
+}
+
+.tp-foundation-away{
+  width:100%;
+  min-height:78px;
+  padding:10px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  text-align:center;
+}
+
+.tp-foundation-away strong{
+  color:#777;
+  font-size:clamp(14px,1.25vw,20px);
+  line-height:1.15;
+  font-weight:normal;
+}
+
+.tp-foundation-away small{
+  color:#666;
+  font:clamp(11px,1vw,15px) 'Black Ops One',sans-serif;
+  line-height:1.15;
+}
+
+.tp-foundation-action.is-away{
+  justify-content:space-between;
+}
+
+.tp-foundation-action.is-member-state{
+  justify-content:center;
+}
+
+
+/* =========================================================
+   TERRITORIO EN FUNDACIÓN — CONCEPTO
+   ========================================================= */
+.tp-founding[hidden]{display:none!important}
+.tp-founding{
+  width:min(100%,1100px);
+  margin:0 auto;
+  display:grid;
+  gap:18px;
+}
+.tp-founding-progress-card{
+  background:#212121;
+  border-radius:8px;
+  min-height:220px;
+  padding:18px 32px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+}
+.tp-founding-progress-card h2{
+  margin:0;
+  color:#777;
+  font-size:clamp(16px,1.35vw,22px);
+  line-height:1.1;
+  font-weight:normal;
+}
+.tp-founding-progress-bar{
+  width:100%;
+  height:58px;
+  border-radius:8px;
+  background:#666;
+  overflow:hidden;
+}
+.tp-founding-progress-fill{
+  width:0%;
+  height:100%;
+  border-radius:8px;
+  background:#79df4b;
+  transition:width .2s linear;
+}
+.tp-founding-progress-percent{
+  color:#fff;
+  font-size:clamp(30px,2.6vw,44px);
+  line-height:1;
+}
+.tp-founding-progress-remaining{
+  color:#777;
+  font-size:clamp(23px,2.25vw,37px);
+  line-height:1.05;
+}
+.tp-founding-progress-remaining span{color:#fff}
+.tp-founding-requirements{display:grid;gap:12px}
+.tp-founding-resource{
+  position:relative;
+  min-width:0;
+  min-height:98px;
+  border-radius:8px;
+  padding:14px 78px 14px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  text-align:center;
+}
+.tp-founding-resource h3{
+  margin:0;
+  font-size:clamp(14px,1.3vw,21px);
+  line-height:1;
+  font-weight:normal;
+}
+.tp-founding-resource-amounts{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  text-align:center;
+  font:clamp(20px,2vw,33px) 'Black Ops One',sans-serif;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.tp-founding-resource-separator{color:currentColor;opacity:.94}
+.tp-founding-resource-plus{
+  position:absolute;
+  right:20px;
+  top:50%;
+  transform:translateY(-50%);
+  width:48px;
+  height:58px;
+  border:0;
+  padding:0;
+  background:transparent;
+  font:clamp(28px,2.2vw,42px) 'Black Ops One',sans-serif;
+  line-height:1;
+  cursor:default;
+  opacity:.95;
+}
+.tp-founding-resource-plus:disabled{opacity:.95}
+.tp-founding-resource.is-complete .tp-founding-resource-plus{opacity:.28}
+.tp-founding-resource-money{background:#212121}
+.tp-founding-resource-money h3,.tp-founding-resource-money .tp-founding-resource-amounts,.tp-founding-resource-money .tp-founding-resource-plus{color:#fff}
+.tp-founding-resource-wood{background:#491301}
+.tp-founding-resource-wood h3,.tp-founding-resource-wood .tp-founding-resource-amounts,.tp-founding-resource-wood .tp-founding-resource-plus{color:#ba480d}
+.tp-founding-resource-mineral{background:#5b5b5b}
+.tp-founding-resource-mineral h3,.tp-founding-resource-mineral .tp-founding-resource-amounts,.tp-founding-resource-mineral .tp-founding-resource-plus{color:#fff}
+.tp-founding-resource-gold{background:#927d2a}
+.tp-founding-resource-gold h3,.tp-founding-resource-gold .tp-founding-resource-amounts,.tp-founding-resource-gold .tp-founding-resource-plus{color:#ffe55d}
+.tp-founding-resource-diamond{background:#74a8d8}
+.tp-founding-resource-diamond h3,.tp-founding-resource-diamond .tp-founding-resource-amounts,.tp-founding-resource-diamond .tp-founding-resource-plus{color:#e4f2ff}
+.tp-founding-resource-uranium{background:#109700}
+.tp-founding-resource-uranium h3,.tp-founding-resource-uranium .tp-founding-resource-amounts,.tp-founding-resource-uranium .tp-founding-resource-plus{color:#6ae64e}
+.tp-founding-resource-oil{background:#202020}
+.tp-founding-resource-oil h3,.tp-founding-resource-oil .tp-founding-resource-amounts,.tp-founding-resource-oil .tp-founding-resource-plus{color:#555}
+@media(max-width:800px){
+  .tp-founding-progress-card{min-height:190px;padding:14px 16px 20px}
+  .tp-founding-progress-bar{height:46px}
+  .tp-founding-resource{padding:12px 58px 12px 12px;min-height:90px}
+  .tp-founding-resource-amounts{white-space:normal;flex-wrap:wrap;gap:8px}
+  .tp-founding-resource-plus{right:10px;width:40px}
+}

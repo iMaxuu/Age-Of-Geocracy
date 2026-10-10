@@ -1,0 +1,891 @@
+/* Age of Geocracy — NACIÓN V2 */
+body[data-page="nation"] .aogn-page,
+body[data-page="nation"] .aogn-page *{box-sizing:border-box}
+
+body[data-page="nation"] .aogn-page.page-content{
+  position:fixed!important;
+  inset:var(--header-height,210px) 0 0!important;
+  width:100%;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:18px clamp(18px,3.5vw,65px) 52px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  background:#080808;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  scrollbar-width:thin;
+  scrollbar-color:#454545 transparent;
+}
+
+/* Evita que toda la interfaz se estire en pantallas ultrawide. */
+body[data-page="nation"] .aogn-page > #aogn-body,
+body[data-page="nation"] .aogn-page > .aogn-unavailable{
+  width:min(100%,1366px);
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.aogn-page{
+  --panel:#212121;
+  --muted:#656565;
+  --green:#79df4b;
+}
+.aogn-page [hidden]{display:none!important}
+.aogn-card,.aogn-official-card{background:var(--panel);border-radius:8px;min-width:0}
+
+.aogn-heading{
+  margin:0 0 26px;
+  color:#656565;
+  text-align:center;
+  font-size:clamp(29px,3vw,46px);
+  line-height:1;
+  font-weight:normal;
+}
+.aogn-info-heading{margin:0 0 24px}
+.aogn-divider{border-top:3px solid #eee;margin:24px 5px 25px}
+.aogn-unavailable{text-align:center;padding:40px;color:#777;font-size:28px}
+
+/* Gobierno */
+.aogn-government-top{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  align-items:stretch;
+}
+.aogn-identity{
+  height:205px;
+  padding:10px 18px 12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.aogn-identity h2,
+.aogn-elections-panel>h2,
+.aogn-parliament h3{
+  margin:0;
+  color:var(--muted);
+  font-size:clamp(16px,1.55vw,23px);
+  line-height:1.15;
+  font-weight:normal;
+  text-align:center;
+}
+#aogn-flag{
+  width:min(180px,70%);
+  height:120px;
+  object-fit:contain;
+  margin:5px auto 5px;
+}
+#aogn-name{
+  font-size:clamp(17px,1.45vw,22px);
+  line-height:1.15;
+  font-weight:normal;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.aogn-elections-panel{
+  height:205px;
+  padding:12px 28px 20px;
+  display:flex;
+  flex-direction:column;
+}
+.aogn-elections-list{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:16px;
+  padding-top:8px;
+}
+.aogn-election-item{
+  min-height:56px;
+  border-radius:10px;
+  background:#3a3a3a;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:8px 12px;
+}
+.aogn-election-item:hover{background:#464646}
+.aogn-election-item strong{
+  color:#fff;
+  font-size:clamp(15px,1.3vw,20px);
+  font-weight:normal;
+  line-height:1.1;
+}
+.aogn-election-item.can-vote strong{color:var(--green)}
+.aogn-election-item span{
+  color:#fff;
+  font-size:clamp(12px,1.05vw,16px);
+}
+.aogn-no-elections{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#616161;
+  font-size:clamp(16px,1.7vw,25px);
+  text-align:center;
+}
+
+.aogn-government-roster{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px 14px;
+  margin-top:14px;
+  align-items:stretch;
+}
+.aogn-official-card{
+  height:104px;
+  padding:9px 10px 10px;
+  display:flex;
+  flex-direction:column;
+}
+.aogn-official-card h3{
+  margin:0 0 6px;
+  color:var(--muted);
+  font-size:clamp(11px,1.05vw,16px);
+  line-height:1.05;
+  font-weight:normal;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.aogn-official-body{
+  flex:1;
+  min-width:0;
+  display:grid;
+  grid-template-columns:63px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  color:#fff;
+  text-decoration:none;
+}
+a.aogn-official-body:hover{opacity:.84}
+.aogn-official-photo{
+  width:63px;
+  height:63px;
+  object-fit:cover;
+  background:transparent;
+  border-radius:6px;
+  display:block;
+}
+.aogn-official-photo.aogn-transparent-photo{
+  background:transparent !important;
+}
+.aogn-official-photo.is-vacant{
+  background:transparent;
+  border-radius:0;
+  object-fit:contain;
+}
+.aogn-official-body>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.aogn-official-body strong{
+  min-width:0;
+  font-size:clamp(13px,1.1vw,17px);
+  line-height:1.08;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-weight:normal;
+}
+.aogn-official-body span,
+.aogn-official-body small{
+  color:#5d5d5d;
+  font-size:clamp(10px,.85vw,13px);
+  line-height:1.08;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Información */
+.aogn-parliament{
+  height:320px;
+  padding:11px 16px 14px;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+}
+.aogn-parliament:hover{background:#2b2b2b}
+.aogn-parliament-preview{
+  flex:1;
+  width:100%;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#666;
+}
+.aogn-parliament-preview svg{
+  width:min(640px,96%);
+  height:100%;
+  display:block;
+}
+
+.aogn-info-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px 14px;
+  margin-top:14px;
+}
+.aogn-stat{
+  height:104px;
+  padding:11px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+  min-width:0;
+}
+.aogn-stat h3{
+  margin:0;
+  color:var(--muted);
+  font-size:clamp(14px,1.3vw,20px);
+  line-height:1.1;
+  font-weight:normal;
+}
+.aogn-stat strong{
+  margin:auto 0;
+  max-width:100%;
+  color:#fff;
+  font-size:clamp(22px,2.1vw,31px);
+  line-height:1;
+  font-weight:normal;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.aogn-stat small{
+  color:#515151;
+  font-size:clamp(10px,.92vw,13px);
+  line-height:1;
+}
+.aogn-date-stat strong{
+  margin:auto 0 2px;
+  font-size:clamp(11px,1.08vw,16px);
+  line-height:1.14;
+}
+
+/* Regiones */
+.aogn-regions-divider{margin-top:25px}
+.aogn-regions-heading{margin:0 0 26px}
+.aogn-region-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px 20px;
+}
+.aogn-region-card{
+  height:220px;
+  padding:12px 18px 14px;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+}
+.aogn-region-card:hover{background:#2b2b2b}
+.aogn-region-card h3{
+  margin:0 0 5px;
+  color:var(--muted);
+  font-size:clamp(15px,1.35vw,20px);
+  line-height:1.1;
+  font-weight:normal;
+}
+.aogn-region-card img{
+  width:min(180px,70%);
+  height:125px;
+  object-fit:contain;
+  margin:1px auto 4px;
+}
+.aogn-region-card strong{
+  max-width:100%;
+  font-size:clamp(15px,1.35vw,20px);
+  font-weight:normal;
+  line-height:1.1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Responsive */
+@media(max-width:980px){
+  .aogn-government-roster{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .aogn-info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  body[data-page="nation"] .aogn-page.page-content{padding:14px 10px 38px!important}
+  .aogn-government-top{grid-template-columns:1fr}
+  .aogn-identity,.aogn-elections-panel{height:auto;min-height:185px}
+  .aogn-government-roster{grid-template-columns:1fr}
+  .aogn-parliament{height:240px}
+  .aogn-info-grid{grid-template-columns:1fr 1fr}
+  .aogn-region-grid{grid-template-columns:1fr}
+  .aogn-official-card{height:102px}
+}
+@media(max-width:460px){
+  .aogn-info-grid{grid-template-columns:1fr}
+}
+
+
+/* Acciones del Presidente */
+.aogn-government-heading-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:16px;
+  min-height:74px;
+  margin:0 0 18px;
+}
+.aogn-government-heading{
+  grid-column:2;
+  margin:0!important;
+  white-space:nowrap;
+}
+.aogn-president-actions{
+  grid-column:1;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  min-width:0;
+}
+.aogn-president-btn{
+  min-width:175px;
+  min-height:58px;
+  padding:8px 18px;
+  border:0;
+  border-radius:16px;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  font-size:14px;
+  line-height:1.15;
+  cursor:pointer;
+}
+.aogn-color-btn{background:#149900}
+.aogn-color-btn:hover{background:#1dad08}
+.aogn-ministry-btn{background:#a78d2d}
+.aogn-ministry-btn:hover{background:#b99d33}
+.aogn-admin-feedback{
+  grid-column:3;
+  justify-self:end;
+  color:#79df4b;
+  font-size:12px;
+  text-align:right;
+}
+.aogn-admin-feedback.is-error{color:#ff5757}
+
+/* Selector de color propio: evita el picker nativo del navegador/SO. */
+.aogn-color-modal{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+}
+.aogn-color-dialog{
+  width:min(430px,100%);
+  background:#202020;
+  border:1px solid #4a4a4a;
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 18px 55px rgba(0,0,0,.55);
+}
+.aogn-color-dialog h2{
+  margin:0 0 16px;
+  color:#6b6b6b;
+  text-align:center;
+  font-size:24px;
+  font-weight:normal;
+}
+.aogn-color-preview{
+  width:100%;
+  height:86px;
+  border-radius:10px;
+  border:1px solid #555;
+  background:#777777;
+  margin-bottom:14px;
+}
+.aogn-color-hex-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin-bottom:15px;
+}
+.aogn-color-hex-row span{font-size:24px;color:#aaa}
+.aogn-color-hex-row input{
+  width:130px;
+  border:1px solid #555;
+  border-radius:8px;
+  background:#2d2d2d;
+  color:#fff;
+  padding:9px 11px;
+  text-transform:uppercase;
+  text-align:center;
+  font:16px 'Black Ops One',sans-serif;
+  outline:none;
+}
+.aogn-color-sliders{display:flex;flex-direction:column;gap:11px}
+.aogn-color-sliders label{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr) 44px;
+  gap:10px;
+  align-items:center;
+  color:#ddd;
+  font-size:14px;
+}
+.aogn-color-sliders input[type=range]{width:100%;accent-color:#79df4b}
+.aogn-color-sliders output{text-align:right;color:#aaa;font-size:13px}
+.aogn-color-dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.aogn-color-dialog-actions button{
+  border:0;
+  border-radius:9px;
+  padding:9px 14px;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  cursor:pointer;
+}
+.aogn-color-cancel{background:#555}
+.aogn-color-save{background:#149900}
+
+/* Controles presidenciales en ministerios */
+.aogn-ministry-card{position:relative;padding-bottom:10px}
+.aogn-ministry-card .aogn-official-body{padding-right:34px}
+.aogn-ministry-actions{
+  position:absolute;
+  right:7px;
+  bottom:7px;
+  display:flex;
+  gap:5px;
+  align-items:center;
+}
+.aogn-ministry-action{
+  width:31px;
+  height:31px;
+  border:0;
+  border-radius:9px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+.aogn-ministry-action.edit{background:#139b00}
+.aogn-ministry-action.add{background:#a78d2d;font-size:26px}
+.aogn-ministry-action.delete{background:#ff3939;font-size:16px}
+.aogn-ministry-action:hover{filter:brightness(1.1)}
+
+.aogn-ministry-card.is-editing{
+  min-height:150px;
+  height:auto;
+}
+.aogn-ministry-card.is-editing h3{
+  overflow:visible;
+  white-space:normal;
+}
+.aogn-ministry-name-input,
+.aogn-player-id-input{
+  width:100%;
+  min-width:0;
+  border:1px solid #555;
+  border-radius:7px;
+  background:#303030;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  padding:8px 10px;
+  outline:none;
+}
+.aogn-ministry-name-input{
+  text-align:center;
+  font-size:13px;
+}
+.aogn-inline-controls,
+.aogn-assign-controls{
+  display:flex;
+  gap:7px;
+  justify-content:center;
+}
+.aogn-inline-controls{position:static}
+.aogn-inline-controls button,
+.aogn-assign-controls button{
+  border:0;
+  border-radius:8px;
+  padding:7px 10px;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  font-size:10px;
+  cursor:pointer;
+}
+.aogn-inline-cancel{background:#555}
+.aogn-inline-save{background:#149900}
+.aogn-inline-save:disabled{opacity:.45;cursor:not-allowed}
+
+.aogn-assign-editor{
+  display:flex!important;
+  flex-direction:column;
+  gap:8px;
+  align-items:stretch!important;
+  grid-template-columns:none!important;
+  padding-right:0!important;
+}
+.aogn-player-preview-wrap{min-height:55px}
+.aogn-player-preview{
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  min-width:0;
+}
+.aogn-preview-photo{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  background:transparent!important;
+  border-radius:5px;
+}
+.aogn-player-preview>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.aogn-player-preview strong,
+.aogn-player-preview span,
+.aogn-player-preview small{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.aogn-player-preview strong{font-size:12px;color:#fff}
+.aogn-player-preview span,
+.aogn-player-preview small{font-size:10px;color:#707070}
+
+@media(max-width:900px){
+  .aogn-government-heading-row{grid-template-columns:1fr;justify-items:center}
+  .aogn-government-heading{grid-column:1;grid-row:1}
+  .aogn-president-actions{grid-column:1;grid-row:2;justify-content:center;flex-wrap:wrap}
+  .aogn-admin-feedback{grid-column:1;grid-row:3;justify-self:center;text-align:center}
+}
+@media(max-width:520px){
+  .aogn-president-btn{min-width:0;flex:1 1 145px}
+}
+
+
+/* ===== REMAKE DISTRIBUCIÓN NACIÓN ===== */
+.aogn-page{padding-bottom:80px!important}
+.aogn-government-heading-row{margin-bottom:18px}
+.aogn-government-top{gap:12px}
+.aogn-government-roster{gap:10px 12px;margin-top:12px}
+.aogn-divider{margin:22px 4px 20px}
+.aogn-parliament{height:300px;margin-bottom:14px}
+.aogn-info-grid{gap:10px 12px}
+.aogn-government-form strong{
+  font-size:clamp(16px,1.7vw,24px);
+  line-height:1.12;
+  white-space:normal
+}
+.aogn-danger-value{color:#ff2626!important}
+.aogn-section-heading{margin-bottom:26px}
+
+.aogn-budget-grid,
+.aogn-resource-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px 10px;
+}
+.aogn-budget-card,
+.aogn-resource-card{
+  border-radius:7px;
+  min-width:0;
+  min-height:112px;
+  padding:11px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.aogn-budget-card h3,
+.aogn-resource-card h3{
+  margin:0;
+  font-size:clamp(13px,1.35vw,19px);
+  line-height:1.08;
+  font-weight:normal;
+}
+.aogn-budget-card strong,
+.aogn-resource-card strong{
+  margin-top:14px;
+  color:#fff;
+  font-size:clamp(24px,2.4vw,36px);
+  line-height:1;
+  font-weight:normal;
+}
+.aogn-budget-card small{
+  margin-top:8px;
+  font-size:clamp(13px,1.25vw,18px);
+  line-height:1;
+}
+
+
+.aogn-money{background:#c7d1db}.aogn-money h3,.aogn-money strong,.aogn-money small{color:#fff}
+.aogn-wood{background:#4a1302}.aogn-wood h3,.aogn-wood small{color:#b7470d}
+.aogn-mineral{background:#464646}.aogn-mineral h3,.aogn-mineral small{color:#fff}
+.aogn-gold{background:#978330}.aogn-gold h3,.aogn-gold small{color:#ffe159}
+.aogn-diamond{background:#73a6d5}.aogn-diamond h3,.aogn-diamond small{color:#d9ecff}
+.aogn-uranium{background:#119900}.aogn-uranium h3,.aogn-uranium small{color:#63dc47}
+.aogn-oil{background:#202020}.aogn-oil h3,.aogn-oil small{color:#444}
+.aogn-geocracyum{background:#00143b}.aogn-geocracyum h3{color:#0e50c5}
+.aogn-aurexium{background:#71005c}.aogn-aurexium h3{color:#f075c8}
+
+.aogn-regions-divider{margin-top:28px}
+.aogn-region-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:14px!important;
+}
+
+@media(max-width:980px){
+  .aogn-budget-grid,.aogn-resource-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .aogn-region-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:540px){
+  .aogn-budget-grid,.aogn-resource-grid{grid-template-columns:1fr}
+}
+
+/* Donación al presupuesto */
+.aogn-donate-card{
+  background:#2d2d2d;
+  gap:7px!important;
+}
+.aogn-donate-card h3{color:#777}
+.aogn-donate-select,
+.aogn-donate-input{
+  width:100%;
+  min-width:0;
+  height:28px;
+  border:0;
+  border-radius:4px;
+  background:#2d2d2d;
+  color:#fff;
+  text-align:center;
+  font:14px 'Black Ops One',sans-serif;
+  outline:none;
+}
+.aogn-donate-select{
+  appearance:none;
+  cursor:pointer;
+}
+.aogn-donate-input{
+  -moz-appearance:textfield;
+}
+.aogn-donate-input::-webkit-outer-spin-button,
+.aogn-donate-input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+.aogn-donate-submit{
+  min-height:28px;
+  padding:4px 14px;
+  border:0;
+  border-radius:4px;
+  background:#3b3b3b;
+  color:#fff;
+  font:13px 'Black Ops One',sans-serif;
+  cursor:pointer;
+}
+.aogn-donate-submit:hover{background:#4a4a4a}
+.aogn-donate-feedback{
+  min-height:13px;
+  color:#72e83e;
+  font-size:10px;
+  line-height:1.15;
+  text-align:center;
+}
+.aogn-donate-feedback.is-error{color:#ff4a4a}
+
+/* Donar: mismo tamaño visual que las demás tarjetas de presupuesto */
+.aogn-budget-card.aogn-donate-card{
+  min-height:112px!important;
+  height:112px!important;
+  padding:8px 12px!important;
+  gap:3px!important;
+  justify-content:center!important;
+  overflow:hidden;
+}
+.aogn-donate-card h3{
+  margin:0 0 2px!important;
+  font-size:clamp(13px,1.35vw,19px)!important;
+}
+.aogn-donate-select,
+.aogn-donate-input{
+  height:22px!important;
+  min-height:22px!important;
+  padding:0 4px!important;
+  font-size:12px!important;
+  line-height:22px!important;
+}
+.aogn-donate-submit{
+  min-height:22px!important;
+  height:22px!important;
+  padding:2px 12px!important;
+  margin-top:2px;
+  font-size:11px!important;
+  line-height:18px;
+}
+.aogn-donate-feedback{
+  min-height:0!important;
+  height:auto;
+  margin:0;
+  font-size:9px!important;
+  line-height:1!important;
+}
+
+/* Modal de donación */
+.aogn-donation-modal[hidden]{display:none!important}
+.aogn-donation-modal{
+  position:fixed;
+  inset:0;
+  z-index:10050;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.aogn-donation-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.74);
+}
+.aogn-donation-modal-box{
+  position:relative;
+  z-index:1;
+  width:min(420px,100%);
+  padding:26px 24px 22px;
+  border:1px solid #4d4d4d;
+  border-radius:10px;
+  background:#252525;
+  box-shadow:0 18px 50px rgba(0,0,0,.55);
+  text-align:center;
+}
+.aogn-donation-modal-box h2{
+  margin:0 0 12px;
+  color:#70e83f;
+  font-size:24px;
+  font-weight:normal;
+}
+.aogn-donation-modal-box p{
+  margin:0 0 20px;
+  color:#fff;
+  font:14px 'Black Ops One',sans-serif;
+  line-height:1.45;
+}
+.aogn-donation-modal-box button{
+  min-width:130px;
+  min-height:38px;
+  border:0;
+  border-radius:5px;
+  background:#3d3d3d;
+  color:#fff;
+  font:14px 'Black Ops One',sans-serif;
+  cursor:pointer;
+}
+.aogn-donation-modal-box button:hover{background:#4b4b4b}
+
+
+/* =========================================================
+   INSTITUCIÓN
+   ========================================================= */
+.aogn-institution-divider{
+  margin-top:26px;
+  margin-bottom:24px;
+}
+.aogn-institution-heading{
+  margin:0 0 24px;
+}
+.aogn-institution-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px 14px;
+}
+.aogn-institution-card{
+  height:104px;
+  min-width:0;
+  padding:10px 8px 9px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+  overflow:hidden;
+}
+.aogn-institution-card h3{
+  margin:0;
+  max-width:100%;
+  color:var(--muted);
+  font-size:clamp(12px,1.15vw,18px);
+  line-height:1.06;
+  font-weight:normal;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.aogn-institution-card strong{
+  margin:auto 0;
+  max-width:100%;
+  color:#fff;
+  font-size:clamp(17px,1.55vw,24px);
+  line-height:1.08;
+  font-weight:normal;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+
+/* El panel superior refleja el tipo de Estado, como en el boceto. */
+#aogn-state-type{
+  margin:0;
+  color:var(--muted);
+  font-size:clamp(16px,1.55vw,23px);
+  line-height:1.15;
+  font-weight:normal;
+  text-align:center;
+}
+
+@media(max-width:980px){
+  .aogn-institution-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:520px){
+  .aogn-institution-grid{
+    grid-template-columns:1fr;
+  }
+}

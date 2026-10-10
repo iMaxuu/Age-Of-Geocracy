@@ -1,0 +1,171 @@
+.regional-parliament-page,
+.regional-parliament-page *{box-sizing:border-box}
+.regional-parliament-page{
+  margin-top:var(--header-height,176px);
+  min-height:calc(100dvh - var(--header-height,176px));
+  padding:14px 1.35% 28px;
+  background:#080808;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+}
+.regional-parliament-page [hidden]{display:none!important}
+.regional-parliament-page>.rp-page-head,
+.regional-parliament-page>#rp-missing,
+.regional-parliament-page>#rp-no-parliament,
+.regional-parliament-page>#rp-layout{
+  width:min(100%,1366px);
+  margin-left:auto;
+  margin-right:auto;
+}
+.rp-page-head{text-align:center;margin:0 0 14px}
+.rp-page-head h1{margin:0;font-size:clamp(30px,3vw,54px);line-height:1;color:#696969;font-weight:400}
+.rp-entity-link{display:inline-block;margin:6px 0 0;color:#5d5d5d;text-decoration:none}
+.rp-entity-link:hover{color:#8a8a8a}
+.rp-entity-link span{font-size:clamp(20px,1.65vw,30px);line-height:1.1}
+.rp-layout{display:flex;flex-direction:column;gap:12px;min-width:0}
+.rp-top-row{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.78fr);gap:12px;align-items:stretch}
+.rp-panel{background:#232323;border-radius:12px;padding:16px 18px;min-width:0;min-height:0;overflow:hidden}
+.rp-chamber-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:320px}
+.rp-seats{display:block;width:min(100%,860px);max-height:360px;height:auto;overflow:visible}
+.rp-seat{cursor:pointer;stroke:transparent;stroke-width:5;paint-order:stroke;transition:transform .12s ease,stroke .12s ease,fill .12s ease}
+.rp-seat:hover,.rp-seat:focus{stroke:#ffffff;outline:none;transform:translateY(-1px)}
+.rp-seat.selected{stroke:#ffffff;fill:#f7f7f7}
+.rp-chair{fill:#b8c0ca}
+.rp-chamber-meta{text-align:center}
+.rp-seat-count{font-size:clamp(18px,1.7vw,32px);line-height:1;color:#5b5b5b}
+.rp-chamber-caption{margin-top:6px;font-size:clamp(14px,1.05vw,18px);line-height:1.1;color:#ffffff}
+.rp-legislator-panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:320px;
+  padding:16px 22px 18px;
+}
+.rp-legislator-card{
+  width:100%;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.rp-legislator-card-body{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+.rp-legislator-main{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-width:0;
+  text-align:center;
+}
+.rp-photo{
+  width:160px;
+  height:160px;
+  max-width:76%;
+  object-fit:contain;
+  object-position:center;
+  background:transparent;
+  border-radius:10px;
+  flex:0 0 auto;
+}
+.rp-legislator-copy{
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  text-align:center;
+}
+.rp-legislator-name,
+.rp-legislator-name a{
+  max-width:100%;
+  font-size:clamp(18px,1.45vw,25px);
+  line-height:1.05;
+  color:#fff;
+  text-decoration:none;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.rp-legislator-sub{
+  max-width:100%;
+  font-size:clamp(13px,.95vw,16px);
+  line-height:1.06;
+  color:#707070;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.rp-legislator-role{
+  width:100%;
+  margin-top:2px;
+  font-size:clamp(16px,1.12vw,20px);
+  line-height:1.05;
+  color:#fff;
+  text-align:center;
+}
+.rp-vacant .rp-legislator-name{color:#efefef}
+.rp-party-section{min-width:0}
+.rp-party-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.rp-party-grid.is-empty{display:flex;align-items:center;justify-content:center;min-height:100px}
+.rp-party-grid.is-empty>.rp-empty{width:min(100%,520px)}
+.rp-party-card{display:flex;gap:12px;align-items:flex-start;background:#232323;border-radius:10px;padding:12px 13px;color:#fff;text-decoration:none;min-width:0}
+.rp-party-card:hover{filter:brightness(1.04)}
+.rp-party-photo{width:74px;height:74px;object-fit:contain;object-position:center;background:transparent;flex:0 0 auto}
+.rp-party-copy{min-width:0;display:flex;flex-direction:column;gap:4px}
+.rp-party-top{font-size:14px;line-height:1;color:#676767}
+.rp-party-name{font-size:clamp(18px,1.25vw,26px);line-height:1.02;color:#fff;overflow-wrap:anywhere}
+.rp-party-sub{font-size:clamp(13px,.95vw,16px);line-height:1.05;color:#707070;overflow-wrap:anywhere}
+.rp-party-seats{font-size:clamp(13px,.95vw,16px);line-height:1.05;color:#a6a6a6}
+.rp-divider{width:100%;height:3px;background:#d7d7d7;border-radius:999px;margin:2px 0}
+.rp-law-section h2{margin:0 0 10px;text-align:center;font-weight:400;font-size:clamp(28px,2.6vw,50px);line-height:1;color:#696969}
+.rp-law-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rp-law-list.is-empty{display:flex;align-items:center;justify-content:center;min-height:110px}
+.rp-law-list.is-empty>.rp-empty{width:min(100%,760px)}
+.rp-law-card{display:grid;grid-template-columns:minmax(0,110px) minmax(0,1fr) 32px;gap:10px;background:#232323;border-radius:10px;padding:10px 12px;align-items:center}
+.rp-law-proposer{display:flex;gap:10px;align-items:center;min-width:0}
+.rp-law-proposer-photo{width:54px;height:54px;object-fit:contain;background:transparent;flex:0 0 auto}
+.rp-law-proposer-copy{min-width:0}
+.rp-law-proposer-top{font-size:13px;color:#6d6d6d;line-height:1}
+.rp-law-proposer-name{font-size:15px;line-height:1.05;color:#fff;overflow-wrap:anywhere}
+.rp-law-proposer-sub{font-size:12px;line-height:1.05;color:#6d6d6d;overflow-wrap:anywhere}
+.rp-law-body{display:flex;flex-direction:column;gap:8px;text-align:center;min-width:0}
+.rp-law-type{font-size:14px;color:#6d6d6d;line-height:1}
+.rp-law-title{font-size:clamp(16px,1.1vw,20px);line-height:1.05;color:#fff;overflow-wrap:anywhere}
+.rp-law-summary{font-size:clamp(13px,.95vw,16px);line-height:1.15;color:#bcbcbc;overflow-wrap:anywhere}
+.rp-law-votes{display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center}
+.rp-vote-btn{width:26px;height:26px;border-radius:999px;border:none;padding:0;cursor:not-allowed;opacity:1}
+.rp-vote-no{background:#ff3d34}
+.rp-vote-abs{background:#efdc4b}
+.rp-vote-yes{background:#6cf15a}
+.rp-empty{margin:0;color:#a5a5a5;font-size:clamp(14px,1vw,18px);text-align:center;padding:22px 10px;background:#232323;border-radius:10px}
+.rp-message{display:grid;place-items:center;min-height:280px;background:#232323;border-radius:12px;font-size:clamp(24px,2.3vw,38px);text-align:center;padding:24px}
+@media (max-width:1200px){
+  .rp-party-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:940px){
+  .rp-top-row{grid-template-columns:minmax(0,1fr)}
+  .rp-law-list{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .regional-parliament-page{padding:10px 10px 24px}
+  .rp-panel{padding:12px}
+  .rp-party-grid{grid-template-columns:minmax(0,1fr)}
+  .rp-party-card{padding:10px}
+  .rp-law-card{grid-template-columns:minmax(0,1fr);gap:10px}
+  .rp-law-votes{flex-direction:row}
+  .rp-photo{width:130px;height:130px}
+  .rp-party-photo{width:60px;height:60px}
+}

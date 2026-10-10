@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "territoryCount": 59960,
+  "projection": "EPSG:8857",
+  "approximateTarget": 60000,
+  "countDeviationPercent": -0.067,
+  "mesh": {
+    "algorithm": "random-voronoi-partial-lloyd-v2",
+    "countPolicy": "approximate; geometry quality takes priority; no count-forcing splits/merges",
+    "irregularity": {
+      "sample": "interior cells away from coast",
+      "sampleCount": 51443,
+      "areaCoefficientOfVariation": 0.4318,
+      "areaPercentilesKm2": {
+        "10": 1258.706,
+        "25": 1704.499,
+        "50": 2333.92,
+        "75": 3097.053,
+        "90": 3924.035
+      },
+      "areaP90P10Ratio": 3.1175,
+      "sideCountHistogram": {
+        "3": 116,
+        "4": 3733,
+        "5": 14215,
+        "6": 18141,
+        "7": 10819,
+        "8": 3564,
+        "9": 705,
+        "10": 128,
+        "11": 19,
+        "12": 3
+      },
+      "wellRepresentedSideCounts": 6
+    },
+    "seed": 20261006,
+    "nominalCellAreaKm2": 2506.745
+  },
+  "precisionMetres": 1,
+  "status": "passed",
+  "errors": [],
+  "checks": {
+    "countNearApproximateTarget": true,
+    "irregularInteriorCells": true,
+    "uniqueIds": true,
+    "exactlyOneContinent": true,
+    "invalidGeometries": 0,
+    "duplicateGeometries": 0,
+    "importantOverlaps": 0,
+    "gapAreaKm2": 0.000571,
+    "waterAreaKm2": 0.0,
+    "asymmetricNeighbors": 0,
+    "missingSharedBorderNeighbors": 0,
+    "nonIslandWithoutNeighbors": 0,
+    "centroidsOutside": 0,
+    "missingChunks": 0,
+    "missingLodTerritories": {
+      "low": 0,
+      "medium": 0,
+      "high": 0
+    },
+    "invalidLodGeometries": {
+      "low": 0,
+      "medium": 0,
+      "high": 0
+    },
+    "extremelySmallNonIslands": 0,
+    "extremelyThinNonIslands": 0
+  },
+  "continents": {
+    "1": 7106,
+    "2": 10143,
+    "3": 4333,
+    "4": 11997,
+    "5": 17575,
+    "6": 3754,
+    "7": 5052
+  },
+  "quality": {
+    "medianAreaKm2": 2300.63,
+    "minimumAreaKm2": 0.01468,
+    "smallThresholdKm2": 34.509,
+    "thinCompactnessThreshold": 0.025,
+    "thinAspectThreshold": 12,
+    "preservedSmallNaturalIslands": 67,
+    "preservedThinNaturalIslands": 21,
+    "note": "Natural source islands are retained even when small/thin; they are explicit geographic exceptions, never discarded."
+  },
+  "antimeridianNeighborPairs": 12,
+  "chunkCount": 377,
+  "lodTotalAreaKm2": {
+    "low": 146717310.162,
+    "medium": 146736935.215,
+    "high": 146737335.442
+  },
+  "examples": {
+    "smallNonIslands": [],
+    "thinNonIslands": [],
+    "invalidLods": {
+      "low": [],
+      "medium": [],
+      "high": []
+    },
+    "missingAdjacencies": [],
+    "overlaps": [],
+    "isolatedNonIslands": []
+  },
+  "versions": {
+    "numpy": "2.3.5",
+    "shapely": "2.1.2",
+    "pyproj": "3.7.2"
+  },
+  "centroidInteriorFallbacks": 73,
+  "generationSeconds": 130.85,
+  "sourceHashes": {
+    "ne_50m_admin_0_countries.geojson": {
+      "sha256": "3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson"
+    },
+    "ne_50m_land.geojson": {
+      "sha256": "e874b27a51d146452be360cafb3cc50c86001074a67d534113e6534682f9826b",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_land.geojson"
+    }
+  },
+  "naturalResources": {
+    "status": "passed",
+    "territoryCount": 59960,
+    "allIdsPresent": true,
+    "allEightResources": true,
+    "initialAvailableEqualsMax": true,
+    "nonNegativeFiniteIntegers": true,
+    "aurexiumOnlyAntarctica": true,
+    "rareResourcesChecks": true,
+    "woodEveryNonDesertNonAntarctic": true,
+    "mineralEveryTerritory": true,
+    "mountainMineralEnrichment": true,
+    "mineralMountainMean": 11219.53,
+    "mineralLowGeologyMean": 1580.68,
+    "mineralMountainToLowRatio": 7.1,
+    "desertNonMineralPresencePercent": 21.41,
+    "forestWoodPositivePercent": 100,
+    "forestMeanWood": 33467.87,
+    "desertMeanWood": 0.0,
+    "unclassifiedBiomeTerritories": 72,
+    "resources": {
+      "wood": {
+        "territories": 44237,
+        "presencePercent": 73.7775,
+        "totalMax": 889591444,
+        "minPositive": 124,
+        "max": 81963
+      },
+      "mineral": {
+        "territories": 59960,
+        "presencePercent": 100.0,
+        "totalMax": 230809586,
+        "minPositive": 75,
+        "max": 40477
+      },
+      "gold": {
+        "territories": 3838,
+        "presencePercent": 6.4009,
+        "totalMax": 203547,
+        "minPositive": 3,
+        "max": 308
+      },
+      "oil": {
+        "territories": 3848,
+        "presencePercent": 6.4176,
+        "totalMax": 212043,
+        "minPositive": 3,
+        "max": 377
+      },
+      "diamond": {
+        "territories": 993,
+        "presencePercent": 1.6561,
+        "totalMax": 4218,
+        "minPositive": 1,
+        "max": 35
+      },
+      "uranium": {
+        "territories": 439,
+        "presencePercent": 0.7322,
+        "totalMax": 2657,
+        "minPositive": 1,
+        "max": 26
+      },
+      "geocracyum": {
+        "territories": 2099,
+        "presencePercent": 3.5007,
+        "totalMax": 2213,
+        "minPositive": 1,
+        "max": 2
+      },
+      "aurexium": {
+        "territories": 505,
+        "presencePercent": 0.8422,
+        "totalMax": 505,
+        "minPositive": 1,
+        "max": 1
+      }
+    }
+  }
+}

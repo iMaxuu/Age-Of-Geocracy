@@ -1,0 +1,11 @@
+/* Additive resource controls; the supplied map layout and political styling stay intact. */
+.map-resource-controls{position:absolute;left:12px;bottom:12px;z-index:6;color:#fff;font-family:'Black Ops One',sans-serif}
+.map-filter-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:144px;height:36px;padding:0 12px;border:1px solid #696969;border-radius:7px;background:#202020;color:#fff;font:12px 'Black Ops One',sans-serif;cursor:pointer}
+.map-filter-toggle:hover,.map-filter-toggle:focus-visible{background:#3a3a3a}
+.map-filter-menu{position:absolute;left:0;bottom:calc(100% + 8px);width:180px;max-height:260px;overflow-y:auto;padding:4px;border:1px solid #696969;border-radius:7px;background:#202023;box-shadow:0 5px 18px #0008}
+.map-filter-menu button{display:block;width:100%;padding:9px 10px;border:0;border-radius:4px;text-align:left;background:transparent;color:#eee;font:12px 'Black Ops One',sans-serif;cursor:pointer}
+.map-filter-menu button[aria-selected="true"]{background:#45454d}
+.map-filter-menu button:hover,.map-filter-menu button:focus-visible{background:#34343c;outline:1px solid #888}
+.map-resource-legend{width:180px;margin-top:7px;padding:7px 9px;border:1px solid #53535e;border-radius:6px;background:#17171cda;font-size:10px}
+.map-resource-legend span{display:block;height:6px;border-radius:3px;margin-bottom:5px}
+.map-resource-legend small{font-size:10px;letter-spacing:.5px}

@@ -1,0 +1,32 @@
+/* Age of Geocracy: WAR — pre-alpha functionality */
+.war-page,.war-page *{box-sizing:border-box}
+.war-page{position:fixed;inset:var(--header-height,176px) 0 0;padding:14px 2% 20px;background:#080808;color:#fff;font-family:"Black Ops One",sans-serif;overflow:hidden}
+.war-panel{width:100%;height:100%;overflow-y:auto;min-height:0;padding:20px;background:#202020;border-radius:8px;scrollbar-color:#555 #202020}
+.war-header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.war-header h1{font-size:clamp(22px,2.6vw,36px);font-weight:normal;margin:0 0 10px}
+.war-search,.war-select{width:100%;padding:12px;background:#111;border:1px solid #555;color:white;font:inherit;font-size:13px;margin:8px 0 15px}
+.war-list{display:flex;flex-direction:column;gap:8px;max-width:630px}
+.war-link{display:block;padding:14px;background:#333;color:white;text-decoration:none}
+.war-link:hover{background:#494949}
+.war-muted{color:#999;font-size:13px}.war-error{color:#ee7777;font-size:13px;min-height:20px}
+.war-grid{display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,1fr);gap:25px}
+.war-section{background:#282828;padding:16px;border-radius:7px;min-width:0}
+.war-section h2{margin:0 0 12px;font-size:20px;font-weight:normal}
+.war-row{display:flex;justify-content:space-between;gap:12px;margin:10px 0;font-size:15px;flex-wrap:wrap}
+.war-rank{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;border-bottom:1px solid #454545;flex-wrap:wrap}
+.war-button{background:#555;border:0;color:#080808;border-radius:10px;padding:12px;font:inherit;cursor:pointer}
+.war-button:disabled{opacity:.55;cursor:not-allowed}
+.war-button:not(:disabled):hover{background:#777}
+.war-field{display:block;margin:12px 0;font-size:13px}
+.war-field input[type=range]{width:100%;accent-color:#78d849;cursor:pointer}
+.war-note{color:#aaa;font-size:12px;line-height:1.5}
+.war-link-player{color:white;text-decoration:none}.war-link-player:hover{color:#79df4b}
+@media(max-width:760px){.war-page{position:relative;inset:auto;padding:calc(var(--header-height,176px) + 12px) 12px 18px;overflow:auto}.war-panel{height:auto;min-height:400px}.war-grid{grid-template-columns:1fr}}
+
+/* ================================================
+   CONTENEDOR ESTABLE
+   ================================================ */
+.war-panel{
+  max-width:1100px;
+  margin:0 auto;
+}

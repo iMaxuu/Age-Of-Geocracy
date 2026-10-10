@@ -1,0 +1,359 @@
+/* Estilos originales de Age of Geocracy PRE-ALPHA v0.0.1.
+ * Importados al módulo React Profile sin modificar el diseño general.
+ * NO depende del CSS global del proyecto anterior.
+ */
+.profile-page,.profile-page *{box-sizing:border-box}
+.profile-page{--pr-bg:#080808;--pr-panel:#242424;--pr-title:#5f5f5f;--pr-gap:18px;font-family:'Black Ops One',sans-serif;background:var(--pr-bg);color:#fff;min-height:100vh;padding:calc(var(--header-height,164px) + 34px) 4.6% 70px}
+.pr-card{background:var(--pr-panel);border-radius:8px;min-width:0}
+.pr-card h2{margin:0;color:var(--pr-title);font-size:clamp(17px,1.45vw,23px);font-weight:normal;line-height:1.2;text-align:center;overflow-wrap:break-word;text-wrap:balance}
+.pr-top-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.96fr);gap:18px}
+.pr-documentation,.pr-biography-card{height:218px;min-height:218px;padding:10px 20px 18px;overflow:hidden}
+.pr-documentation{position:relative}
+.pr-documentation-body{display:grid;grid-template-columns:150px minmax(0,1fr) 130px;gap:16px;align-items:center;min-height:158px}
+.pr-photo-button{width:138px;height:138px;border:0;background:transparent;padding:0;cursor:default;justify-self:center}
+.pr-photo-button img{display:block;width:100%;height:100%;object-fit:cover}
+.profile-page.is-editing .pr-photo-button{cursor:pointer;outline:2px dashed #78d54e;outline-offset:3px}
+.pr-personal{min-width:0;align-self:center}
+.pr-name{font-size:clamp(25px,2.35vw,37px);line-height:1.05;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;overflow-wrap:anywhere}
+.pr-player-tag{color:#79df4b;font-size:.62em}
+.pr-id{font-size:clamp(16px,1.55vw,25px);margin-top:2px}
+.pr-country{margin-top:12px;min-height:54px;display:flex;align-items:center}
+.pr-country img{display:block;width:100px;height:58px;object-fit:cover}
+.pr-actions{align-self:end;padding-bottom:8px}
+.pr-action-group{display:flex;flex-direction:column;gap:8px}
+.pr-action-group[hidden]{display:none}
+.pr-actions button,.pr-upgrade-actions button,.pr-crop-dialog button{font-family:'Black Ops One',sans-serif;border:0;border-radius:8px;min-height:33px;cursor:pointer}
+.pr-actions button{font-size:11px;padding:6px 8px;background:#5b5b5b;color:#fff}
+.pr-green,.pr-actions .pr-green{background:#78d94e!important;color:#17320e!important}
+.pr-red,.pr-actions .pr-red{background:#ff343e!important;color:#151515!important}
+.pr-neutral,.pr-actions .pr-neutral{background:#616161;color:#fff}
+.pr-actions button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.35)}
+.pr-edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;padding-top:10px;border-top:1px solid #444}
+.pr-edit-fields[hidden]{display:none}
+.pr-edit-fields label{display:grid;gap:4px;font-size:10px;color:#888}
+.pr-edit-fields label:last-child{grid-column:1/-1}
+.pr-control{display:block;width:100%;font:12px 'Black Ops One',sans-serif;color:#fff;background:#444;border:1px solid #777;border-radius:5px;padding:7px;resize:vertical}
+.pr-biography-card{display:flex;flex-direction:column}
+.pr-biography{font-size:clamp(12px,1.02vw,16px);line-height:1.28;margin-top:12px;white-space:pre-wrap;overflow:auto;overflow-wrap:anywhere;flex:1;min-height:0;scrollbar-gutter:stable}
+.pr-biography-input{margin-top:12px;flex:1;min-height:135px}
+.pr-affiliations{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:16px}
+.pr-entity{height:250px;padding:16px 14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.pr-entity-link{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#fff;text-decoration:none;min-height:0;overflow-wrap:anywhere}
+.pr-entity-link>span{display:block;width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.pr-entity-link[href]{cursor:pointer}
+.pr-entity-link[href]:hover{background:#2b2b2b;border-radius:6px}
+.pr-entity-link[href]:focus-visible,.pr-info-link[href]:focus-visible{outline:2px solid #79df4b;outline-offset:2px}
+.pr-entity-link:not([href]){cursor:default}
+.pr-entity img{display:block;width:min(72%,180px);height:145px;object-fit:contain}
+.pr-entity img[hidden]{display:none}
+.pr-entity-link span{font-size:clamp(13px,1.18vw,18px);line-height:1.2}
+.pr-entity-link small{font-size:clamp(10px,.85vw,14px);color:#555}
+.pr-section{margin-top:30px;padding-top:23px;border-top:3px solid #e6e6e6}
+.pr-section>h1{margin:0 0 28px;text-align:center;color:#5f5f5f;font-size:clamp(28px,3vw,43px);font-weight:normal;line-height:1}
+.pr-info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.pr-info-card{height:112px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;color:#fff;text-decoration:none}
+.pr-info-card strong{margin:auto 0;font-size:clamp(15px,1.65vw,25px);font-weight:normal;overflow-wrap:anywhere}
+.pr-info-card:first-child strong{font-size:clamp(12px,1.2vw,18px)}
+.pr-info-link[href]{cursor:pointer}
+.pr-info-link[href]:hover{background:#2b2b2b}
+.pr-info-link:not([href]){cursor:default}
+.pr-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.pr-stat-card{min-height:191px;padding:17px 12px 14px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.pr-stat-value{font-size:clamp(31px,3.1vw,48px);font-weight:normal;line-height:1;margin:18px 0 17px}
+.pr-upgrade-actions{width:100%;display:grid;grid-template-columns:1fr;gap:8px;margin-top:auto}
+.pr-upgrade-actions button{min-height:57px;background:#626262;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px}
+.pr-upgrade-actions button[data-currency="gold"]{background:#b69d29;color:#ffc54a}
+.pr-upgrade-actions button strong{font-size:clamp(15px,1.42vw,21px);font-weight:normal;line-height:1.05}
+.pr-upgrade-actions button small{font-size:clamp(10px,.95vw,14px);line-height:1}
+.pr-upgrade-actions button:disabled{opacity:.45;cursor:not-allowed}
+.profile-page:not(.is-own-profile) .pr-stat-card{min-height:127px;justify-content:flex-start}
+.profile-page:not(.is-own-profile) .pr-stat-value{margin:auto 0;font-size:clamp(31px,3vw,45px)}
+.profile-page:not(.is-own-profile) .pr-upgrade-actions{display:none}
+.pr-job-status{text-align:center;font-size:11px;min-height:14px;margin:8px 0 0;color:#a9a9a9}
+#pr-error{margin:16px 0 0;color:#ff6262;text-align:center}
+.pr-crop-dialog{background:#212121;color:#fff;border:1px solid #555;border-radius:10px;padding:20px;max-width:min(95vw,440px);font-family:'Black Ops One',sans-serif}
+.pr-crop-dialog::backdrop{background:#000b}
+.pr-crop-dialog h2{margin-top:0}
+.pr-crop-dialog canvas{max-width:100%;height:auto;touch-action:none;cursor:grab;display:block;margin:12px auto;border:1px solid #999}
+.pr-crop-dialog label{display:flex;gap:10px;align-items:center}
+.pr-crop-dialog label input{flex:1}
+.pr-crop-dialog>div{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+.pr-crop-dialog button{padding:8px 15px;background:#555;color:#fff}
+[hidden]{display:none!important}
+@media(max-width:900px){.pr-top-grid{grid-template-columns:1fr}.pr-affiliations,.pr-info-grid,.pr-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-documentation-body{grid-template-columns:130px minmax(0,1fr) 120px}.pr-photo-button{width:120px;height:120px}}
+@media(max-width:600px){.profile-page{padding:calc(var(--header-height,164px) + 18px) 12px 50px}.pr-documentation-body{grid-template-columns:95px minmax(0,1fr)}.pr-photo-button{width:88px;height:88px}.pr-actions{grid-column:1/-1;width:100%;padding:0}.pr-action-group{display:grid;grid-template-columns:1fr 1fr}.pr-country img{width:78px;height:45px}.pr-affiliations,.pr-info-grid,.pr-stats{grid-template-columns:1fr}.pr-entity{height:225px}.pr-info-card{height:100px}.pr-section>h1{margin-bottom:20px}.pr-edit-fields{grid-template-columns:1fr}.pr-edit-fields label:last-child{grid-column:1}}
+
+/* Editor del perfil: DOCUMENTACION se expande para mostrar todos los campos. */
+.profile-page.is-editing .pr-documentation{height:245px;min-height:245px;overflow:visible}
+.profile-page.is-editing .pr-documentation-body{min-height:105px;grid-template-columns:92px minmax(0,1fr) 130px;gap:14px}
+.profile-page.is-editing .pr-photo-button{width:88px;height:88px}
+.profile-page.is-editing .pr-country img{width:70px;height:40px}
+.profile-page.is-editing .pr-edit-fields{grid-template-columns:1.2fr .8fr 1fr;gap:8px 10px;padding-top:7px}
+.profile-page.is-editing .pr-edit-fields label:last-child{grid-column:auto}
+.profile-page.is-editing .pr-edit-fields label{gap:2px}
+.profile-page.is-editing .pr-control{min-height:28px}
+
+/* ================================================
+   CONTENEDOR ESTABLE · evita que PROFILE se estire
+   ================================================ */
+.profile-page{
+  width:min(calc(100% - 24px),1100px);
+  margin:0 auto;
+  padding-left:0;
+  padding-right:0;
+}
+@media(max-width:600px){
+  .profile-page{
+    width:min(calc(100% - 24px),1100px);
+    padding-left:0;
+    padding-right:0;
+  }
+}
+
+
+/* INFORMACIÓN: máximo 4 por fila y relaciones juntas.
+   Fila 1: Registro, Experiencia, Daño, Ideología.
+   Fila 2: Territorio + Ciudadanía. */
+.pr-info-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+#pr-territory-card{grid-column:1}
+#pr-citizenship-card{grid-column:2}
+@media(max-width:900px){
+  #pr-territory-card,#pr-citizenship-card{grid-column:auto}
+}
+
+/* INFORMACIÓN — valores largos: máximo 2 líneas y luego ... */
+.pr-info-card strong{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+  line-height:1.2;
+  overflow-wrap:normal;
+  word-break:normal;
+}
+
+
+
+/* PROFILE v2.2 — sistema de diseño compartido con Home.
+   Este bloque es la única fuente de verdad para el aspecto del módulo. */
+.profile-page {
+  --pr-accent: var(--aog-accent, #d62718);
+  --pr-dark: color-mix(in srgb, var(--pr-accent) 15%, #000);
+  --pr-mid: color-mix(in srgb, var(--pr-accent) 58%, #000 42%);
+  --pr-gold: #ffe056;
+  --pr-bg: #080808;
+  --pr-panel: #080808;
+  --pr-title: var(--pr-dark);
+  width: min(100%, 1366px);
+  min-height: 0;
+  padding: 12px clamp(12px, 3.65%, 50px) 44px;
+  margin: 0 auto;
+  background: #080808;
+  color: var(--pr-accent);
+  font-family: 'Black Ops One', system-ui, sans-serif;
+}
+.profile-page,.profile-page *,.profile-page *::before,.profile-page *::after {box-sizing:border-box}
+.profile-page::before {
+  content:'PERFIL';display:block;margin:0 0 17px;text-align:center;
+  color:var(--pr-dark);font-size:clamp(24px,3vw,43px);line-height:1.14;
+}
+.profile-page .pr-card {
+  position:relative;min-width:0;background:#080808;
+  border:4px solid var(--pr-accent);border-radius:29px;
+  box-shadow:none;color:var(--pr-accent);
+}
+.profile-page .pr-card > h2 {
+  position:absolute;z-index:2;left:50%;top:-2px;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:center;
+  width:max-content;max-width:calc(100% - 60px);min-width:0;
+  min-height:38px;height:auto;margin:0;padding:5px 14px 8px;
+  border:0;border-radius:0 0 21px 21px;
+  background:var(--pr-accent);color:var(--pr-dark);
+  font-size:clamp(11px,1.12vw,17px);font-weight:normal;
+  line-height:1.12;white-space:nowrap;overflow:visible;
+}
+/* Curvas idénticas a .aog-home-panel-title, sin recortes invertidos. */
+.profile-page .pr-card > h2::before,
+.profile-page .pr-card > h2::after {
+  content:'';position:absolute;top:0;width:24px;height:24px;
+  background:var(--pr-accent);pointer-events:none;
+  clip-path:path('M 0 0 H 24 V 24 C 24 10 14 0 0 0 Z');
+}
+.profile-page .pr-card > h2::before {right:calc(100% - 1px)}
+.profile-page .pr-card > h2::after {left:calc(100% - 1px);transform:scaleX(-1)}
+.profile-page .pr-top-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.profile-page .pr-documentation,.profile-page .pr-biography-card {
+  height:214px;min-height:214px;padding:39px 16px 12px;overflow:hidden;
+}
+.profile-page .pr-documentation-body {
+  position:relative;display:grid;grid-template-columns:126px minmax(0,1fr);
+  gap:9px;align-items:start;min-height:158px;
+}
+.profile-page .pr-avatar-column {
+  width:126px;align-self:start;justify-self:center;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.profile-page .pr-avatar-column .pr-photo-button {
+  width:124px;height:124px;overflow:hidden;border-radius:13px;background:#c7d0d7;
+}
+.profile-page .pr-avatar-column .pr-photo-button img {width:100%;height:100%;object-fit:cover}
+.profile-page .pr-level-track {
+  position:relative;width:100%;height:29px;overflow:hidden;
+  border:2px solid var(--pr-accent);border-radius:999px;background:var(--pr-dark);
+}
+.profile-page .pr-level-track > span {display:block;height:100%;background:var(--pr-accent);border-radius:inherit}
+.profile-page .pr-level-number {
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:16px;color:var(--pr-accent);text-shadow:0 1px 2px #000;
+}
+.profile-page .pr-personal {min-width:0;align-self:start;padding:2px 0}
+.profile-page .pr-name {display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:clamp(20px,2.5vw,37px);line-height:1.06;color:var(--pr-accent)}
+.profile-page .pr-id,.profile-page .pr-player-tag {color:var(--pr-mid);font-size:clamp(12px,1.15vw,18px)}
+.profile-page .pr-country {margin:5px 0 0;min-height:36px}
+.profile-page .pr-country img {width:53px;height:34px;object-fit:cover;border-radius:5px}
+.profile-page .pr-ideology-inline {color:var(--pr-mid);font-size:clamp(11px,1.13vw,16px);margin-top:4px}
+.profile-page .pr-actions {position:absolute;right:0;bottom:0;width:min(210px,calc(100% - 139px));padding:0}
+.profile-page .pr-action-group {display:flex;flex-direction:column-reverse;align-items:flex-end;gap:4px}
+.profile-page .pr-actions button {
+  background:var(--pr-dark);border:2px solid var(--pr-accent);border-radius:999px;
+  color:var(--pr-accent);min-height:33px;padding:3px 12px;font-size:14px;
+}
+.profile-page .pr-actions .pr-edit-icon {width:36px;height:36px;padding:0;border-radius:50%;font-size:22px}
+.profile-page .pr-biography {margin:0;color:var(--pr-accent);font-size:clamp(12px,1.12vw,16px);line-height:1.36;overflow:auto;overflow-wrap:anywhere}
+.profile-page .pr-affiliations {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-top:14px}
+.profile-page .pr-entity {height:242px;padding:39px 10px 10px}
+.profile-page .pr-entity-link {color:var(--pr-accent);gap:8px}
+.profile-page .pr-entity-link span {font-size:clamp(13px,1.35vw,19px);white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+.profile-page .pr-entity img {height:130px;width:min(80%,154px);object-fit:contain}
+.profile-page .pr-section {border-top:3px solid var(--pr-accent);margin-top:32px;padding-top:10px}
+.profile-page .pr-section > h1 {font-size:clamp(26px,3.1vw,42px);color:var(--pr-dark);margin:0 0 13px;text-align:center;line-height:1.1}
+.profile-page .pr-info-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 17px}
+.profile-page .pr-info-card {height:102px;padding:38px 9px 9px;justify-content:center}
+.profile-page .pr-info-card > h2 {max-width:calc(100% - 48px);padding-inline:9px;font-size:clamp(10px,1.04vw,15px)}
+.profile-page .pr-info-card strong {color:var(--pr-accent);margin:auto 0;font-size:clamp(18px,2vw,29px);line-height:1.1;max-width:100%;overflow-wrap:anywhere}
+.profile-page .pr-info-card:first-child strong {font-size:clamp(12px,1.25vw,18px)}
+.profile-page #pr-territory-card,.profile-page #pr-citizenship-card {grid-column:auto}
+.profile-page .pr-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.profile-page.is-own-profile .pr-stat-card {height:247px;min-height:247px;padding:39px 16px 12px}
+.profile-page .pr-stat-card > h2 {max-width:calc(100% - 48px);font-size:clamp(11px,1.1vw,16px)}
+.profile-page .pr-stat-value {color:var(--pr-accent);font-size:clamp(31px,3vw,43px);margin:6px 0}
+.profile-page .pr-upgrade-actions {width:100%;gap:6px}
+.profile-page .pr-upgrade-actions button {min-height:65px;border:3px solid var(--pr-accent);border-radius:28px;background:#080808;color:var(--pr-accent);padding:4px;gap:0}
+.profile-page .pr-upgrade-actions button[data-currency='gold'] {border-color:var(--pr-gold);color:var(--pr-gold);background:#080808}
+.profile-page .pr-upgrade-actions button:disabled {opacity:1;cursor:not-allowed}
+.profile-page .pr-upgrade-actions button strong {font-size:clamp(18px,2.3vw,31px)}
+.profile-page .pr-upgrade-actions button small {font-size:clamp(9px,1.05vw,13px);color:inherit;opacity:.75}
+.profile-page .pr-job-status {color:var(--pr-accent)}
+.profile-page .pr-control {background:var(--pr-dark);border:1px solid var(--pr-accent);color:var(--pr-accent)}
+.profile-page .pr-biography,.profile-page .pr-biography-input {scrollbar-width:thin;scrollbar-color:var(--pr-accent) var(--pr-dark)}
+.profile-page.is-editing .pr-documentation {height:auto;min-height:310px;overflow:visible}
+.profile-page.is-editing .pr-actions {position:static;grid-column:1/-1;width:100%}
+.profile-page.is-editing .pr-action-group {flex-direction:row;align-items:center}
+.profile-page.is-editing .pr-edit-fields {grid-template-columns:repeat(3,minmax(0,1fr));color:var(--pr-accent)}
+@media(max-width:900px){
+ .profile-page .pr-top-grid{grid-template-columns:1fr}
+ .profile-page .pr-documentation,.profile-page .pr-biography-card{height:220px;min-height:220px}
+ .profile-page .pr-affiliations,.profile-page .pr-stats,.profile-page .pr-info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .profile-page {padding:12px 12px 44px;width:100%}
+ .profile-page .pr-card {border-width:3px;border-radius:22px}
+ .profile-page .pr-card>h2 {min-height:31px;font-size:clamp(10px,2.9vw,12px);padding:5px 9px 6px;max-width:calc(100% - 52px)}
+ .profile-page .pr-documentation,.profile-page .pr-biography-card{height:auto;min-height:214px;padding:38px 10px 10px}
+ .profile-page .pr-documentation-body{grid-template-columns:90px minmax(0,1fr);gap:7px;min-height:130px}
+ .profile-page .pr-avatar-column {width:88px}
+ .profile-page .pr-avatar-column .pr-photo-button {width:85px;height:85px}
+ .profile-page .pr-level-track {height:24px}
+ .profile-page .pr-actions {width:min(195px,calc(100% - 98px))}
+ .profile-page .pr-affiliations,.profile-page .pr-info-grid,.profile-page .pr-stats {gap:12px}
+ .profile-page .pr-entity{height:190px;padding:35px 8px 8px}
+ .profile-page .pr-entity img {height:92px}
+ .profile-page .pr-info-card{height:100px}
+ .profile-page.is-own-profile .pr-stat-card {height:240px;min-height:240px;padding:35px 9px 9px}
+ .profile-page .pr-upgrade-actions button{min-height:55px}
+ .profile-page.is-editing .pr-edit-fields{grid-template-columns:1fr}
+}
+@media(max-width:380px){.profile-page .pr-affiliations,.profile-page .pr-info-grid,.profile-page .pr-stats{grid-template-columns:1fr}}
+
+/* Edición en línea: los campos ocupan el lugar del texto, sin bloque adicional. */
+.profile-page.is-editing .pr-documentation {height:214px;min-height:214px;overflow:hidden}
+.profile-page.is-editing .pr-documentation-body {grid-template-columns:126px minmax(0,1fr);min-height:158px;gap:9px}
+.profile-page.is-editing .pr-actions {position:absolute;right:0;bottom:0;width:min(210px,calc(100% - 139px))}
+.profile-page.is-editing .pr-action-group {flex-direction:row;flex-wrap:wrap;justify-content:flex-end}
+.profile-page .pr-inline-input,.profile-page .pr-inline-select {font-family:inherit;color:var(--pr-accent);background:transparent;border:1px dashed var(--pr-accent);border-radius:6px;outline-offset:2px}
+.profile-page .pr-inline-input:focus,.profile-page .pr-inline-select:focus{outline:2px solid var(--pr-accent)}
+.profile-page .pr-inline-name{font-size:inherit;font-weight:inherit;line-height:inherit;width:min(100%,290px);min-width:80px;padding:0 3px}
+.profile-page .pr-inline-flag-wrap{display:flex;align-items:center;gap:8px;min-width:0;width:100%}
+.profile-page .pr-inline-flag-wrap img{width:53px;height:34px;flex:none;object-fit:cover;border-radius:5px}
+.profile-page .pr-inline-country-select{max-width:210px;min-width:0;width:100%;height:35px;font-size:12px;padding:3px}
+.profile-page .pr-inline-ideology{max-width:250px;width:100%;font-size:13px;padding:4px 2px}
+.profile-page .pr-inline-select option{background:#111;color:#f5f5f5}
+@media(max-width:600px){
+ .profile-page.is-editing .pr-documentation{height:auto;min-height:214px}
+ .profile-page.is-editing .pr-documentation-body{grid-template-columns:90px minmax(0,1fr);gap:7px;min-height:175px}
+ .profile-page.is-editing .pr-actions{width:100%;position:static;grid-column:1/-1}
+ .profile-page.is-editing .pr-action-group{justify-content:flex-end}
+ .profile-page .pr-inline-name{width:100%;font-size:clamp(18px,5vw,28px)}
+ .profile-page .pr-inline-country-select{max-width:100px;font-size:10px}
+}
+
+/* Recorte 1:1. El PNG permanece transparente y el panel se ve detrás. */
+.profile-page .pr-photo-button { background:transparent; overflow:hidden; border-radius:12px; }
+.profile-page .pr-photo-button img { background:transparent; object-fit:contain; }
+.profile-page .pr-avatar-column { background:transparent; }
+.pr-crop-backdrop {position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.83)}
+.pr-crop-dialog {width:min(420px,100%);padding:22px;background:#090909;color:var(--aog-accent,#ed291d);border:3px solid var(--aog-accent,#ed291d);border-radius:25px;display:flex;flex-direction:column;gap:15px;align-items:center;text-align:center}
+.pr-crop-dialog h2 {margin:0;font-size:23px;color:var(--aog-accent,#ed291d)}
+.pr-crop-dialog p {margin:0;font-size:12px;line-height:1.5;color:var(--aog-accent,#ed291d)}
+.pr-crop-stage {width:min(300px,100%);aspect-ratio:1;background:transparent;border:2px solid var(--aog-accent,#ed291d);border-radius:12px;overflow:hidden;touch-action:none;}
+.pr-crop-stage canvas {display:block;width:100%;height:100%;touch-action:none;cursor:grab;background:transparent}
+.pr-crop-stage canvas:active {cursor:grabbing}
+.pr-crop-zoom {width:100%;display:flex;align-items:center;gap:12px}
+.pr-crop-zoom input {flex:1;min-width:0;accent-color:var(--aog-accent,#ed291d)}
+.pr-crop-actions {display:flex;gap:12px;width:100%}
+.pr-crop-actions button {flex:1;background:transparent;color:var(--aog-accent,#ed291d);border:2px solid var(--aog-accent,#ed291d);border-radius:25px;padding:10px 6px;cursor:pointer;font:inherit;font-size:13px}
+.pr-crop-actions button:last-child {background:var(--aog-accent,#ed291d);color:#080808}
+
+/* Mejora de estadísticas */
+.pr-training-active {display:block;text-align:center;color:var(--aog-accent);font-size:.7rem;margin:0 0 .2rem;}
+.pr-upgrade-actions button:disabled {cursor:not-allowed;opacity:.53;}
+.pr-upgrade-actions button[data-currency="gold"] {border-color:#f8d74d!important;color:#f8d74d!important;background:#0a0903!important;}
+.pr-upgrade-actions button[data-currency="gold"] strong,.pr-upgrade-actions button[data-currency="gold"] small {color:#f8d74d!important;}
+
+/* Una mejora activa por jugador: los demás botones desaparecen. */
+.profile-page .pr-upgrade-actions-hidden{visibility:hidden;pointer-events:none;}
+.profile-page .pr-upgrade-actions button:disabled{cursor:default;}
+
+/* v2.9 — El precio se ajusta a su botón; nunca aumenta el tamaño del panel.
+   cqi toma el ancho REAL del botón (también al reducir la ventana). */
+.profile-page .pr-upgrade-actions button {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 65px;
+  min-height: 65px;
+  box-sizing: border-box;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.profile-page .pr-upgrade-actions button .pr-price-auto {
+  display: block;
+  width: max-content;
+  max-width: calc(100% - 8px);
+  min-width: 0;
+  margin: 0 auto;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.05;
+  font-size: clamp(9px, calc(123cqi / var(--pr-price-chars)), 31px);
+}
+.profile-page .pr-upgrade-actions button small {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .profile-page .pr-upgrade-actions button { height: 55px; min-height: 55px; }
+}

@@ -1,0 +1,26 @@
+/* Age of Geocracy: visual migration adapter */
+.aog-legacy-root { width:100%; min-width:0; color:#fff; }
+.aog-legacy-root .page-content:not(.profile-page) { font-family:'Black Ops One',sans-serif; }
+.aog-legacy-root .aog-legacy-empty { min-height:calc(100vh - 120px); display:grid; align-content:center; justify-items:center; padding:24px; gap:20px; background:#080808; text-align:center; }
+.aog-legacy-empty h1 {font-size:clamp(20px,3vw,36px);color:var(--aog-accent)}
+.aog-legacy-empty p {color:#777;font-size:12px}
+.aog-design-empty { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:180px;margin:24px;color:#808080;text-align:center;font-size:14px;}
+.aog-design-empty small {font-size:10px;color:#555}
+.aog-legacy-root .aog-shell-fallback {position:fixed;inset:120px 0 0;padding:18px;background:#080808;overflow:auto}
+.aog-legacy-root .aog-org-page {min-height:calc(100vh - 120px)}
+.aog-legacy-root .news-shell, .aog-legacy-root .election-placeholder {padding:20px}
+.aog-legacy-root .election-placeholder {position:fixed;inset:120px 0 0;background:#080808;overflow:auto}
+.aog-legacy-root .aog-map-placeholder {position:absolute;z-index:1;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;inset:10% 15%;color:#707070;text-align:center;font-size:16px;}
+.aog-legacy-root .aog-map-placeholder small{font-size:10px;max-width:420px;line-height:1.5}
+.aog-legacy-root .work-resource-card:disabled {cursor:not-allowed;opacity:.8}
+.aog-legacy-root .work-resource-card .amount{font-size:18px}
+/* Never import the old global header; React's Header is the only one on screen. */
+.aog-legacy-root #global-header {display:none!important}
+/* During the visual stage, dialogs are hidden until their actions are migrated. */
+.aog-legacy-root dialog:not([open]) {display:none}
+/* Keep mobile layout accessible, allowing scrolling when original fixed desktop panels are too tall. */
+@media(max-width:800px){
+ .aog-legacy-root .home-content,.aog-legacy-root .aogn-page,.aog-legacy-root .aogr-page,
+ .aog-legacy-root .tp-page,.aog-legacy-root .map-page,.aog-legacy-root .work-page,
+ .aog-legacy-root .election-page,.aog-legacy-root .storage-page{overflow:auto!important}
+}

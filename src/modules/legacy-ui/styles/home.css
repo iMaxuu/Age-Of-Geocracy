@@ -1,0 +1,999 @@
+
+/* ============================================
+   AGE OF GEOCRACY — HOME
+   CSS COMPLETO CORREGIDO
+   ============================================ */
+
+/* GENERAL */
+
+.home-content,
+.home-content * {
+    box-sizing: border-box;
+}
+
+.home-content {
+    position: fixed;
+    inset: var(--header-height, 176px) 0 0;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .94fr);
+
+    gap: 18px;
+    padding: 10px 1%;
+
+    background: #090909;
+    color: #fff;
+
+    overflow: hidden;
+
+    font-family: 'Black Ops One', sans-serif;
+}
+
+.home-card {
+    min-width: 0;
+    min-height: 0;
+
+    background: #212121;
+    border-radius: 8px;
+}
+
+
+/* ============================================
+   CHAT — CONTENEDOR
+   ============================================ */
+
+.home-chat {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 12px 12px 18px;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+}
+
+
+/* ============================================
+   CHAT — LISTA DE MENSAJES
+   ============================================ */
+
+.home-chat-messages {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    width: 100%;
+
+    overflow-x: hidden !important;
+    overflow-y: auto;
+
+    padding: 8px 8px 12px;
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #454545 transparent;
+
+    overscroll-behavior: contain;
+}
+
+/* Chrome, Edge, Safari */
+
+.home-chat-messages::-webkit-scrollbar {
+    width: 5px;
+    height: 0;
+}
+
+.home-chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.home-chat-messages::-webkit-scrollbar-thumb {
+    background: #454545;
+    border-radius: 20px;
+}
+
+.home-chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+
+/* ============================================
+   CHAT — BURBUJAS DE MENSAJES
+   ============================================ */
+
+.home-chat-message {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 0;
+
+    flex-shrink: 0;
+
+    width: fit-content;
+
+    max-width: min(86%, 435px);
+    min-width: 0;
+
+    padding: 8px;
+
+    border-radius: 7px;
+
+    background: #535353;
+    color: #fff;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* MENSAJES AJENOS */
+
+.home-chat-message.other {
+    align-self: flex-start;
+
+    background: #535353;
+
+    border-radius: 7px;
+}
+
+/* MENSAJES PROPIOS */
+
+.home-chat-message.own {
+    align-self: flex-end;
+
+    background: #526f8c;
+
+    border-radius: 7px;
+}
+
+/* ELIMINAR TRIÁNGULOS */
+
+.home-chat-message::before,
+.home-chat-message::after,
+.home-chat-message.other::before,
+.home-chat-message.other::after,
+.home-chat-message.own::before,
+.home-chat-message.own::after {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* ============================================
+   CHAT — AVATARES
+   ============================================ */
+
+.home-chat-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 37px;
+    height: 37px;
+
+    flex: 0 0 37px;
+
+    margin-right: 6px;
+
+    background: #777;
+
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.home-chat-avatar img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.home-chat-avatar img.is-default {
+    width: 80%;
+    height: 80%;
+
+    object-fit: contain;
+
+    filter: brightness(0) invert(1);
+}
+
+
+/* ============================================
+   CHAT — INFORMACIÓN DE MENSAJES
+   ============================================ */
+
+.home-chat-message-body {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
+.home-chat-heading {
+    display: flex;
+    align-items: baseline;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+
+    min-width: 0;
+
+    font-size: 13px;
+    line-height: 1.15;
+}
+
+.home-chat-heading a {
+    color: #fff;
+    text-decoration: none;
+
+    overflow-wrap: anywhere;
+}
+
+.home-chat-heading a:hover {
+    text-decoration: underline;
+}
+
+/* PARTIDOS */
+
+.home-chat-tag {
+    color: #79df4b;
+
+    font-size: 11px;
+}
+
+/* FECHA Y HORA */
+
+.home-chat-time {
+    display: block;
+
+    width: 100%;
+
+    font-size: 9px;
+
+    color: #eee;
+}
+
+/* TEXTO DEL MENSAJE */
+
+.home-chat-message-text {
+    min-width: 0;
+    max-width: 100%;
+
+    margin-top: 5px;
+
+    font-size: 11px;
+    line-height: 1.3;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+
+/* ============================================
+   CHAT — ESCRIBIR MENSAJE
+   ============================================ */
+
+.home-chat-form {
+    display: flex;
+    align-items: stretch;
+
+    flex-shrink: 0;
+
+    min-width: 0;
+    min-height: 40px;
+
+    margin: 8px 10px 0;
+
+    background: #555;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+}
+
+.home-chat-form input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 0 12px;
+
+    font: inherit;
+    font-size: 13px;
+
+    color: white;
+
+    background: transparent;
+
+    border: 0;
+    outline: none;
+}
+
+.home-chat-form input::placeholder {
+    color: #bbb;
+}
+
+.home-chat-form button {
+    border: 0;
+
+    cursor: pointer;
+
+    color: white;
+    background: transparent;
+
+    font-family: inherit;
+}
+
+/* BANDERA / IDIOMA */
+
+.home-chat-form #home-chat-language {
+    width: 48px;
+    flex-shrink: 0;
+
+    padding: 3px;
+
+    font-size: 25px;
+}
+
+/* ENVIAR */
+
+.home-chat-form .home-chat-send {
+    width: 38px;
+    flex-shrink: 0;
+
+    font-size: 18px;
+
+    background: #434343;
+
+    transition: background .15s ease;
+}
+
+.home-chat-form .home-chat-send:hover {
+    background: #606060;
+}
+
+
+/* ============================================
+   SELECTOR DE IDIOMAS
+   ============================================ */
+
+.home-language-panel {
+    position: absolute;
+
+    bottom: 70px;
+    right: 20px;
+
+    width: min(410px, calc(100% - 40px));
+
+    padding: 12px;
+
+    background: #2b2b2b;
+
+    border: 1px solid #555;
+    border-radius: 9px;
+
+    box-shadow: 0 6px 24px #000b;
+
+    z-index: 12;
+}
+
+.home-language-panel[hidden] {
+    display: none;
+}
+
+.home-language-panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+    font-size: 13px;
+}
+
+.home-language-panel-title button {
+    color: white;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+.home-language-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 5px;
+
+    max-height: 250px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: #454545 transparent;
+}
+
+.home-language-grid::-webkit-scrollbar {
+    width: 5px;
+    height: 0;
+}
+
+.home-language-grid::-webkit-scrollbar-thumb {
+    background: #454545;
+    border-radius: 10px;
+}
+
+.home-language-option {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    min-width: 0;
+
+    padding: 9px;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    background: #444;
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font: 12px Arial, sans-serif;
+}
+
+.home-language-option span:first-child {
+    font-size: 21px;
+    flex-shrink: 0;
+}
+
+.home-language-option:hover,
+.home-language-option.is-selected {
+    border-color: #9fb8df;
+
+    background: #4e6883;
+}
+
+
+/* ============================================
+   COLUMNA DERECHA
+   ============================================ */
+
+.home-side {
+    display: grid;
+
+    grid-template-rows:
+        minmax(0, 3fr)
+        minmax(115px, 1.08fr);
+
+    gap: 12px;
+
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* ============================================
+   ESTADÍSTICAS MUNDIALES
+   ============================================ */
+
+.home-world {
+    min-width: 0;
+    min-height: 0;
+
+    padding: 14px 10px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: #454545 transparent;
+}
+
+.home-world::-webkit-scrollbar {
+    width: 5px;
+    height: 0;
+}
+
+.home-world::-webkit-scrollbar-thumb {
+    background: #454545;
+    border-radius: 10px;
+}
+
+.home-metrics,
+.home-records {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.home-metrics > div,
+.home-records > div {
+    display: flex;
+    align-items: baseline;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    min-width: 0;
+
+    font-size: clamp(12px, 1.4vw, 18px);
+
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+}
+
+.home-metrics strong,
+.home-records strong {
+    font-weight: normal;
+
+    color: #9cc67d;
+}
+
+/* RÉCORDS */
+
+.home-records {
+    margin-top: 32px;
+
+    gap: 8px;
+}
+
+
+/* ============================================
+   NOTICIAS
+   ============================================ */
+
+.home-news {
+    min-width: 0;
+    min-height: 0;
+
+    padding: 12px 16px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: #454545 transparent;
+}
+
+.home-news::-webkit-scrollbar {
+    width: 5px;
+    height: 0;
+}
+
+.home-news::-webkit-scrollbar-thumb {
+    background: #454545;
+    border-radius: 10px;
+}
+
+.home-news ul {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin: 0;
+
+    padding-left: 14px;
+
+    font-size: clamp(11px, 1.1vw, 14px);
+
+    line-height: 1.3;
+}
+
+
+/* ============================================
+   ACCESIBILIDAD
+   ============================================ */
+
+.home-accessibility-note {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    overflow: hidden;
+
+    clip-path: inset(50%);
+}
+
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 800px) {
+
+    .home-content {
+        position: relative;
+        inset: auto;
+
+        min-height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+
+        padding:
+            calc(var(--header-height, 176px) + 10px)
+            10px
+            12px;
+
+        overflow: visible;
+    }
+
+    .home-chat {
+        height: 58vh;
+        min-height: 320px;
+
+        flex: none;
+    }
+
+    .home-chat-messages {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .home-chat-message {
+        max-width: 90%;
+    }
+
+    .home-side {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .home-world {
+        min-height: 310px;
+    }
+
+    .home-news {
+        min-height: 180px;
+    }
+
+    .home-metrics > div,
+    .home-records > div {
+        font-size: 14px;
+    }
+}
+
+
+/* ============================================
+   PANTALLAS PEQUEÑAS
+   ============================================ */
+
+@media (max-width: 420px) {
+
+    .home-content {
+        gap: 10px;
+    }
+
+    .home-chat {
+        padding: 8px;
+    }
+
+    .home-chat-message {
+        max-width: 96%;
+    }
+
+    .home-chat-heading {
+        font-size: 12px;
+    }
+
+    .home-chat-form {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .home-language-panel {
+        bottom: 62px;
+        right: 8px;
+
+        width: calc(100% - 16px);
+    }
+
+    .home-language-option {
+        font-size: 11px;
+        padding: 7px;
+    }
+}
+
+/* ================================================
+   CONTENEDOR ESTABLE · HOME no se deforma al achicar
+   ================================================ */
+.home-content {
+    inset: var(--header-height, 176px) auto 0 50%;
+    width: min(calc(100% - 24px), 1100px);
+    transform: translateX(-50%);
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* FIX: HOME mantiene su estructura al achicar la ventana, como PARTY/COALITION. */
+@media (max-width: 800px) {
+  .home-content {
+    position: fixed;
+    inset: var(--header-height,176px) auto 0 50%;
+    width: min(calc(100% - 24px),1100px);
+    min-height: 0;
+    height: auto;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,.94fr);
+    gap: 12px;
+    padding: 10px 0 12px;
+    overflow: hidden;
+  }
+  .home-chat {
+    height: auto;
+    min-height: 0;
+  }
+  .home-side {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .home-world,
+  .home-news {
+    min-height: 0;
+  }
+}
+
+/* ============================================================
+   FIX 2 — HOME conserva proporción vertical como COALITION.
+   El contenedor ya no usa toda la altura disponible del viewport.
+   ============================================================ */
+.home-content {
+  position: fixed;
+  top: var(--header-height,176px);
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  width: min(calc(100% - 24px),1100px);
+  height: min(clamp(470px,45vw,620px), calc(100dvh - var(--header-height,176px) - 18px));
+  min-height: 0;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,.94fr);
+  align-items: stretch;
+  gap: 12px;
+  padding: 10px 0 12px;
+  overflow: hidden;
+}
+.home-chat,
+.home-side,
+.home-world,
+.home-news { min-height:0; height:auto; }
+@media (max-width:800px){
+  .home-content{
+    top:var(--header-height,176px);
+    bottom:auto;
+    height:min(clamp(430px,54vw,560px),calc(100dvh - var(--header-height,176px) - 14px));
+    grid-template-columns:minmax(0,1fr) minmax(0,.94fr);
+  }
+}
+
+/* =========================================================
+   HOME — REDISEÑO 2026-10
+   ========================================================= */
+body[data-page="home"] .home-content{
+  position:fixed;
+  inset:var(--header-height,176px) 0 0;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  padding:28px clamp(18px,6.4vw,88px) 34px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background:#090909;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+  scrollbar-width:thin;
+  scrollbar-color:#454545 transparent;
+}
+body[data-page="home"] .home-content::-webkit-scrollbar{width:5px}
+body[data-page="home"] .home-content::-webkit-scrollbar-track{background:transparent}
+body[data-page="home"] .home-content::-webkit-scrollbar-thumb{background:#454545;border-radius:20px}
+
+.home-elections{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+  flex:0 0 auto;
+  min-width:0;
+}
+.home-elections.is-empty,
+.home-elections[hidden]{display:none!important}
+.home-election-card{
+  min-width:0;
+  height:76px;
+  padding:9px 12px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border-radius:7px;
+  background:#212121;
+  color:#fff;
+  text-decoration:none;
+  text-align:center;
+}
+.home-election-card:hover{background:#292929}
+.home-election-card:focus-visible{outline:2px solid #ddd;outline-offset:2px}
+.home-election-title{
+  max-width:100%;
+  color:#fff;
+  font-size:clamp(12px,1.05vw,16px);
+  line-height:1.15;
+  font-weight:normal;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.home-election-card.is-pre .home-election-title{color:#606060}
+.home-election-card.is-active.can-vote .home-election-title{color:#79df4b}
+.home-election-meta{
+  color:#fff;
+  font-size:clamp(14px,1.35vw,19px);
+  line-height:1;
+  white-space:nowrap;
+}
+.home-election-card.is-pre .home-election-meta{color:#555}
+
+.home-main-row{
+  display:grid;
+  grid-template-columns:minmax(0,3.18fr) minmax(220px,1fr);
+  gap:20px;
+  min-width:0;
+  height:400px;
+  flex:0 0 400px;
+}
+body[data-page="home"] .home-chat{
+  height:100%;
+  min-height:0;
+  padding:12px 12px 18px;
+  background:#212121;
+}
+.home-side-stats{
+  display:grid;
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:18px;
+  min-width:0;
+  min-height:0;
+}
+.home-stat-card,
+.home-global-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+  padding:12px 10px;
+}
+.home-stat-card h2,
+.home-global-card h2{
+  margin:0;
+  color:#5f5f5f;
+  font-size:clamp(16px,1.7vw,24px);
+  line-height:1.1;
+  font-weight:normal;
+}
+.home-stat-card strong{
+  margin:auto 0;
+  color:#fff;
+  font-size:clamp(27px,3vw,38px);
+  line-height:1;
+  font-weight:normal;
+}
+
+.home-global{
+  flex:0 0 auto;
+  min-width:0;
+}
+.home-global-divider{
+  width:100%;
+  border-top:4px solid #f1f1f1;
+  margin:8px 0 10px;
+}
+.home-global>h1{
+  margin:0 0 18px;
+  color:#5f5f5f;
+  text-align:center;
+  font-size:clamp(30px,3.2vw,43px);
+  line-height:1;
+  font-weight:normal;
+}
+.home-global-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px 20px;
+}
+.home-global-card{
+  height:126px;
+  min-height:126px;
+  justify-content:flex-start;
+}
+.home-global-card h2{font-size:clamp(15px,1.55vw,22px)}
+.home-global-card strong{
+  margin:auto 0;
+  color:#fff;
+  font-size:clamp(26px,2.8vw,36px);
+  line-height:1;
+  font-weight:normal;
+}
+
+/* El nuevo HOME ya no utiliza los paneles laterales viejos. */
+.home-world,.home-news,.home-accessibility-note{display:none!important}
+
+@media(max-width:900px){
+  body[data-page="home"] .home-content{padding:18px 18px 28px}
+  .home-elections{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-main-row{grid-template-columns:minmax(0,2fr) minmax(190px,1fr);height:370px;flex-basis:370px}
+  .home-global-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  body[data-page="home"] .home-content{padding:14px 10px 24px;gap:14px}
+  .home-elections{grid-template-columns:1fr;gap:10px}
+  .home-election-card{height:68px}
+  .home-main-row{display:flex;flex-direction:column;height:auto;flex-basis:auto}
+  body[data-page="home"] .home-chat{height:330px;flex:0 0 330px}
+  .home-side-stats{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;gap:10px}
+  .home-stat-card{min-height:105px;padding:10px 6px}
+  .home-stat-card h2{font-size:12px}
+  .home-stat-card strong{font-size:26px}
+  .home-global-divider{border-top-width:3px}
+  .home-global-grid{gap:10px}
+  .home-global-card{height:105px;min-height:105px;padding:10px 6px}
+  .home-global-card h2{font-size:12px}
+}
+
+/* =========================================================
+   HOME — FIX DE POSICIONAMIENTO TRAS EL REDISEÑO
+   Resetea propiedades heredadas del layout responsive anterior.
+   ========================================================= */
+body[data-page="home"] .home-content{
+  top:var(--header-height,176px) !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:100% !important;
+  max-width:none !important;
+  height:auto !important;
+  min-height:0 !important;
+  transform:none !important;
+  margin:0 !important;
+}

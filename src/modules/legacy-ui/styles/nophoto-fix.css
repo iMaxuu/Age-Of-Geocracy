@@ -1,0 +1,5 @@
+/* Agregar al final del CSS de cada pantalla, si existen estilos anteriores */
+.home-chat-avatar, .home-chat-avatar img,
+.nation-person-photo, .region-person-photo,
+.profile-affiliation-image { background: transparent !important; }
+.home-chat-avatar img.is-default {width:100%;height:100%;filter:none !important;object-fit:contain;}

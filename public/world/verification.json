@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "territoryCount": 59960,
+  "projection": "EPSG:8857",
+  "lod": {
+    "low": {
+      "territories": 59960,
+      "invalid": 0,
+      "mismatchedSharedArcs": 0
+    },
+    "medium": {
+      "territories": 59960,
+      "invalid": 0,
+      "mismatchedSharedArcs": 0
+    },
+    "high": {
+      "territories": 59960,
+      "invalid": 0,
+      "mismatchedSharedArcs": 0
+    }
+  },
+  "importantOverlaps": 0,
+  "errors": []
+}

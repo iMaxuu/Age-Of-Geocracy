@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "territoryCount": 59960,
+  "allIdsPresent": true,
+  "allEightResources": true,
+  "initialAvailableEqualsMax": true,
+  "nonNegativeFiniteIntegers": true,
+  "aurexiumOnlyAntarctica": true,
+  "rareResourcesChecks": true,
+  "woodEveryNonDesertNonAntarctic": true,
+  "mineralEveryTerritory": true,
+  "mountainMineralEnrichment": true,
+  "mineralMountainMean": 11219.53,
+  "mineralLowGeologyMean": 1580.68,
+  "mineralMountainToLowRatio": 7.1,
+  "desertNonMineralPresencePercent": 21.41,
+  "forestWoodPositivePercent": 100,
+  "forestMeanWood": 33467.87,
+  "desertMeanWood": 0.0,
+  "unclassifiedBiomeTerritories": 72,
+  "resources": {
+    "wood": {
+      "territories": 44237,
+      "presencePercent": 73.7775,
+      "totalMax": 889591444,
+      "minPositive": 124,
+      "max": 81963
+    },
+    "mineral": {
+      "territories": 59960,
+      "presencePercent": 100.0,
+      "totalMax": 230809586,
+      "minPositive": 75,
+      "max": 40477
+    },
+    "gold": {
+      "territories": 3838,
+      "presencePercent": 6.4009,
+      "totalMax": 203547,
+      "minPositive": 3,
+      "max": 308
+    },
+    "oil": {
+      "territories": 3848,
+      "presencePercent": 6.4176,
+      "totalMax": 212043,
+      "minPositive": 3,
+      "max": 377
+    },
+    "diamond": {
+      "territories": 993,
+      "presencePercent": 1.6561,
+      "totalMax": 4218,
+      "minPositive": 1,
+      "max": 35
+    },
+    "uranium": {
+      "territories": 439,
+      "presencePercent": 0.7322,
+      "totalMax": 2657,
+      "minPositive": 1,
+      "max": 26
+    },
+    "geocracyum": {
+      "territories": 2099,
+      "presencePercent": 3.5007,
+      "totalMax": 2213,
+      "minPositive": 1,
+      "max": 2
+    },
+    "aurexium": {
+      "territories": 505,
+      "presencePercent": 0.8422,
+      "totalMax": 505,
+      "minPositive": 1,
+      "max": 1
+    }
+  }
+}

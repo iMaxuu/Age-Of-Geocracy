@@ -1,0 +1,120 @@
+/* Age of Geocracy · Storage */
+html:has(body[data-page="storage"]){
+  min-height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:#080808;
+}
+
+body[data-page="storage"]{
+  min-height:100%;
+  margin:0;
+  overflow:visible;
+  background:#080808;
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;
+}
+body[data-page="storage"] .storage-page,
+body[data-page="storage"] .storage-page *{
+  box-sizing:border-box;
+}
+body[data-page="storage"] .storage-page.page-content{
+  position:relative!important;
+  inset:auto!important;
+  width:100%;
+  height:auto!important;
+  min-height:100vh!important;
+  margin:0!important;
+  padding:
+    calc(var(--header-height,164px) + 14px)
+    clamp(18px,4vw,62px)
+    40px!important;
+  overflow:visible!important;
+  background:#080808;
+}
+.storage-page > *{
+  width:min(100%,1100px);
+  margin-inline:auto;
+}
+.storage-title{
+  margin:0 0 72px;
+  color:#5f5f5f;
+  text-align:center;
+  font-size:clamp(30px,3vw,45px);
+  line-height:1;
+  font-weight:normal;
+}
+.storage-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px 12px;
+}
+.storage-card{
+  min-width:0;
+  min-height:126px;
+  border-radius:8px;
+  padding:13px 10px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.storage-card h2{
+  margin:0 0 11px;
+  font-size:clamp(17px,1.6vw,24px);
+  line-height:1;
+  font-weight:normal;
+}
+.storage-card strong{
+  display:block;
+  margin:0 0 9px;
+  color:#fff;
+  font-size:clamp(31px,3vw,44px);
+  line-height:1;
+  font-weight:normal;
+}
+.storage-card span{
+  font-size:clamp(17px,1.65vw,24px);
+  line-height:1;
+}
+.storage-card span b{
+  font-weight:normal;
+}
+.storage-wood{background:#491301}
+.storage-wood h2,.storage-wood span{color:#b8450b}
+
+.storage-mineral{background:#464646}
+.storage-mineral h2,.storage-mineral span{color:#fff}
+
+.storage-gold{background:#947f2c}
+.storage-gold h2,.storage-gold span{color:#ffe257}
+
+.storage-diamond{background:#75a8d8}
+.storage-diamond h2,.storage-diamond span{color:#e4f2ff}
+
+.storage-uranium{background:#13a000}
+.storage-uranium h2,.storage-uranium span{color:#75e54f}
+
+.storage-oil{background:#222}
+.storage-oil h2,.storage-oil span{color:#555}
+
+.storage-geocracyum{background:#00163d}
+.storage-geocracyum h2,.storage-geocracyum span{color:#0752cf}
+
+.storage-aurexium{background:#760061}
+.storage-aurexium h2,.storage-aurexium span{color:#f06cc2}
+
+.storage-divider{
+  border:0;
+  border-top:3px solid #e5e5e5;
+  margin-top:22px;
+}
+
+@media(max-width:820px){
+  .storage-title{margin-bottom:36px}
+  .storage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+  .storage-grid{grid-template-columns:1fr}
+}

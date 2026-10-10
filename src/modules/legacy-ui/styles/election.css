@@ -1,0 +1,368 @@
+/* Age of Geocracy — ELECTION · base visual PRE-ALPHA */
+body[data-page="election"] .election-page,
+body[data-page="election"] .election-page *{box-sizing:border-box}
+body[data-page="election"] .election-page.page-content{
+  position:fixed!important;
+  inset:var(--header-height,210px) 0 0!important;
+  width:100%;height:auto!important;min-height:0!important;
+  margin:0!important;padding:26px 14px 54px!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  background:#080808;color:#fff;font-family:'Black Ops One',sans-serif;
+  scrollbar-width:thin;scrollbar-color:#454545 transparent;
+}
+.election-shell{width:min(100%,1100px);margin:0 auto}
+.election-card{background:#232323;border-radius:8px;min-width:0}
+.election-muted{color:#626262}
+.election-hidden{display:none!important}
+
+/* Cabecera de evento */
+.election-event-head{min-height:138px;padding:14px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+.election-event-head h1{margin:0;color:#666;font-size:clamp(19px,2vw,28px);font-weight:normal;line-height:1.15}
+.election-event-date{font-size:clamp(18px,2vw,28px);line-height:1.15}
+.election-event-status{margin-top:25px;font-size:clamp(13px,1.25vw,18px);color:#666}
+.election-event-status strong{color:#fff;font-weight:normal}
+.election-event-meta{font-size:11px;color:#555;margin-top:-2px}
+
+/* Selector cuando el mismo Election ID contiene varios procesos */
+.election-process-bar{display:flex;justify-content:flex-end;margin:10px 0 14px}
+.election-process-toggle{border:0;border-radius:8px;background:#606060;color:#fff;font:12px 'Black Ops One',sans-serif;padding:10px 15px;cursor:pointer}
+.election-process-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.election-process-option{border:1px solid #4e4e4e;border-radius:8px;background:#1d1d1d;color:#fff;padding:11px 12px;text-align:left;font:12px 'Black Ops One',sans-serif;cursor:pointer;min-height:60px}
+.election-process-option:hover,.election-process-option.is-active{border-color:#d4c800;background:#292929}
+.election-process-option span{display:block;color:#777;font-size:10px;margin-top:5px}
+
+/* Panel principal */
+.election-main{min-height:428px;padding:17px 24px 19px;margin-top:14px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.election-main h2{margin:0;color:#666;font-size:clamp(19px,2vw,29px);font-weight:normal;line-height:1.15}
+.election-main h2 strong{color:#fff;font-weight:normal}
+.election-main-bottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:8px}
+.election-big-number{font-size:clamp(38px,4vw,58px);line-height:1}
+.election-method{font-size:clamp(14px,1.6vw,21px);color:#606060}
+.election-method strong{color:#fff;font-weight:normal}
+.election-next{margin-top:13px;color:#666;font-size:14px;line-height:1.3}.election-next strong{display:block;color:#fff;font-size:17px;margin-top:5px;font-weight:normal}
+.election-total-votes{margin-top:11px;color:#666;font-size:13px}.election-total-votes strong{color:#fff;font-weight:normal}
+.election-primary-button{border:0;border-radius:7px;background:#666;color:#fff;font:12px 'Black Ops One',sans-serif;padding:14px 16px;min-width:210px;cursor:pointer}
+.election-primary-button:disabled{opacity:.42;cursor:not-allowed}
+
+/* Hemiciclo */
+.election-hemicycle{width:min(100%,455px);height:205px;margin:18px auto 0;display:block;overflow:visible}
+.election-seat{stroke:#777;stroke-width:.6}
+.election-seat.is-empty{fill:#d6d2d2}
+.election-seat.is-neutral{fill:#aeb7bc}
+
+/* Título de listas */
+.election-divider{border:0;border-top:3px solid #eee;margin:29px 0 19px}
+.election-list-title{text-align:center;margin:0 0 14px;color:#5f5f5f;font-size:clamp(27px,3vw,40px);font-weight:normal}
+.election-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 18px;padding:0 8px}
+.election-candidate{background:#242424;border-radius:7px;min-height:230px;padding:10px;display:flex;flex-direction:column;min-width:0}
+.election-candidate-head{display:grid;grid-template-columns:58px minmax(0,1fr);gap:9px;align-items:start;text-align:left}
+.election-candidate-logo{width:58px;height:58px;object-fit:contain;background:transparent;display:block}
+.election-candidate-party{font-size:15px;line-height:1.12;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.election-candidate-id{font-size:10px;margin-top:4px}
+.election-candidate-list{margin-top:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 9px;text-align:left;font-size:11px;line-height:1.15}
+.election-candidate-list .seats{color:#575757;white-space:nowrap}
+.election-vote-button{margin:auto auto 0;width:160px;max-width:100%;border:0;border-radius:7px;background:#666;color:#fff;font:12px 'Black Ops One',sans-serif;padding:11px;cursor:pointer}
+.election-result-percent{margin:auto 0 2px;text-align:center;font-size:clamp(28px,3vw,42px);line-height:1}
+.election-blank{align-items:center;justify-content:center;text-align:center}.election-blank strong{font-size:17px;font-weight:normal}.election-blank .election-vote-button{margin-top:auto;margin-bottom:0}
+
+/* Ejecutivo */
+.election-executive-main{min-height:428px;justify-content:flex-start}
+.election-executive-roles{width:min(100%,560px);margin:34px auto 8px;display:flex;flex-direction:column;gap:36px}
+.election-role{display:grid;grid-template-columns:86px minmax(0,1fr);align-items:center;gap:26px;text-align:left}
+.election-role-icon{position:relative;width:78px;height:78px;margin:auto}
+.election-role-icon::before{content:'';position:absolute;left:25px;top:0;width:28px;height:28px;border-radius:50%;background:#fff}
+.election-role-icon::after{content:'';position:absolute;left:14px;bottom:0;width:50px;height:43px;border-radius:50% 50% 10px 10px;background:#fff}
+.election-role-name{font-size:clamp(27px,3.2vw,43px);line-height:1.05}
+.election-exec-card{min-height:250px}
+.election-exec-person{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center;margin-top:12px;text-align:left}
+.election-exec-person img{width:62px;height:62px;object-fit:cover;background:transparent}
+.election-exec-person h3{margin:0 0 4px;color:#666;font-size:15px;font-weight:normal}.election-exec-person strong{font-size:13px;font-weight:normal}.election-exec-person small{display:block;font-size:9px}
+
+/* Error / vacío */
+.election-empty{min-height:260px;padding:35px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px}.election-empty h1{font-size:28px;margin:0;color:#666}.election-empty p{font-size:13px;color:#aaa;max-width:600px;line-height:1.4}
+
+@media(max-width:800px){
+  .election-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .election-process-picker{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  body[data-page="election"] .election-page.page-content{padding:16px 10px 40px!important}
+  .election-main{min-height:370px;padding:14px 10px}
+  .election-cards,.election-process-picker{grid-template-columns:1fr}
+  .election-candidate{min-height:215px}
+  .election-role{grid-template-columns:64px minmax(0,1fr);gap:13px}.election-role-icon{transform:scale(.78);transform-origin:center}
+}
+
+
+/* Separación clara entre varios procesos dentro del mismo Election ID */
+.election-process-divider{
+  border:0;
+  border-top:3px solid #e8e8e8;
+  width:100%;
+  margin:38px 0 32px;
+}
+
+/* Votación funcional */
+.election-vote-emitted{
+  width:min(100%,420px);
+  margin:0 auto 16px;
+  padding:12px 16px;
+  border-radius:8px;
+  background:#31552a;
+  color:#bdf39f;
+  text-align:center;
+  font-size:13px;
+}
+.election-vote-button:not(:disabled):hover{background:#79d955;color:#101010}
+
+/* VOTO BLANCO: tarjeta permanente en PRE / ELECCIÓN / POST. */
+.election-cards > .election-blank-permanent{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-height:230px;
+}
+.election-blank-permanent .election-result-percent{
+  margin-top:auto;
+}
+
+
+/* Vacíos y voto blanco: etiqueta siempre centrada; acción/resultado anclados abajo. */
+.election-no-candidates,
+.election-blank-permanent{
+  position:relative;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.election-no-candidates .election-empty-label,
+.election-blank-permanent .election-empty-label{
+  display:block;
+  margin:auto;
+  font-size:17px;
+  font-weight:normal;
+  line-height:1.2;
+}
+.election-blank-permanent .election-vote-button,
+.election-blank-permanent .election-result-percent{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:14px;
+  margin:0;
+}
+.election-blank-permanent .election-result-percent{
+  width:100%;
+  text-align:center;
+}
+
+/* Candidaturas: partido y jugadores navegables; partido sin logo ni ID. */
+.election-candidate-head-text{
+  display:block;
+  text-align:left;
+  min-height:0;
+}
+.election-entity-link,
+.election-player-link{
+  color:#fff;
+  text-decoration:none;
+  cursor:pointer;
+}
+.election-entity-link:hover,
+.election-player-link:hover{
+  color:#79df4b;
+}
+.election-entity-link:focus-visible,
+.election-player-link:focus-visible{
+  outline:2px solid #79df4b;
+  outline-offset:2px;
+  border-radius:4px;
+}
+.election-exec-party-link{
+  display:block;
+  width:100%;
+  font-size:17px;
+  line-height:1.18;
+  padding:2px 0 5px;
+}
+a.election-exec-person{
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+  padding:4px;
+  margin-left:-4px;
+  margin-right:-4px;
+}
+a.election-exec-person:hover{
+  background:#2d2d2d;
+}
+.election-player-link{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Candidaturas: nombre del partido centrado, máximo 2 líneas. */
+.election-candidate-head-text{
+  text-align:center;
+}
+.election-candidate-head-text .election-candidate-party,
+.election-exec-party-link{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+  margin-inline:auto;
+  text-align:center;
+  line-height:1.18;
+}
+
+
+/* POST-ELECCIÓN: autoridades electas en el panel de cargos. */
+.election-elected-roles{gap:24px;margin-top:26px}
+.election-elected-role{
+  grid-template-columns:86px minmax(0,1fr);
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+  padding:8px 12px;
+  transition:background .15s ease;
+}
+.election-elected-role:hover{background:#2d2d2d}
+.election-elected-role:focus-visible{outline:2px solid #79df4b;outline-offset:2px}
+.election-elected-photo{width:78px;height:78px;object-fit:cover;background:transparent;display:block}
+.election-elected-role div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.election-elected-role span{color:#707070;font-size:clamp(14px,1.25vw,18px)}
+.election-elected-role strong{
+  font-size:clamp(23px,2.7vw,38px);
+  line-height:1.05;
+  font-weight:normal;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Encabezado: sin Election ID; el ámbito político es navegable. */
+.election-scope-link{color:#666;text-decoration:none}
+.election-scope-link:hover{color:#79df4b}
+.election-scope-link:focus-visible{outline:2px solid #79df4b;outline-offset:2px;border-radius:4px}
+
+/* Ejecutivo: el panel toma la altura real del contenido, sin espacio muerto. */
+.election-main.election-executive-main{
+  min-height:0;
+  height:auto;
+  padding-bottom:20px;
+}
+.election-executive-main .election-executive-roles{
+  margin-top:24px;
+  margin-bottom:6px;
+}
+.election-executive-main .election-main-bottom{
+  margin-top:16px;
+}
+.election-executive-main .election-elected-roles{
+  margin-top:22px;
+  margin-bottom:4px;
+}
+@media(max-width:560px){
+  .election-main.election-executive-main{min-height:0;height:auto}
+}
+
+/* ================================================
+   PRESENTAR CANDIDATURA — editor dentro del panel
+   ================================================ */
+.election-candidacy-editor{
+  width:min(100%,620px);
+  margin:24px auto 4px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.election-candidate-picker{
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  align-items:center;
+  gap:18px;
+  text-align:left;
+}
+.election-candidate-picker>span{
+  color:#666;
+  font-size:clamp(17px,1.8vw,25px);
+  line-height:1.1;
+}
+.election-candidate-picker select{
+  width:100%;
+  min-width:0;
+  height:42px;
+  border:1px solid #777;
+  border-radius:7px;
+  background:#454545;
+  color:#fff;
+  padding:0 10px;
+  font:12px 'Black Ops One',sans-serif;
+  outline:none;
+}
+.election-candidate-picker select:focus{border-color:#79df4b}
+.election-candidate-picker option:disabled{color:#858585}
+.election-candidacy-actions{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  width:min(100%,430px);
+  margin:2px auto 0;
+}
+.election-candidacy-actions .election-primary-button{min-width:0;width:100%}
+.election-secondary-button{
+  border:0;
+  border-radius:7px;
+  background:#555;
+  color:#fff;
+  padding:14px 16px;
+  font:12px 'Black Ops One',sans-serif;
+  cursor:pointer;
+}
+.election-secondary-button:hover{background:#686868}
+.election-candidacy-waiting{
+  margin:auto auto 0;
+  padding:8px 12px;
+  color:#9adf74;
+  font-size:11px;
+  text-align:center;
+}
+@media(max-width:560px){
+  .election-candidate-picker{grid-template-columns:1fr;gap:6px}
+  .election-candidacy-actions{grid-template-columns:1fr}
+}
+
+
+/* Mensajes de validación integrados al panel, sin modal. */
+.election-inline-feedback{
+  min-height:18px;
+  margin-top:10px;
+  color:#ff6b6b;
+  font-size:12px;
+  line-height:1.25;
+  text-align:center;
+}
+.election-vote-feedback{
+  width:min(100%,620px);
+  margin:0 auto 10px;
+}
+
+
+/* Blindaje: cualquier mensaje de código viejo se muestra dentro del panel. */
+.election-native-feedback{
+  width:min(100%,620px);
+  margin:12px auto 0;
+  color:#ff6b6b;
+  text-align:center;
+  font-size:12px;
+  line-height:1.3;
+}

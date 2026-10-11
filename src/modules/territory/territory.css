@@ -96,3 +96,117 @@ a.aog-territory-entity-link:focus-visible { outline: 2px solid var(--territory-a
   .aog-territory-resource { border-width: 3px; }
   .aog-territory-resource > strong { font-size: 16px; }
 }
+
+/* Fundación en territorio independiente: mismo lenguaje visual y pestañas de Home. */
+.aog-foundation { display: grid; gap: 15px; }
+.aog-foundation-info {
+  display: grid; grid-template-columns: minmax(125px, 23%) minmax(0, 1fr);
+  align-items: center; gap: clamp(18px, 3vw, 45px);
+  min-height: 305px; padding: 25px clamp(18px, 3.5vw, 46px);
+}
+.aog-foundation-emblem {
+  display: block; width: 100%; height: 230px;
+  background: var(--territory-accent);
+  -webkit-mask: url('/assets/icons/foundation-fist.svg') center / contain no-repeat;
+  mask: url('/assets/icons/foundation-fist.svg') center / contain no-repeat;
+}
+.aog-foundation-info p {
+  margin: 0; color: var(--territory-accent);
+  font-size: clamp(14px, 1.7vw, 24px); line-height: 1.38;
+  overflow-wrap: anywhere;
+}
+.aog-foundation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.aog-foundation-grid > .aog-territory-panel { height: 240px; }
+.aog-foundation-count {
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  padding: 45px 14px 12px; gap: 6px;
+}
+.aog-foundation-count .aog-territory-tab { font-size: clamp(17px, 1.8vw, 23px); }
+.aog-foundation-count strong { font-size: clamp(44px, 6vw, 83px); font-weight: normal; }
+.aog-foundation-count > span { font-size: 13px; color: var(--territory-accent); }
+.aog-foundation-action {
+  padding: 26px clamp(10px, 4vw, 48px) 15px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;
+}
+.aog-foundation-button {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 90px; border: 3px solid var(--territory-accent);
+  border-radius: 35px; background: color-mix(in srgb, var(--territory-accent) 14%, #080808);
+  color: var(--territory-accent); font: inherit; font-size: clamp(16px, 1.4vw, 19px);
+  cursor: pointer; transition: background .16s ease;
+}
+.aog-foundation-button span { color: #ffdb4c; }
+.aog-foundation-button:hover:not(:disabled), .aog-foundation-button:focus-visible {
+  background: color-mix(in srgb, var(--territory-accent) 24%, #080808);
+}
+.aog-foundation-button:disabled { opacity: .56; cursor: not-allowed; }
+.aog-foundation-leave { min-height: 75px; }
+.aog-foundation-explanation {
+  margin: 0; max-width: 100%; color: color-mix(in srgb, var(--territory-accent) 58%, #080808);
+  text-align: center; font-size: clamp(11px, 1.15vw, 16px); line-height: 1.4;
+}
+.aog-foundation-ready-inline { font-size: clamp(15px, 2.1vw, 25px); text-align: center; }
+.aog-foundation-message, .aog-foundation-error { margin: 0; text-align: center; font-size: 13px; }
+.aog-foundation-error { color: #ffca9e; }
+.aog-foundation-event-slot {
+  min-height: 132px; display: flex; align-items: center; justify-content: center;
+  padding: 49px 15px 20px;
+}
+.aog-foundation-event-slot p { margin: 0; text-align: center; font-size: clamp(13px, 1.4vw, 18px); }
+@media (max-width: 720px) {
+  .aog-foundation-info { grid-template-columns: 1fr; padding: 20px 15px; gap: 10px; }
+  .aog-foundation-emblem { height: 145px; width: 150px; justify-self: center; }
+  .aog-foundation-info p { font-size: 15px; }
+  .aog-foundation-grid { grid-template-columns: 1fr; gap: 15px; }
+  .aog-foundation-grid > .aog-territory-panel { height: 205px; }
+  .aog-foundation-count strong { font-size: 64px; }
+  .aog-foundation-button { min-height: 77px; }
+}
+
+/* Evento de fundación: vista distinta del reclutamiento. */
+.aog-foundation-event { gap: 18px; }
+.aog-foundation-event-top > .aog-territory-panel { min-height: 205px; height: 205px; }
+.aog-foundation-timer { display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 44px 12px 13px; gap: 10px; }
+.aog-foundation-timer .aog-territory-tab { font-size: clamp(15px, 1.7vw, 23px); }
+.aog-foundation-timer > strong { font-size: clamp(28px, 4.5vw, 63px); font-weight: normal; }
+.aog-foundation-timer > span { color: var(--territory-accent); opacity: .68; font-size: clamp(10px, 1.1vw, 14px); text-align: center; }
+.aog-foundation-event-top .aog-foundation-action { padding-top: 20px; }
+.aog-foundation-progress { position: relative; height: 47px; border: 3px solid var(--territory-accent);
+  border-radius: 28px; overflow: hidden; background: color-mix(in srgb, var(--territory-accent) 14%, #080808); }
+.aog-foundation-progress-fill { position: absolute; left: 0; top: 0; bottom: 0;
+  background: #159800; border-radius: 25px; transition: width .3s ease; }
+.aog-foundation-progress > strong { position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--territory-accent); font-weight: normal; font-size: 22px; }
+.aog-foundation-event-resources { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 15px 20px; }
+.aog-foundation-event-resources .aog-territory-resource { height: 117px; }
+.aog-foundation-event-resources .aog-territory-resource > strong { font-size: clamp(18px, 2vw, 29px); }
+.aog-foundation-modal-backdrop { position: fixed; z-index: 1100; inset: 0; background: #000b;
+  display: flex; align-items: center; justify-content: center; padding: 18px; }
+.aog-foundation-modal { position: relative; width: min(100%, 530px); max-height: 90vh; overflow-y: auto;
+  background: #080808; border: 3px solid var(--territory-accent); border-radius: 27px;
+  padding: 33px 28px 25px; color: var(--territory-accent); display: flex; flex-direction: column; gap: 14px; }
+.aog-foundation-modal h2 { margin: 0 35px 12px 0; text-align: center; font-size: 25px; }
+.aog-foundation-modal label { font-size: 14px; }
+.aog-foundation-modal select,.aog-foundation-modal input { width: 100%; min-height: 45px; padding: 8px 10px;
+  background: #080808; border: 2px solid var(--territory-accent); border-radius: 10px;
+  font: inherit; font-size: 16px; color: var(--territory-accent); }
+.aog-foundation-modal select option { background: #080808; }
+.aog-foundation-modal p { margin: 0; font-size: 14px; }
+.aog-foundation-modal .aog-foundation-button { min-height: 66px; margin-top: 8px; }
+.aog-foundation-modal-close { position: absolute; top: 10px; right: 16px; border: 0;
+  background: none; color: var(--territory-accent); font: inherit; font-size: 34px; cursor: pointer; }
+.aog-foundation-modal .aog-foundation-modal-note { font-size: 12px; opacity: .72; line-height: 1.4; }
+@media(max-width:720px) {
+  .aog-foundation-event-resources { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .aog-foundation-event-top > .aog-territory-panel { min-height: 190px; height: auto; }
+  .aog-foundation-timer > strong { font-size: 36px; }
+  .aog-foundation-event-resources .aog-territory-resource > strong { font-size: clamp(15px, 3.4vw, 22px); }
+  .aog-foundation-modal { padding-inline: 18px; }
+}
+
+.aog-territory-capital { grid-column: 1 / -1; min-height: 190px; display: flex;
+ flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+ padding: 45px 14px 20px; text-align: center; }
+.aog-territory-capital > strong { font-size: clamp(25px, 3vw, 44px); font-weight: normal; }
+.aog-territory-capital > span { font-size: clamp(11px, 1.3vw, 17px); }

@@ -300,10 +300,21 @@
  .profile-page .pr-inline-country-select{max-width:100px;font-size:10px}
 }
 
-/* Recorte 1:1. El PNG permanece transparente y el panel se ve detrás. */
-.profile-page .pr-photo-button { background:transparent; overflow:hidden; border-radius:12px; }
-.profile-page .pr-photo-button img { background:transparent; object-fit:contain; }
+/* Avatar del perfil propio y público: misma presentación que las fotos de Party.
+   Una imagen PNG transparente debe dejar ver el fondo real del panel, no un recuadro gris. */
 .profile-page .pr-avatar-column { background:transparent; }
+.profile-page .pr-avatar-column .pr-photo-button {
+  background:transparent;
+  overflow:hidden;
+  border-radius:13px;
+}
+.profile-page .pr-avatar-column .pr-photo-button img {
+  display:block;
+  width:100%;
+  height:100%;
+  background:transparent;
+  object-fit:contain;
+}
 .pr-crop-backdrop {position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.83)}
 .pr-crop-dialog {width:min(420px,100%);padding:22px;background:#090909;color:var(--aog-accent,#ed291d);border:3px solid var(--aog-accent,#ed291d);border-radius:25px;display:flex;flex-direction:column;gap:15px;align-items:center;text-align:center}
 .pr-crop-dialog h2 {margin:0;font-size:23px;color:var(--aog-accent,#ed291d)}
@@ -356,4 +367,31 @@
 }
 @media (max-width: 600px) {
   .profile-page .pr-upgrade-actions button { height: 55px; min-height: 55px; }
+}
+
+/* Perfil público: mismos estilos, títulos y columnas que el propio,
+   pero estadísticas compactas porque no hay botones de entrenamiento. */
+.pr-public-status {
+  text-align:center;
+  color:var(--aog-accent,#e43a28);
+  margin:30px auto;
+  font-size:20px;
+}
+.profile-page.is-public-profile .pr-stat-card {
+  height:128px;
+  min-height:128px;
+  padding:39px 12px 10px;
+  justify-content:flex-start;
+}
+.profile-page.is-public-profile .pr-stat-value {
+  font-size:clamp(29px,2.8vw,41px);
+  line-height:1.1;
+  margin:auto 0;
+}
+@media(max-width:600px) {
+  .profile-page.is-public-profile .pr-stat-card {
+    height:118px;
+    min-height:118px;
+    padding:35px 9px 8px;
+  }
 }

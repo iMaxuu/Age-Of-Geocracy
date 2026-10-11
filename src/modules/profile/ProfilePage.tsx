@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState, type ChangeEvent, type PointerEvent, type ReactNode } from 'react';
 import { fetchPlayer, getXp, updatePlayerProfile, type Player } from '../auth/player';
 import { supabase } from '../../lib/supabase';
+import { ownParty, partyDetails } from '../party/partyApi';
+import { coalitionForParty } from '../coalition/coalitionApi';
 import './profile.css';
 import { FLAG_COUNTRY_CODES } from './countryFlags';
+import { IDEOLOGIES } from './ideologies';
 
 const PHOTO = '/assets/photos/nophoto.png';
 const FLAG = '/assets/photos/noflag.png';
 const COUNTRIES: readonly string[] = FLAG_COUNTRY_CODES;
-const IDEOLOGIES = [
-  'Ultraderecha', 'Derecha', 'Centro derecha', 'Centro',
-  'Centro izquierda', 'Izquierda', 'Ultraizquierda',
-];
 const STAT_LABELS = {
   attack: 'ATAQUE', defense: 'DEFENSA', efficiency: 'EFICIENCIA', strength: 'FUERZA',
 } as const;
@@ -123,6 +122,19 @@ function InformationCard({ title, children, href }: {
 
 export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) {
   const [editing, setEditing] = useState(false);
+  const [actualParty, setActualParty] = useState<Relationship | null>(null);
+  const [actualCoalition, setActualCoalition] = useState<Relationship | null>(null);
+  useEffect(() => {
+    let active = true;
+    void ownParty().then(async state => {
+      if (!state?.party_id) { if (active) {setActualParty(null);setActualCoalition(null);} return; }
+      const data = await partyDetails(state.party_id);
+      if (active) setActualParty(data ? { id: data.id, label: data.name, image: data.photo_url } : null);
+      const coalition=await coalitionForParty(state.party_id);
+      if(active)setActualCoalition(coalition?{id:coalition.id,label:coalition.name,image:coalition.photo_url}:null);
+    }).catch(error => console.warn('No se pudo consultar el partido del perfil:', error));
+    return () => { active = false; };
+  }, [player.authId]);
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [serverOffset, setServerOffset] = useState(0);
   const [clock, setClock] = useState(Date.now());
@@ -376,8 +388,8 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
     {error && <p className="pr-profile-error" role="alert">{error}</p>}
 
     <section className="pr-affiliations" aria-label="Afiliaciones del jugador">
-      <EntityPanel title="PARTIDO" empty="SIN PARTIDO" entity={relationship(player, 'party')} type="party" />
-      <EntityPanel title="COALICIÓN" empty="SIN COALICIÓN" entity={relationship(player, 'coalition')} type="coalition" />
+      <EntityPanel title="PARTIDO" empty="SIN PARTIDO" entity={actualParty ?? relationship(player, 'party')} type="party" />
+      <EntityPanel title="COALICIÓN" empty="SIN COALICIÓN" entity={actualCoalition} type="coalition" />
       <EntityPanel title="REGIÓN" empty="SIN REGIÓN" entity={relationship(player, 'region')} type="region" />
       <EntityPanel title="NACIÓN" empty="SIN NACIÓN" entity={relationship(player, 'nation')} type="nation" />
     </section>

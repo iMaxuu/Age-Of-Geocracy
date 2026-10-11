@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
 import type { Player } from '../auth/player';
 import { supabase } from '../../lib/supabase';
 import type { ResourceName } from '../map/world';
@@ -9,6 +9,53 @@ import './territory.css';
 
 type Props = { player?: Player; onNavigate?: (path: string) => void };
 type ResourceInfo = { key: ResourceName; name: string; icon: string; abbreviation: string; color: string };
+type FoundationRequirement = { resource_code: string; required_amount: number; amount: number };
+type FoundationStatus = {
+  territory_id: number;
+  independent: boolean;
+  state: 'recruiting' | 'event_ready';
+  outcome: 'ongoing' | 'failed' | 'succeeded';
+  event_ready_at: string | null;
+  deadline_at: string | null;
+  cooldown_until: string | null;
+  server_now: string;
+  count: number;
+  capacity: number;
+  joined: boolean;
+  cost: number;
+  viewer_territory_id: number | null;
+  viewer_gold: number | null;
+  founders: { id: number; name: string; photo_url: string | null; joined_at: string }[];
+  requirements: FoundationRequirement[];
+  inventory: Record<string, number>;
+  founded_nation_id: number | null;
+  founded_region_id: number | null;
+};
+
+const EVENT_RESOURCES = [
+  { key: 'wood', icon: 'wood', color: '#9b390f', title: 'MADERA' },
+  { key: 'mineral', icon: 'ore', color: '#c8d2db', title: 'MINERAL' },
+  { key: 'oil', icon: 'oil', color: '#846483', title: 'PETRÓLEO' },
+  { key: 'diamond', icon: 'diamond', color: '#79b5e5', title: 'DIAMANTE' },
+  { key: 'uranium', icon: 'uranium', color: '#159800', title: 'URANIO' },
+  { key: 'gold', icon: 'gold', color: '#ffdf53', title: 'ORO' },
+] as const;
+
+function remainingTime(date: string | null, now: number) {
+  if (!date) return '—';
+  const delta = Math.max(0, Math.floor((new Date(date).getTime() - now) / 1000));
+  const days = Math.floor(delta / 86400);
+  const hours = Math.floor(delta / 3600) % 24;
+  const mins = Math.floor(delta / 60) % 60;
+  const secs = delta % 60;
+  const part = [hours, mins, secs].map(v => String(v).padStart(2, '0')).join(':');
+  return days ? `${days}D ${part}` : part;
+}
+function shortDate(date: string | null) {
+  if (!date) return '—';
+  return new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(date)).toUpperCase();
+}
+
 
 // Primera fila: madera, mineral, petróleo y oro. Segunda: diamante, uranio, geocracyum y aurexium.
 const RESOURCES: ResourceInfo[] = [
@@ -69,10 +116,160 @@ function AuthorityPanel({ title }: { title: string }) {
   </Panel>;
 }
 
+function IndependentFoundation({ territory, onFounded }: { territory: number; onFounded: () => void }) {
+  const [status, setStatus] = useState<FoundationStatus | null>(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [resource, setResource] = useState<string>('wood');
+  const [amount, setAmount] = useState('');
+  const [now, setNow] = useState(() => Date.now());
+  const refresh = useCallback(async () => {
+    const { data, error: fetchError } = await supabase.rpc('aog_foundation_status', { p_territory_id: territory });
+    if (fetchError) setError(`No se pudo cargar la fundación: ${fetchError.message}`);
+    else {
+      const next = data as FoundationStatus;
+      setStatus(next); setError('');
+      if (next.outcome === 'succeeded') onFounded();
+    }
+    setFetching(false);
+  }, [territory, onFounded]);
+  useEffect(() => {
+    setFetching(true); setStatus(null); setError(''); setModalOpen(false);
+    void refresh();
+    const poll = window.setInterval(() => { if (!document.hidden) void refresh(); }, 15000);
+    const clock = window.setInterval(() => setNow(Date.now()), 1000);
+    const focus = () => void refresh();
+    window.addEventListener('focus', focus);
+    return () => { window.clearInterval(poll); window.clearInterval(clock); window.removeEventListener('focus', focus); };
+  }, [refresh]);
+  useEffect(() => {
+    if (!modalOpen) return;
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setModalOpen(false); };
+    window.addEventListener('keydown', escape);
+    return () => window.removeEventListener('keydown', escape);
+  }, [modalOpen]);
+
+  const call = async (name: string, params: Record<string, unknown>) => {
+    if (busy) return;
+    setBusy(true); setError('');
+    try {
+      const { data, error: rpcError } = await supabase.rpc(name, params);
+      if (rpcError) throw new Error(rpcError.message);
+      const next = data as FoundationStatus;
+      setStatus(next);
+      if (next.outcome === 'succeeded') { setModalOpen(false); onFounded(); }
+    } catch (e) { setError(e instanceof Error ? e.message : 'No se pudo completar la operación.'); }
+    finally { setBusy(false); }
+  };
+  const count = Math.min(3, Math.max(0, status?.count ?? 0));
+  const ready = status?.state === 'event_ready' && status.outcome === 'ongoing';
+  const failed = status?.outcome === 'failed';
+  const joined = !!status?.joined;
+  const inTerritory = status?.viewer_territory_id === territory;
+  const canJoin = !busy && !fetching && !!status && !ready && !failed && count < 3 &&
+    inTerritory && (status.viewer_gold ?? 0) >= 1000;
+  const requirements = EVENT_RESOURCES.map(r => ({ ...r,
+    required_amount: Number(status?.requirements?.find(v => v.resource_code === r.key)?.required_amount ?? 0),
+    amount: Number(status?.requirements?.find(v => v.resource_code === r.key)?.amount ?? 0),
+    available: Number(status?.inventory?.[r.key] ?? 0),
+  }));
+  const percentage = requirements.length && requirements.every(r => r.required_amount > 0)
+    ? Math.min(100, Math.floor(requirements.reduce((sum, r) => sum +
+        Math.min(1, r.amount / r.required_amount), 0) / requirements.length * 100)) : 0;
+  const selected = requirements.find(r => r.key === resource) ?? requirements[0];
+  const maxDonation = selected ? Math.max(0, Math.min(selected.available, selected.required_amount - selected.amount)) : 0;
+  const parsedAmount = Number(amount);
+  const canDonate = !busy && ready && inTerritory && Number.isSafeInteger(parsedAmount) &&
+    parsedAmount > 0 && parsedAmount <= maxDonation;
+
+  if (ready || failed) return <div className="aog-foundation aog-foundation-event">
+    <div className="aog-foundation-grid aog-foundation-event-top">
+      <Panel title={failed ? 'PRÓXIMO INTENTO' : 'TIEMPO RESTANTE'} className="aog-foundation-timer">
+        <strong>{remainingTime(failed ? status?.cooldown_until ?? null : status?.deadline_at ?? null, now)}</strong>
+        <span>{failed ? 'DISPONIBLE ' + shortDate(status?.cooldown_until ?? null) :
+          'EL EVENTO TERMINA EL ' + shortDate(status?.deadline_at ?? null)}</span>
+      </Panel>
+      <section className="aog-territory-panel aog-foundation-action">
+        <button type="button" className="aog-foundation-button" disabled={!ready || !inTerritory || busy}
+          onClick={() => { setResource('wood'); setAmount(''); setModalOpen(true); }}>
+          {failed ? 'FUNDACIÓN NO COMPLETADA' : 'APORTAR RECURSOS'}
+        </button>
+        {!inTerritory && ready && <p className="aog-foundation-explanation">Solo pueden aportar jugadores presentes en el territorio.</p>}
+        {failed && <p className="aog-foundation-explanation">No se alcanzó el 100% antes de las 24 horas. Podrán volver a intentarlo después de 7 días.</p>}
+      </section>
+    </div>
+    <div className="aog-foundation-progress" role="progressbar" aria-label="Progreso de fundación"
+      aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}>
+      <div className="aog-foundation-progress-fill" style={{ width: `${percentage}%` }} />
+      <strong>{percentage}%</strong>
+    </div>
+    <div className="aog-foundation-event-resources">{requirements.map(r =>
+      <section className="aog-territory-panel aog-territory-resource" key={r.key}
+        style={{ '--resource-color': r.color, '--home-accent': r.color } as CSSProperties}
+        title={r.title}>
+        <h3 className="aog-home-panel-title aog-territory-resource-tab" aria-label={r.title}>
+          <ResourceIcon name={r.icon} abbreviation={r.title.slice(0, 3)} />
+        </h3><strong>{format.format(r.amount)}/{format.format(r.required_amount)}</strong>
+      </section>)}</div>
+    {modalOpen && <div className="aog-foundation-modal-backdrop" onMouseDown={e => {
+      if (e.target === e.currentTarget) setModalOpen(false);
+    }}>
+      <section className="aog-foundation-modal" role="dialog" aria-modal="true" aria-label="Aportar recursos">
+        <button type="button" className="aog-foundation-modal-close" aria-label="Cerrar" onClick={() => setModalOpen(false)}>×</button>
+        <h2>APORTAR RECURSOS</h2>
+        <label htmlFor="aog-foundation-resource">RECURSO</label>
+        <select id="aog-foundation-resource" value={resource} onChange={e => { setResource(e.target.value); setAmount(''); }}>
+          {requirements.map(r => <option key={r.key} value={r.key}>{r.title}</option>)}
+        </select>
+        <p>ALMACÉN: {format.format(selected?.available ?? 0)}</p>
+        <p>FALTAN: {format.format(Math.max(0,(selected?.required_amount ?? 0) - (selected?.amount ?? 0)))}</p>
+        <label htmlFor="aog-foundation-amount">CANTIDAD</label>
+        <input id="aog-foundation-amount" type="number" min="1" max={maxDonation} step="1"
+          value={amount} placeholder="0" onChange={e => setAmount(e.target.value)} />
+        <button type="button" className="aog-foundation-button" disabled={!canDonate} onClick={() => void call('aog_foundation_donate',
+          { p_territory_id: territory, p_resource_code: resource, p_amount: parsedAmount }).then(() => setAmount(''))}>
+          CONFIRMAR APORTE
+        </button>
+        {maxDonation === 0 && <p className="aog-foundation-modal-note">No tenés recursos disponibles de este tipo en el Almacén. Su obtención y gestión se incorporarán en el siguiente módulo.</p>}
+        <p className="aog-foundation-modal-note">Los aportes son definitivos y no se devuelven si el evento fracasa.</p>
+      </section>
+    </div>}
+    {error && <p className="aog-foundation-error" role="alert">{error}</p>}
+  </div>;
+
+  if (status?.outcome === 'succeeded') return <div className="aog-foundation-ready-inline">¡NACIÓN FUNDADA!</div>;
+  return <div className="aog-foundation">
+    <section className="aog-territory-panel aog-foundation-info" aria-label="Información de la fundación">
+      <span className="aog-foundation-emblem" aria-hidden="true" />
+      <p>Los jugadores podrán fundar una nueva Nación desde un territorio independiente. La fundación requerirá la participación y cooperación de varios jugadores y dará inicio a un evento de fundación.<br />
+        Si el proceso tiene éxito, el territorio se convertirá en el punto de partida de una nueva Nación, comenzando posteriormente su organización política y sus primeras elecciones.</p>
+    </section>
+    <div className="aog-foundation-grid">
+      <Panel title="FUNDADORES" className="aog-foundation-count">
+        <strong aria-live="polite">{fetching ? '—' : `${count}/3`}</strong>
+      </Panel>
+      <section className="aog-territory-panel aog-foundation-action">
+        {joined ? <button type="button" className="aog-foundation-button aog-foundation-leave" disabled={busy}
+            onClick={() => void call('aog_foundation_leave', { p_territory_id: territory })}>ABANDONAR FUNDACIÓN</button>
+        : <button type="button" className="aog-foundation-button" disabled={!canJoin}
+            onClick={() => void call('aog_foundation_join', { p_territory_id: territory })}>UNIRSE <span>G 1.000</span></button>}
+        <p className="aog-foundation-explanation">Si abandonás el territorio antes de reunir tres fundadores, perderás tu puesto y los 1.000 G aportados no serán devueltos.</p>
+      </section>
+    </div>
+    {!fetching && !joined && !inTerritory && <p className="aog-foundation-message">Para unirte, primero debés viajar a este territorio.</p>}
+    {!fetching && !joined && inTerritory && (status?.viewer_gold ?? 0) < 1000 &&
+      <p className="aog-foundation-message">Necesitás 1.000 G para unirte.</p>}
+    {error && <p className="aog-foundation-error" role="alert">{error}</p>}
+  </div>;
+}
+
 export default function TerritoryPage({ player, onNavigate }: Props) {
   const id = territoryId(player?.territoryId);
   const [ownership, setOwnership] = useState<MapOwnership | null>(null);
   const [ownershipLoaded, setOwnershipLoaded] = useState(false);
+  const [isCapital, setIsCapital] = useState(false);
   const [players, setPlayers] = useState<number | null>(null);
   const [resources, setResources] = useState<Map<ResourceName, ResourceStatus> | null>(null);
   const [resourceError, setResourceError] = useState('');
@@ -80,7 +277,7 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
   const [warning, setWarning] = useState('');
   useEffect(() => {
     let active = true;
-    setOwnership(null); setOwnershipLoaded(false); setPlayers(null); setLoading(true); setWarning('');
+    setOwnership(null); setOwnershipLoaded(false); setIsCapital(false); setPlayers(null); setLoading(true); setWarning('');
     if (!id) { setLoading(false); return; }
     const load = async () => {
       const results = await Promise.allSettled([
@@ -90,6 +287,12 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
             .eq('territory_id', id).maybeSingle();
           if (error) throw Error(error.message);
           if (active) { setOwnership(data as MapOwnership | null); setOwnershipLoaded(true); }
+          // Las capitales fundadas no tienen gobernador ni vicegobernador.
+          if (data?.region_id) {
+            const capital = await supabase.from('aog_founded_regions')
+              .select('is_capital').eq('id', data.region_id).maybeSingle();
+            if (active && !capital.error) setIsCapital(capital.data?.is_capital === true);
+          }
         })(),
         (async () => {
           const { count, error } = await supabase.from('players').select('id', { count: 'exact', head: true }).eq('territory_id', id);
@@ -123,18 +326,25 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
     return () => { active = false; window.clearInterval(timer); window.removeEventListener('focus', refresh); };
   }, [id]);
 
+  const handleFounded = useCallback(() => {
+    // Una vez que Supabase asigna región y nación, recargar la vista política.
+    window.location.reload();
+  }, []);
+
   const independent = ownershipLoaded && !ownership?.region_id && !ownership?.nation_id;
 
   if (!id) return <main className="aog-territory-page"><h1>SELECCIONÁ UN TERRITORIO</h1></main>;
   return <main className="aog-territory-page"><div className="aog-territory-container">
     <h1 className="aog-territory-heading">TERRITORIO #{format.format(id)}</h1>
     {warning && <p className="aog-territory-warning" role="status">{warning}</p>}
-    {independent ? <div className="aog-territory-independent" role="status">INDEPENDIENTE</div> : <div className="aog-territory-pair">
+    {independent ? <IndependentFoundation territory={id} onFounded={handleFounded} /> : <div className="aog-territory-pair">
       <EntityPanel title="REGIÓN" name={ownership?.region_name || (loading ? 'CARGANDO...' : 'SIN REGIÓN')}
         flag={ownership?.region_flag || null} id={ownership?.region_id || null} path="region" onNavigate={onNavigate} />
       <EntityPanel title="NACIÓN" name={ownership?.nation_name || (loading ? 'CARGANDO...' : 'SIN NACIÓN')}
         flag={ownership?.nation_flag || null} id={ownership?.nation_id || null} path="nation" onNavigate={onNavigate} />
-      <AuthorityPanel title="GOBERNADOR" /><AuthorityPanel title="PRESIDENTE" />
+      {isCapital ? <Panel title="CAPITAL" className="aog-territory-capital">
+        <strong>★ CAPITAL</strong><span>BAJO ADMINISTRACIÓN NACIONAL</span>
+      </Panel> : <><AuthorityPanel title="GOBERNADOR" /><AuthorityPanel title="PRESIDENTE" /></>}
     </div>}
     <section className="aog-territory-section" aria-label="Datos del territorio">
       <h2 className="aog-territory-section-title">DATOS</h2>

@@ -3,15 +3,19 @@ import { AuthScreen } from './modules/auth/AuthScreen';
 import { fetchPlayer, getXp, logout, type Player } from './modules/auth/player';
 import { supabase } from './lib/supabase';
 import { ProfilePage } from './modules/profile/ProfilePage';
+import PublicProfilePage from './modules/profile/PublicProfilePage';
+import HomePage from './modules/home/HomePage';
 import { MigratedPage } from './modules/MigratedPage';
 import MapPage from './modules/map/MapPage';
+import PartyPage from './modules/party/PartyPage';
+import CoalitionPage from './modules/coalition/CoalitionPage';
 import TerritoryPage from './modules/territory/TerritoryPage';
 import { Header, type HeaderAction, type HeaderSection } from './components/header/Header';
 import { useTheme } from './theme/theme';
 import { useAppRoute } from './app/router';
 
 export default function App() {
-  const { route, navigate } = useAppRoute();
+  const { route, navigate, pathname } = useAppRoute();
   const section = route === 'login' || route === 'register' ? 'home' : route;
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,6 +80,9 @@ export default function App() {
     onAuthenticated={() => { /* La sesión activa dispara el cambio de ruta cuando corresponda. */ }}
   /></>;
 
+  const pathMatch=pathname.match(/^\/profile\/(\d+)\/?$/);
+  const viewedPlayerId=pathMatch?Number(pathMatch[1]):null;
+  const isOtherProfile=section==='profile'&&viewedPlayerId!==null&&viewedPlayerId!==player.id;
   const {level,xp,required}=getXp(player);
   return <div className={section === 'map' ? 'aog-map-shell bg-[#080808] text-white' : 'min-h-screen bg-[#080808] text-white'}>
     <Header
@@ -93,9 +100,15 @@ export default function App() {
       onProfile={()=>navigate('/profile')}
     />
     {section === 'profile'
-      ? <ProfilePage player={player} onPlayerChange={setPlayer} onLogout={() => { void logout().then(()=>{ setPlayer(null); navigate('/login',true); }); }}/>
+      ? isOtherProfile ? <PublicProfilePage playerId={viewedPlayerId!}/> : <ProfilePage player={player} onPlayerChange={setPlayer} onLogout={() => { void logout().then(()=>{ setPlayer(null); navigate('/login',true); }); }}/>
       : section === 'map'
         ? <MapPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
+      : section === 'party'
+        ? <PartyPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
+      : section === 'coalition'
+        ? <CoalitionPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
+      : section === 'home'
+        ? <HomePage onNavigate={navigate}/>
       : section === 'territory'
         ? <TerritoryPage player={player} onNavigate={navigate}/>
       : section === 'settings'

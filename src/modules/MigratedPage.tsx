@@ -1,10 +1,6 @@
 import HomePage from './home/HomePage';
-import MapPage from './map/MapPage';
 import NationPage from './nation/NationPage';
 import RegionPage from './region/RegionPage';
-import TerritoryPage from './territory/TerritoryPage';
-import PartyPage from './party/PartyPage';
-import CoalitionPage from './coalition/CoalitionPage';
 import NationalparliamentPage from './nationalparliament/NationalparliamentPage';
 import RegionalparliamentPage from './regionalparliament/RegionalparliamentPage';
 import ElectionPage from './election/ElectionPage';
@@ -21,12 +17,8 @@ import ConfigPage from './config/ConfigPage';
 import type { ComponentType } from 'react';
 const SCREENS: Record<string, ComponentType> = {
   home: HomePage,
-  map: MapPage,
   nation: NationPage,
   region: RegionPage,
-  territory: TerritoryPage,
-  party: PartyPage,
-  coalition: CoalitionPage,
   nationalparliament: NationalparliamentPage,
   regionalparliament: RegionalparliamentPage,
   election: ElectionPage,

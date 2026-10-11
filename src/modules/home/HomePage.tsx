@@ -45,7 +45,7 @@ function LanguageFlag({ code, src }: { code: ChatLanguage; src: string }) {
 
 
 
-export default function HomePage() {
+export default function HomePage({onNavigate=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));}}:{onNavigate?:(path:string)=>void}={}) {
   const [draft, setDraft] = useState('');
   const [language, setLanguage] = useState<ChatLanguage>('es');
   const messagesEnd = useRef<HTMLDivElement>(null);
@@ -56,11 +56,19 @@ export default function HomePage() {
   const [myId,setMyId]=useState<number|null>(null);
   const [sending,setSending]=useState(false);
   const [playerCount,setPlayerCount]=useState<number|null>(null);
+  const [partyCount,setPartyCount]=useState<number|null>(null);
+  const [coalitionCount,setCoalitionCount]=useState<number|null>(null);
   useEffect(() => {
     let active = true;
 
     void supabase.from('players').select('id', {count:'exact', head:true})
       .then(({count,error}) => { if(active && !error) setPlayerCount(count); });
+    void supabase.rpc('aog_party_count').then(({data,error}) => {
+      if(active&&!error&&data!==null)setPartyCount(Number(data));
+    });
+    void supabase.rpc('aog_coalition_count').then(({data,error}) => {
+      if(active&&!error&&data!==null)setCoalitionCount(Number(data));
+    });
     void supabase.auth.getUser().then(async ({data:{user}}) => {
       if(!user || !active) return;
       const {data} = await supabase.from('players').select('id').eq('auth_id',user.id).single();
@@ -139,11 +147,11 @@ export default function HomePage() {
             {messages.length ? messages.map(msg => (
               <article key={msg.id} className={`aog-chat-message ${msg.player_id===myId ? 'aog-chat-own' : ''}`}>
                 <div className="aog-chat-author">
-                  <img
-                    src={msg.players?.photo_url || DEFAULT_AVATAR}
-                    alt=""
-                    onError={event => { event.currentTarget.src = DEFAULT_AVATAR; }}
-                  />
+                  <button type="button" className="aog-chat-profile-link" onClick={()=>onNavigate(`/profile/${msg.player_id}`)}
+                    aria-label={`Ver perfil de ${msg.players?.name||'jugador'} #${msg.player_id}`} title="Ver perfil">
+                    <img src={msg.players?.photo_url || DEFAULT_AVATAR} alt=""
+                      onError={event => { event.currentTarget.src = DEFAULT_AVATAR; }} />
+                  </button>
                   <div className="aog-chat-author-info">
                     <div className="aog-chat-name">
                       <strong>{msg.players?.name || 'JUGADOR'}</strong>
@@ -214,7 +222,11 @@ export default function HomePage() {
         {counters.map(([label, key]) => (
           <article className="aog-home-panel aog-home-counter" key={key}>
             <h2 className="aog-home-panel-title">{label}</h2>
-            <strong className="aog-home-counter-value" aria-label={`${label}: ${key === 'players' && playerCount !== null ? playerCount : 'datos pendientes'}`}>{key === 'players' && playerCount !== null ? playerCount.toLocaleString('es-AR') : '—'}</strong>
+            <strong className="aog-home-counter-value" aria-label={`${label}: ${key==='players'&&playerCount!==null?playerCount:key==='party'&&partyCount!==null?partyCount:key==='coalition'&&coalitionCount!==null?coalitionCount:'datos pendientes'}`}>
+              {key==='players'&&playerCount!==null?playerCount.toLocaleString('es-AR'):
+                key==='party'&&partyCount!==null?partyCount.toLocaleString('es-AR'):
+                key==='coalition'&&coalitionCount!==null?coalitionCount.toLocaleString('es-AR'):'—'}
+            </strong>
           </article>
         ))}
       </section>

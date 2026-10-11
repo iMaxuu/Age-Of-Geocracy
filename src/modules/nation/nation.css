@@ -1,0 +1,96 @@
+/* Nation limpio: reutiliza exclusivamente las pestañas de Home. */
+.aog-nation-page{--home-accent:var(--aog-accent,#e32219);--home-dark:color-mix(in srgb,var(--home-accent) 23%,black);max-width:1366px;margin:auto;padding:12px clamp(12px,3.5vw,46px) 32px;background:#080808;color:var(--home-accent);font-family:'Black Ops One',system-ui,sans-serif}
+.aog-nation-page *,.aog-nation-page *::before,.aog-nation-page *::after{box-sizing:border-box}
+.aog-nation-page h1,.aog-nation-page h2{margin:0 0 16px;text-align:center;color:var(--home-dark);font-size:clamp(24px,3vw,38px);line-height:1.1}
+.aog-nation-page h2{margin:18px 0 20px;padding-top:10px;border-top:3px solid var(--home-accent)}
+.aog-nation-box,.aog-nation-region{position:relative;min-width:0;border:3px solid var(--home-accent);border-radius:28px;background:#080808;color:var(--home-accent);text-align:center}
+.aog-nation-box{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:42px 12px 12px}
+/* No redefinir curvas, alturas, clips ni pseudoelementos de .aog-home-panel-title. */
+.aog-nation-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.aog-nation-top>.aog-nation-box:nth-child(-n+2){height:225px}
+.aog-nation-top>.aog-nation-box:nth-child(n+3){height:134px}
+.aog-nation-identity strong{font-size:clamp(16px,1.8vw,22px)}
+.aog-nation-flag{display:block;width:125px;height:87px;object-fit:contain;margin:0 auto 5px;background:transparent}
+.aog-nation-pending{display:grid;place-items:center;margin:0;min-height:35px;font-size:clamp(12px,1.2vw,17px)}
+.aog-nation-official{display:flex;align-items:center;gap:16px;justify-content:flex-start;width:100%;font-size:clamp(13px,1.6vw,19px);text-align:left}
+.aog-nation-avatar{width:88px;height:88px;object-fit:contain;flex:none;background:transparent}
+.aog-nation-ministers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 20px}
+.aog-nation-ministers .aog-nation-box{height:163px}
+.aog-nation-institutions,.aog-nation-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 18px}
+.aog-nation-institutions .aog-nation-box{height:98px}
+.aog-nation-institutions .aog-home-panel-title{font-size:clamp(10px,1vw,14px);padding-inline:9px}
+.aog-nation-parliament{height:315px;margin-bottom:15px}
+/* DATOS: tamaños estándar de Home, sin afectar INSTITUCIONES. */
+.aog-nation-facts .aog-nation-box{height:117px}
+.aog-nation-facts .aog-nation-box > .aog-home-panel-title{font-size:17px;line-height:1.12}
+.aog-nation-facts strong{font-size:43px;line-height:1;font-weight:normal}
+@media (max-width:470px){
+  .aog-nation-facts .aog-nation-box{height:92px}
+  .aog-nation-facts .aog-nation-box > .aog-home-panel-title{font-size:12px;line-height:1.12}
+  .aog-nation-facts strong{font-size:32px}
+}
+/* Regiones: tres tarjetas compactas y título curvo de Home. */
+.aog-nation-regions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 18px}
+.aog-nation-region{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:166px;padding:47px 12px 12px;cursor:pointer;font:inherit;overflow:visible}
+.aog-nation-region:hover{background:color-mix(in srgb,var(--home-accent) 8%,#080808)}
+.aog-nation-region .aog-nation-flag{width:122px;height:85px;margin:0;flex:none}
+.aog-nation-region strong{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:clamp(12px,1.25vw,16px);line-height:1.1}
+.aog-nation-region .aog-home-panel-title.aog-nation-count{width:max-content;min-width:min(160px,calc(100% - 58px));max-width:calc(100% - 58px);font-size:17px;min-height:38px;padding:5px 14px 8px;line-height:1.12}
+.aog-nation-star{position:absolute;top:5px;left:10px;z-index:3;font-size:24px;line-height:1}
+.aog-nation-status{text-align:center;margin:30px auto;font-size:18px}
+@media(max-width:800px){.aog-nation-page{padding:12px 12px 28px}.aog-nation-institutions,.aog-nation-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-nation-ministers,.aog-nation-regions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:510px){.aog-nation-top{gap:12px}.aog-nation-top>.aog-nation-box:nth-child(-n+2){height:185px}.aog-nation-top>.aog-nation-box:nth-child(n+3){height:125px}.aog-nation-flag{width:94px;height:70px}.aog-nation-official{flex-direction:column;gap:3px;text-align:center}.aog-nation-avatar{height:55px;width:55px}.aog-nation-ministers .aog-nation-box{height:148px}.aog-nation-region{height:155px;padding-top:39px}.aog-nation-region .aog-nation-flag{width:100px;height:72px}.aog-nation-region .aog-home-panel-title.aog-nation-count{min-width:min(160px,calc(100% - 58px));font-size:12px;min-height:31px;padding:5px 9px 6px}}
+
+/* Solo la pestaña RENOVACIÓN PARLAMENTARIA: evita desbordes. */
+.aog-nation-institutions > .aog-nation-box:nth-child(11) > .aog-home-panel-title {
+  font-size: clamp(8px, 0.78vw, 11px);
+  white-space: nowrap;
+  letter-spacing: 0;
+  padding-inline: 7px;
+}
+
+/* Autoridades principales: proporciones del boceto Party / Nation. */
+.aog-nation-top>.aog-nation-official-box:nth-child(n+3){height:190px;min-height:190px;padding:48px 18px 16px}
+.aog-nation-official-box .aog-nation-official{height:100%;gap:16px;justify-content:flex-start;align-items:center;min-width:0}
+.aog-nation-official-box .aog-nation-avatar{width:132px;height:132px;object-fit:contain;flex:0 0 132px;border-radius:10px}
+.aog-nation-official-details{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;font-size:clamp(11px,1vw,15px);line-height:1.25;overflow-wrap:anywhere}
+.aog-nation-official-name{font-size:clamp(17px,1.65vw,25px);line-height:1.1}
+.aog-nation-official-name small{font-size:.48em;opacity:.65;vertical-align:baseline}
+.aog-nation-official-country{width:36px;height:25px;object-fit:contain}
+.aog-nation-vacant{font-size:clamp(17px,1.65vw,24px)}
+@media(max-width:510px){
+ .aog-nation-top>.aog-nation-official-box:nth-child(n+3){height:160px;min-height:160px;padding:39px 9px 10px}
+ .aog-nation-official-box .aog-nation-official{flex-direction:row;gap:7px;text-align:left}
+ .aog-nation-official-box .aog-nation-avatar{width:64px;height:86px;flex-basis:64px}
+ .aog-nation-official-details{font-size:10px;gap:2px}
+ .aog-nation-official-name{font-size:14px}
+ .aog-nation-official-country{width:27px;height:19px}
+}
+
+/* Tamaño propio de pestaña, independiente del ancho del panel.
+   El texto largo amplía la pestaña, hasta el máximo que permiten sus hombros.
+   La silueta y las curvas se heredan directamente de Home. */
+.aog-nation-page .aog-nation-box > .aog-home-panel-title {
+  width: max-content;
+  min-width: min(160px, calc(100% - 58px));
+  max-width: calc(100% - 58px);
+}
+
+/* Nation — móvil: cada panel ocupa una fila completa.
+   Las disposiciones de escritorio se conservan sin cambios. */
+@media (max-width: 767px) {
+  .aog-nation-page .aog-nation-top,
+  .aog-nation-page .aog-nation-ministers,
+  .aog-nation-page .aog-nation-institutions,
+  .aog-nation-page .aog-nation-facts,
+  .aog-nation-page .aog-nation-regions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .aog-nation-page .aog-nation-top,
+  .aog-nation-page .aog-nation-ministers,
+  .aog-nation-page .aog-nation-institutions,
+  .aog-nation-page .aog-nation-facts,
+  .aog-nation-page .aog-nation-regions {
+    gap: 14px;
+  }
+}

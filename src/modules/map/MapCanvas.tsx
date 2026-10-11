@@ -1,38 +1,46 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { world, makePath, intersects, type Bounds, type Point, type ResourceName } from './world';
 import type { MapOwnership } from './mapApi';
-import { availableForTerritory, type ResourcePools } from './resourcesApi';
-export type MapMode='political'|'players'|ResourceName;
+export type MapMode='political'|'players'|'parties'|ResourceName;
 export type MapHandle={ zoom:(inward:boolean)=>void; reset:()=>void; focus:(id:number,zoom?:number)=>void; focusContinent:(id:number)=>void; redraw:()=>void };
-type Props={mode:MapMode;selectedId:number|null;homeId:number;onSelect:(id:number)=>void;onError:(error:string)=>void;showBorders:boolean;playerCounts:Map<number,number>;ownership:Map<number,MapOwnership>;resourcePools:ResourcePools};
+type Props={mode:MapMode;selectedId:number|null;homeId:number;onSelect:(id:number)=>void;onError:(error:string)=>void;showBorders:boolean;playerCounts:Map<number,number>;resourcePools?:unknown;partyCounts:Map<number,number>;showPlayerPosition:boolean;ownership:Map<number,MapOwnership>};
 const CONTINENT_ZOOM:Record<number,{x:number;y:number;zoom:number}>={
   1:{x:-5940,y:3550,zoom:3.5},2:{x:-7950,y:-2600,zoom:2.9},3:{x:900,y:-4750,zoom:6},
   4:{x:170,y:1150,zoom:3.6},5:{x:6700,y:-2600,zoom:2.6},6:{x:11700,y:2700,zoom:3.9},7:{x:0,y:7280,zoom:2.6}
 };
 function makeImage(src:string):Promise<HTMLImageElement>{return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error('No se pudo cargar: '+src));image.src=src;});}
-type PlayerLowChunk={arcs:Array<{points:Point[]}>;features:Array<{id:number;rings:number[][]}>};
-const lowChunkCache=new Map<string,Promise<PlayerLowChunk>>();
+type PlayerLowChunk={arcs:Array<{points:Point[];owners?:number[]}>;features:Array<{id:number;rings:number[][]}>};
 async function loadPlayerLowChunk(id:string):Promise<PlayerLowChunk>{
-  const previous=lowChunkCache.get(id);if(previous)return previous;
   const meta=world.chunks.find(chunk=>chunk.id===id);
   if(!meta)throw Error(`Sector inexistente: ${id}`);
-  const loading=fetch(`/world/${meta.files.low}`).then(response=>{
-    if(!response.ok)throw Error(`No se pudo cargar el sector ${id}`);
-    return response.json() as Promise<PlayerLowChunk>;
-  }).catch(error=>{lowChunkCache.delete(id);throw error;});
-  lowChunkCache.set(id,loading);
-  while(lowChunkCache.size>96)lowChunkCache.delete(lowChunkCache.keys().next().value!);
-  return loading;
+  const response=await fetch(`/world/${meta.files.low}`);
+  if(!response.ok)throw Error(`No se pudo cargar el sector ${id}`);
+  return response.json() as Promise<PlayerLowChunk>;
 }
 const SEA_COLOR='#202020';
 const BACKGROUND_COLOR='#080808';
-const EMPTY_PLAYER_COLOR='#303030';
-function playerColor(count:number,max:number){
-  if(count<=0)return EMPTY_PLAYER_COLOR;
-  const intensity=Math.log1p(count)/Math.log1p(Math.max(1,max));
-  const red=Math.round(64+181*intensity),green=Math.round(47-13*intensity);
-  return `rgb(${red},${green},${green})`;
+const EMPTY_PLAYER_COLOR='#373737';
+const isHeatMode=(mode:MapMode)=>mode==='players'||mode==='parties';
+// Las fronteras regionales heredan el tono de su nacion, pero mas oscuro.
+function darkerNationColor(color:string|undefined):string {
+  const hex=color?.trim().match(/^#([0-9a-f]{6}|[0-9a-f]{3})$/i)?.[1];
+  if(!hex)return '#444444';
+  const full=hex.length===3?Array.from(hex,c=>c+c).join(''):hex;
+  const channels=[0,2,4].map(i=>Math.round(parseInt(full.slice(i,i+2),16)*0.53));
+  return `rgb(${channels[0]}, ${channels[1]}, ${channels[2]})`;
 }
+
+function heatColor(count:number,max:number){
+  if(count<=0)return EMPTY_PLAYER_COLOR;
+  const intensity=max<=1?1:Math.log(count)/Math.log(max);
+  const t=Math.max(0,Math.min(1,intensity));
+  const from=t<0.5?[36,97,218]:[237,139,44];
+  const to=t<0.5?[237,139,44]:[220,27,40];
+  const fraction=t<0.5?t*2:(t-0.5)*2;
+  const rgb=from.map((c,i)=>Math.round(c+(to[i]-c)*fraction));
+  return `rgb(${rgb.join(',')})`;
+}
+
 class CanvasMap {
   canvas:HTMLCanvasElement;
   ctx:CanvasRenderingContext2D;
@@ -42,13 +50,12 @@ class CanvasMap {
   framePath:Path2D|null=null;
   playerAtlas:HTMLCanvasElement|null=null;
   playerAtlasCounts:Map<number,number>|null=null;
+  heatAtlasMode:MapMode|null=null;
   playerAtlasVersion=0;
+  politicalAtlas:HTMLCanvasElement|null=null;
+  politicalAtlasOwnership:Map<number,MapOwnership>|null=null;
+  politicalAtlasVersion=0;
   playerMax=1;
-  resourceOverlay:HTMLCanvasElement|null=null;
-  resourceOverlayMode:ResourceName|null=null;
-  resourceOverlayPools:ResourcePools|null=null;
-  resourceOverlayOwnership:Map<number,MapOwnership>|null=null;
-  resourceOverlayVersion=0;
   atlas=new Map<string,HTMLImageElement>();
   loadingAtlases=new Set<string>();
   dragging:{id:number;x:number;y:number,startX:number,startY:number,moved:boolean}|null=null;
@@ -66,7 +73,8 @@ class CanvasMap {
     this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.bind();this.resize();
     this.camera={...(CONTINENT_ZOOM[world.territory.get(props.homeId)?.continentId||1]||this.camera)};this.changed();
     this.prepareBase();
-    if(props.mode==='players')void this.preparePlayerAtlas();
+    if(isHeatMode(props.mode))void this.preparePlayerAtlas();
+    if(props.mode==='political')void this.preparePoliticalAtlas();
   }
   async prepareBase(){
     if(!world.overview)return;
@@ -80,9 +88,73 @@ class CanvasMap {
     }
     this.base=base;this.requestDraw();
   }
+  async preparePoliticalAtlas(){
+    const ownership=this.props.ownership;
+    if(!world.overview||this.politicalAtlasOwnership===ownership)return;
+    const version=++this.politicalAtlasVersion;
+    const [a,b,c,d]=world.bounds,atlas=document.createElement('canvas');
+    atlas.width=2400;atlas.height=Math.round(atlas.width*(d-b)/(c-a));
+    const ctx=atlas.getContext('2d')!,scale=atlas.width/(c-a);
+    ctx.setTransform(scale,0,0,scale,-a*scale,-b*scale);
+    // Renderizar exclusivamente los sectores con territorios politicos.
+    // El resto del mundo sigue proviniendo de la base neutral.
+    const chunks=new Set<string>();
+    for(const [id,owner] of ownership){
+      if(owner.nation_id==null)continue;
+      const t=world.territory.get(id);if(t)chunks.add(t.chunkId);
+    }
+    this.politicalAtlas=atlas;this.politicalAtlasOwnership=ownership;this.requestDraw();
+    const keys=Array.from(chunks);let next=0;
+    const worker=async()=>{
+      while(next<keys.length&&!this.disposed&&version===this.politicalAtlasVersion){
+        const key=keys[next++];
+        try{
+          const chunk=await loadPlayerLowChunk(key);
+          if(this.disposed||version!==this.politicalAtlasVersion)return;
+          const pathFor=(rings:number[][])=>makePath(rings.map(refs=>{
+            const ring:Point[]=[];
+            for(const ref of refs){const points=chunk.arcs[Math.abs(ref)-1]?.points;
+              if(points)ring.push(...(ref>0?points:points.slice().reverse()));}
+            return ring;
+          }));
+          // Un canvas por sector permite que las cargas paralelas no se pisen.
+          const tile=document.createElement('canvas');tile.width=atlas.width;tile.height=atlas.height;
+          const tc=tile.getContext('2d')!;tc.setTransform(scale,0,0,scale,-a*scale,-b*scale);
+          for(const feature of chunk.features){
+            const owner=ownership.get(feature.id);
+            if(owner?.nation_id==null)continue;
+            tc.fillStyle=owner.color||'#302a29';tc.fill(pathFor(feature.rings),'evenodd');
+          }
+          for(const arc of chunk.arcs){
+            const owners=arc.owners;
+            if(!owners||owners.length!==2||arc.points.length<2)continue;
+            const left=ownership.get(owners[0]),right=ownership.get(owners[1]);
+            const n1=left?.nation_id??null,n2=right?.nation_id??null;
+            if(n1===n2||n1===null&&n2===null)continue;
+            tc.beginPath();tc.moveTo(...arc.points[0]);
+            for(let i=1;i<arc.points.length;i++)tc.lineTo(...arc.points[i]);
+            tc.strokeStyle='#080808';tc.lineWidth=2/scale;tc.stroke();
+          }
+          if(version!==this.politicalAtlasVersion||this.disposed)return;
+          // El atlas y cada tile ya estan rasterizados en pixeles.
+          // Componer con una transformacion de mundo activa los desplaza
+          // y puede hacer desaparecer paises al alejar el mapa.
+          ctx.save();
+          ctx.setTransform(1,0,0,1,0,0);
+          ctx.drawImage(tile,0,0);
+          ctx.restore();
+          this.requestDraw();
+        }catch(error){
+          if(version===this.politicalAtlasVersion)this.props.onError(error instanceof Error?error.message:'No se pudo cargar el mapa politico');
+        }
+      }
+    };
+    await Promise.all(Array.from({length:Math.min(3,keys.length)},worker));
+  }
   async preparePlayerAtlas(){
-    const counts=this.props.playerCounts;
-    if(!world.overview||this.playerAtlasCounts===counts)return;
+    const mode=this.props.mode;
+    const counts=mode==='parties'?this.props.partyCounts:this.props.playerCounts;
+    if(!world.overview||this.playerAtlasCounts===counts&&this.heatAtlasMode===mode)return;
     const version=++this.playerAtlasVersion;
     const [a,b,c,d]=world.bounds,atlas=document.createElement('canvas');
     atlas.width=2400;atlas.height=Math.round(atlas.width*(d-b)/(c-a));
@@ -102,7 +174,7 @@ class CanvasMap {
     }
     // El atlas mundial pinta exclusivamente los polígonos con jugadores.
     // Se cargan solo sus sectores, sin descargar los 60.000 territorios.
-    this.playerAtlas=atlas;this.playerAtlasCounts=counts;this.requestDraw();
+    this.playerAtlas=atlas;this.playerAtlasCounts=counts;this.heatAtlasMode=mode;this.requestDraw();
     const groups=Array.from(byChunk);
     let next=0;
     const worker=async()=>{
@@ -123,7 +195,7 @@ class CanvasMap {
               }
               return ring;
             });
-            ctx.fillStyle=playerColor(count,this.playerMax);ctx.fill(makePath(rings),'evenodd');
+            ctx.fillStyle=heatColor(count,this.playerMax);ctx.fill(makePath(rings),'evenodd');
           }
           this.requestDraw();
         }catch(error){
@@ -132,57 +204,6 @@ class CanvasMap {
       }
     };
     await Promise.all(Array.from({length:Math.min(3,groups.length)},worker));
-  }
-  async prepareResourceOverlay(){
-    const mode=this.props.mode;
-    if(this.disposed||mode==='political'||mode==='players')return;
-    if(this.resourceOverlayMode===mode&&this.resourceOverlayPools===this.props.resourcePools&&this.resourceOverlayOwnership===this.props.ownership)return;
-    const version=++this.resourceOverlayVersion;
-    this.resourceOverlayMode=mode;this.resourceOverlayPools=this.props.resourcePools;
-    this.resourceOverlayOwnership=this.props.ownership;
-    const pools=this.props.resourcePools,ownership=this.props.ownership;
-    const individual=new Set<number>(),regions=new Set<number>();
-    for(const pool of pools.values()){
-      if(pool.resource_code!==mode||pool.max_amount<=0||pool.current_amount>=pool.max_amount)continue;
-      if(pool.scope_kind==='region')regions.add(pool.scope_id);
-      else individual.add(pool.scope_id);
-    }
-    for(const [id,owner] of ownership){if(owner.region_id&&regions.has(owner.region_id))individual.add(id);}
-    const groups=new Map<string,Set<number>>();
-    for(const id of individual){const territory=world.territory.get(id);if(!territory)continue;
-      const active=groups.get(territory.chunkId)||new Set<number>();active.add(id);groups.set(territory.chunkId,active);
-    }
-    const [a,b,c,d]=world.bounds,overlay=document.createElement('canvas');
-    overlay.width=2400;overlay.height=Math.round(overlay.width*(d-b)/(c-a));
-    const ctx=overlay.getContext('2d')!,scale=overlay.width/(c-a);
-    ctx.setTransform(scale,0,0,scale,-a*scale,-b*scale);
-    this.resourceOverlay=overlay;this.requestDraw();
-    if(!groups.size)return;
-    try{await world.ensureStock();}catch(error){this.props.onError(String(error));return;}
-    if(this.disposed||version!==this.resourceOverlayVersion)return;
-    const pending=Array.from(groups);let next=0;
-    const worker=async()=>{
-      while(next<pending.length&&!this.disposed&&version===this.resourceOverlayVersion){
-        const [chunkId,active]=pending[next++];
-        try{
-          const chunk=await loadPlayerLowChunk(chunkId);
-          if(this.disposed||version!==this.resourceOverlayVersion)return;
-          for(const feature of chunk.features){if(!active.has(feature.id))continue;
-            const rings=feature.rings.map(refs=>{
-              const ring:Point[]=[];
-              for(const ref of refs){const points=chunk.arcs[Math.abs(ref)-1]?.points;
-                if(points)ring.push(...(ref>0?points:points.slice().reverse()));
-              }return ring;
-            });
-            const available=availableForTerritory(feature.id,mode,ownership,pools);
-            ctx.fillStyle=world.resourceColor(feature.id,mode,available);
-            ctx.fill(makePath(rings),'evenodd');
-          }
-          this.requestDraw();
-        }catch(error){if(version===this.resourceOverlayVersion)this.props.onError(error instanceof Error?error.message:'Error al actualizar recursos del mapa');}
-      }
-    };
-    await Promise.all(Array.from({length:Math.min(3,pending.length)},worker));
   }
   resize(){if(this.disposed)return;const bounds=this.canvas.getBoundingClientRect();this.width=Math.max(1,bounds.width);this.height=Math.max(1,bounds.height);this.dpr=Math.min(2,window.devicePixelRatio||1);
     const [a,b,c,d]=world.bounds;this.fit=Math.min(this.width/(c-a),this.height/(d-b))*.98;
@@ -222,11 +243,11 @@ class CanvasMap {
       this.displayKeys.includes(`${c.id}:${detailedLod}`)&&!!world.cached(c.id,detailedLod));
     if(exactLand&&this.framePath){ctx.fillStyle=SEA_COLOR;ctx.fill(this.framePath);}
     else if(this.base)ctx.drawImage(this.base,a,b,c-a,d-b);
-    if(mode==='players'){
+    if(mode==='political'&&!exactLand&&this.politicalAtlas)ctx.drawImage(this.politicalAtlas,a,b,c-a,d-b);
+    if(isHeatMode(mode)){
       if(!exactLand&&this.playerAtlas)ctx.drawImage(this.playerAtlas,a,b,c-a,d-b);
     }else if(mode!=='political'){
       const atlas=this.atlas.get(mode);if(!exactLand&&atlas)ctx.drawImage(atlas,a,b,c-a,d-b);
-      if(!exactLand&&this.resourceOverlay&&this.resourceOverlayMode===mode)ctx.drawImage(this.resourceOverlay,a,b,c-a,d-b);
     }
     if(details){
       const bounds=this.visible();
@@ -234,12 +255,36 @@ class CanvasMap {
         for(const f of chunk.features){if(!intersects(f.bbox,bounds))continue;
           const owner=this.props.ownership.get(f.id);
           if(mode==='political'){ctx.fillStyle=owner?.color || '#302a29';ctx.fill(f.path,'evenodd');}
-          else if(mode!=='players'){
-            const available=availableForTerritory(f.id,mode,this.props.ownership,this.props.resourcePools);
-            ctx.fillStyle=world.resourceColor(f.id,mode,available);ctx.fill(f.path,'evenodd');
+          else if(isHeatMode(mode)){const counts=mode==='parties'?this.props.partyCounts:this.props.playerCounts;ctx.fillStyle=heatColor(counts.get(f.id)||0,this.playerMax);ctx.fill(f.path,'evenodd');}
+          else {ctx.fillStyle=world.resourceColor(f.id,mode as ResourceName);ctx.fill(f.path,'evenodd');}
+          // La capa politica usa limites entre entidades, no contornos completos.
+          if(mode!=='political'&&(this.props.showBorders||this.camera.zoom>30)){
+            ctx.lineWidth=Math.max(.5/s,.5);ctx.strokeStyle='rgba(0,0,0,.42)';ctx.stroke(f.path);
           }
-          else {ctx.fillStyle=playerColor(this.props.playerCounts.get(f.id)||0,this.playerMax);ctx.fill(f.path,'evenodd');}
-          if(this.props.showBorders||this.camera.zoom>30){ctx.lineWidth=Math.max(.5/s,.5);ctx.strokeStyle='rgba(0,0,0,.42)';ctx.stroke(f.path);}
+        }
+        if(mode==='political'){
+          // Los arcos llevan los IDs de sus territorios adyacentes.
+          // Pintarlos una sola vez evita bordes duplicados y uniones interiores.
+          const regionalZoom=this.camera.zoom>=5;
+          for(const arc of chunk.arcs){
+            if(arc.owners.length!==2||arc.points.length<2)continue;
+            const left=this.props.ownership.get(arc.owners[0]);
+            const right=this.props.ownership.get(arc.owners[1]);
+            const nationA=left?.nation_id??null,nationB=right?.nation_id??null;
+            const countryBorder=nationA!==nationB&&(nationA!==null||nationB!==null);
+            const regionBorder=!countryBorder&&regionalZoom&&nationA!==null&&
+              nationA===nationB&&(left?.region_id??null)!==(right?.region_id??null);
+            if(!countryBorder&&!regionBorder)continue;
+            const first=arc.points[0],last=arc.points[arc.points.length-1];
+            const bounds=this.visible();
+            if(Math.max(first[0],last[0])<bounds[0]||Math.min(first[0],last[0])>bounds[2]||
+               Math.max(first[1],last[1])<bounds[1]||Math.min(first[1],last[1])>bounds[3])continue;
+            ctx.beginPath();ctx.moveTo(first[0],first[1]);
+            for(let i=1;i<arc.points.length;i++)ctx.lineTo(arc.points[i][0],arc.points[i][1]);
+            ctx.strokeStyle=countryBorder?'#080808':darkerNationColor(left?.color||right?.color);
+            ctx.lineWidth=(countryBorder?2.2:1.3)/s;
+            ctx.stroke();
+          }
         }
       }
     }
@@ -257,7 +302,7 @@ class CanvasMap {
       }
     }
     const home=world.territory.get(this.props.homeId);
-    if(home&&home.id!==selectedTerritory?.id){ctx.fillStyle='#fff3a1';ctx.strokeStyle='#111';ctx.lineWidth=1.5/s;ctx.beginPath();ctx.arc(home.x,home.y,5/s,0,Math.PI*2);ctx.fill();ctx.stroke();}
+    if(this.props.showPlayerPosition&&home&&home.id!==selectedTerritory?.id){ctx.fillStyle='#fff3a1';ctx.strokeStyle='#111';ctx.lineWidth=1.5/s;ctx.beginPath();ctx.arc(home.x,home.y,5/s,0,Math.PI*2);ctx.fill();ctx.stroke();}
   }
   bind(){const canvas=this.canvas;
     canvas.addEventListener('wheel',this.onWheel,{passive:false});canvas.addEventListener('pointerdown',this.onDown);canvas.addEventListener('pointermove',this.onMove);
@@ -279,12 +324,12 @@ class CanvasMap {
   onClick=(e:MouseEvent)=>{if(this.ignoreClick){this.ignoreClick=false;return;}const gen=++this.clickVersion;const [x,y]=this.worldAt(e.clientX,e.clientY);
     void world.hit(x,y).then(id=>{if(!this.disposed&&gen===this.clickVersion&&id)this.props.onSelect(id);}).catch(err=>this.props.onError(String(err)));};
   onDoubleClick=(e:MouseEvent)=>{e.preventDefault();this.zoom(1.7,e.clientX,e.clientY);};
-  destroy(){this.disposed=true;this.playerAtlasVersion++;this.resourceOverlayVersion++;cancelAnimationFrame(this.raf);clearTimeout(this.preloadTimer);this.observer.disconnect();this.canvas.removeEventListener('wheel',this.onWheel);this.canvas.removeEventListener('pointerdown',this.onDown);this.canvas.removeEventListener('pointermove',this.onMove);this.canvas.removeEventListener('pointerup',this.onUp);this.canvas.removeEventListener('pointercancel',this.onUp);this.canvas.removeEventListener('click',this.onClick);this.canvas.removeEventListener('dblclick',this.onDoubleClick);this.atlas.clear();this.base=null;this.framePath=null;this.playerAtlas=null;this.playerAtlasCounts=null;this.resourceOverlay=null;}
+  destroy(){this.disposed=true;this.playerAtlasVersion++;cancelAnimationFrame(this.raf);clearTimeout(this.preloadTimer);this.observer.disconnect();this.canvas.removeEventListener('wheel',this.onWheel);this.canvas.removeEventListener('pointerdown',this.onDown);this.canvas.removeEventListener('pointermove',this.onMove);this.canvas.removeEventListener('pointerup',this.onUp);this.canvas.removeEventListener('pointercancel',this.onUp);this.canvas.removeEventListener('click',this.onClick);this.canvas.removeEventListener('dblclick',this.onDoubleClick);this.atlas.clear();this.base=null;this.framePath=null;this.playerAtlas=null;this.playerAtlasCounts=null;this.politicalAtlas=null;this.politicalAtlasOwnership=null;this.politicalAtlasVersion++;}
 }
 export const MapCanvas=forwardRef<MapHandle,Props>(function MapCanvas(props,ref){
   const canvas=useRef<HTMLCanvasElement>(null),instance=useRef<CanvasMap|null>(null);
   useEffect(()=>{if(!canvas.current||!world.overview)return;const renderer=new CanvasMap(canvas.current,props);instance.current=renderer;return()=>{instance.current=null;renderer.destroy();};},[]);
-  useEffect(()=>{if(!instance.current)return;instance.current.props=props;instance.current.requestDraw();if(props.mode==='players')void instance.current.preparePlayerAtlas();else if(props.mode!=='political'){void instance.current.loadAtlas(props.mode);void instance.current.prepareResourceOverlay();}if(props.selectedId){const t=world.territory.get(props.selectedId);if(t)void world.loadChunk(t.chunkId,'high').then(()=>instance.current?.requestDraw()).catch(()=>{});}},[props.mode,props.selectedId,props.homeId,props.showBorders,props.playerCounts,props.ownership,props.resourcePools,props.onError,props.onSelect]);
+  useEffect(()=>{if(!instance.current)return;instance.current.props=props;instance.current.requestDraw();if(isHeatMode(props.mode))void instance.current.preparePlayerAtlas();else if(props.mode==='political')void instance.current.preparePoliticalAtlas();else void instance.current.loadAtlas(props.mode);if(props.selectedId){const t=world.territory.get(props.selectedId);if(t)void world.loadChunk(t.chunkId,'high').then(()=>instance.current?.requestDraw()).catch(()=>{});}},[props.mode,props.selectedId,props.homeId,props.showBorders,props.playerCounts,props.partyCounts,props.showPlayerPosition,props.ownership,props.onError,props.onSelect]);
   useImperativeHandle(ref,()=>({zoom:inward=>instance.current?.zoom(inward?1.35:1/1.35),reset:()=>instance.current?.reset(),focus:(id,z)=>instance.current?.focus(id,z),focusContinent:id=>instance.current?.focusContinent(id),redraw:()=>instance.current?.requestDraw()}),[]);
   return <canvas ref={canvas} className="aog-world-canvas" role="application" aria-label="Mapa mundial Equal Earth. Arrastrá para mover, rueda para acercar, tocá para seleccionar" tabIndex={0}/>;
 });

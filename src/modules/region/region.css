@@ -1,0 +1,46 @@
+/* REGION comparte los paneles y las pestañas originales de HOME/NATION.
+   Solo definimos diferencias de distribución y los títulos largos de DATOS. */
+.aog-region-page .aog-nation-top > .aog-nation-box:nth-child(-n+2) {
+  height: 225px;
+}
+.aog-region-page .aog-nation-top > .aog-nation-official-box:nth-child(n+3) {
+  height: 190px;
+}
+.aog-region-page .aog-nation-ministers .aog-nation-box {
+  height: 165px;
+}
+.aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title {
+  font-size: clamp(10px, 1.05vw, 15px);
+  line-height: 1.1;
+}
+.aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title {
+  min-width: min(160px, calc(100% - 58px));
+}
+.aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) strong {
+  font-size: clamp(12px, 1.4vw, 18px);
+}
+.aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title {
+  font-size: clamp(9px, 0.95vw, 13px);
+}
+.aog-region-official-photo-link { display: inline-flex; flex: none; }
+.aog-region-official-link { color: inherit; text-decoration: none; }
+.aog-region-official-link:hover { text-decoration: underline; }
+.aog-region-capital-authority { margin-inline: auto; text-align: center; font-size: clamp(13px, 1.4vw, 19px); }
+/* No inventamos curvas ni estilos propios: se usan .aog-home-panel-title. */
+@media (max-width: 767px) {
+  .aog-region-page .aog-nation-top,
+  .aog-region-page .aog-nation-ministers,
+  .aog-region-page .aog-nation-facts { grid-template-columns: minmax(0, 1fr); }
+  .aog-region-page .aog-nation-top > .aog-nation-box:nth-child(-n+2) { height: 205px; }
+  .aog-region-page .aog-nation-top > .aog-nation-official-box:nth-child(n+3) { height: 180px; }
+  .aog-region-page .aog-nation-ministers .aog-nation-box { height: 145px; }
+  .aog-region-page .aog-nation-facts .aog-nation-box { height: 105px; }
+  .aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title { font-size: 14px; }
+  .aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title { font-size: 12px; }
+  .aog-region-page .aog-nation-top .aog-nation-official { flex-direction: row; text-align: left; }
+  .aog-region-page .aog-nation-official-box .aog-nation-avatar { width: 105px; height: 105px; flex-basis: 105px; }
+}
+@media (max-width: 470px) {
+  .aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title { font-size: 12px; }
+  .aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title { font-size: 10px; }
+}

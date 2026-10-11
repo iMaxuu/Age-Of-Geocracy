@@ -42,7 +42,19 @@ export async function fetchPlayer(authId: string): Promise<Player> {
   const {data,error}=await supabase.rpc('aog_get_player_with_energy');
   if(error) throw new Error(`No se pudo cargar el jugador: ${error.message}. Aplicá supabase/energia-regeneracion.sql.`);
   if(!data || data.auth_id !== authId) throw new Error('Jugador no encontrado.');
-  return playerFromRow(data as ProfileRow);
+  const player=playerFromRow(data as ProfileRow);
+  // La ciudadania pertenece al jugador, no a su ubicacion de viaje actual.
+  const {data:citizenship,error:citizenshipError}=await supabase
+    .from('aog_player_citizenships')
+    .select('region_id,nation_id')
+    .eq('player_id',player.id)
+    .maybeSingle();
+  if(citizenshipError){
+    console.warn('No se pudo consultar la ciudadania:',citizenshipError);
+  }else if(citizenship){
+    player.citizenship={regionId:citizenship.region_id,nationId:citizenship.nation_id};
+  }
+  return player;
 }
 export async function register(email:string,password:string,confirmation:string):Promise<void> {
   if(password!==confirmation) throw new Error('Las contraseñas no coinciden.');
@@ -111,5 +123,7 @@ export async function updatePlayerProfile(changes:Record<string,unknown>):Promis
     p_photo_url:updates.photo_url ?? null,
   });
   if(error) throw new Error(`No se pudo guardar el perfil: ${error.message}`);
-  return playerFromRow(data as ProfileRow);
+  const updated=playerFromRow(data as ProfileRow);
+  updated.citizenship=current.citizenship;
+  return updated;
 }

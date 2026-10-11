@@ -135,6 +135,22 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
     }).catch(error => console.warn('No se pudo consultar el partido del perfil:', error));
     return () => { active = false; };
   }, [player.authId]);
+  const [currentRegion, setCurrentRegion] = useState<Relationship | null>(null);
+  const [currentNation, setCurrentNation] = useState<Relationship | null>(null);
+  useEffect(() => {
+    let active = true;
+    setCurrentRegion(null); setCurrentNation(null);
+    if (!player.territoryId) return;
+    void supabase.from('map_territory_politics')
+      .select('region_id,region_name,region_flag,nation_id,nation_name,nation_flag')
+      .eq('territory_id', player.territoryId).maybeSingle()
+      .then(({data,error}) => {
+        if (!active || error) return;
+        setCurrentRegion(data?.region_id ? { id:data.region_id, label:data.region_name || `REGION #${data.region_id}`, image:data.region_flag || null } : null);
+        setCurrentNation(data?.nation_id ? { id:data.nation_id, label:data.nation_name || `NATION #${data.nation_id}`, image:data.nation_flag || null } : null);
+      });
+    return () => { active = false; };
+  }, [player.territoryId]);
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [serverOffset, setServerOffset] = useState(0);
   const [clock, setClock] = useState(Date.now());
@@ -390,8 +406,8 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
     <section className="pr-affiliations" aria-label="Afiliaciones del jugador">
       <EntityPanel title="PARTIDO" empty="SIN PARTIDO" entity={actualParty ?? relationship(player, 'party')} type="party" />
       <EntityPanel title="COALICIÓN" empty="SIN COALICIÓN" entity={actualCoalition} type="coalition" />
-      <EntityPanel title="REGIÓN" empty="SIN REGIÓN" entity={relationship(player, 'region')} type="region" />
-      <EntityPanel title="NACIÓN" empty="SIN NACIÓN" entity={relationship(player, 'nation')} type="nation" />
+      <EntityPanel title="REGIÓN" empty="SIN REGIÓN" entity={currentRegion} type="region" />
+      <EntityPanel title="NACIÓN" empty="SIN NACIÓN" entity={currentNation} type="nation" />
     </section>
 
     <section className="pr-section pr-information-section">

@@ -96,12 +96,53 @@ function Panel({ title, children, className = '' }: { title: string; children: R
     <h2 className="aog-home-panel-title aog-territory-tab">{title}</h2>{children}
   </section>;
 }
+type PublicAuthority = {
+  id: number;
+  name: string;
+  photo_url: string | null;
+  country_code: string | null;
+  political_ideology: string | null;
+};
+
+// Los nombres provisionales de la fundación no reemplazan los futuros nombres elegidos por jugadores.
+function entityName(raw: string | null, id: number | null, kind: 'region' | 'nation'): string {
+  if (!id) return kind === 'region' ? 'SIN REGIÓN' : 'SIN NACIÓN';
+  const value = raw?.trim() || '';
+  const placeholder = kind === 'region'
+    ? /^(?:CAPITAL|REGI[ÓO]N|REGION)\s*#\s*\d+$/i
+    : /^(?:NACI[ÓO]N|NATION)\s*#\s*\d+$/i;
+  if (!value || placeholder.test(value) || /^(?:REGIÓN CAPITAL|NACIÓN EN ORGANIZACIÓN)$/i.test(value))
+    return `${kind === 'region' ? 'REGION' : 'NATION'} #${id}`;
+  return value;
+}
+
+async function publicAuthority(playerId: number | null): Promise<PublicAuthority | null> {
+  if (!playerId) return null;
+  const { data, error } = await supabase.rpc('aog_public_player_profile', { p_player_id: playerId });
+  if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || !('id' in data)) return null;
+  const record = data as Record<string, unknown>;
+  return {
+    id: Number(record.id),
+    name: typeof record.name === 'string' ? record.name : `JUGADOR #${playerId}`,
+    photo_url: typeof record.photo_url === 'string' ? record.photo_url : null,
+    country_code: typeof record.country_code === 'string' ? record.country_code : null,
+    political_ideology: typeof record.political_ideology === 'string' ? record.political_ideology : null,
+  };
+}
+
 function EntityPanel({ title, name, flag, id, path, onNavigate }: {
   title: string; name: string; flag: string | null; id: number | null; path: 'region' | 'nation'; onNavigate?: (path: string) => void;
 }) {
-  const image = flagUrl(flag);
+  const image = flagUrl(flag) ?? '/assets/photos/noflag.png';
   const destination = id ? `/${path}?id=${id}` : null;
-  const content = <>{image && <img className="aog-territory-flag" src={image} alt="" onError={event => { event.currentTarget.src = '/assets/photos/noflag.png'; }} />}<strong>{name}</strong></>;
+  const content = <>
+    <img className="aog-territory-flag" src={image} alt="" onError={event => {
+      if (!event.currentTarget.src.endsWith('/assets/photos/noflag.png'))
+        event.currentTarget.src = '/assets/photos/noflag.png';
+    }} />
+    <strong>{name}</strong>
+  </>;
   return <Panel title={title} className="aog-territory-entity">
     {destination ? <a className="aog-territory-entity-link" href={destination} onClick={(event: MouseEvent<HTMLAnchorElement>) => {
       if (!onNavigate || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
@@ -109,10 +150,28 @@ function EntityPanel({ title, name, flag, id, path, onNavigate }: {
     }}>{content}</a> : <div className="aog-territory-entity-link">{content}</div>}
   </Panel>;
 }
-function AuthorityPanel({ title }: { title: string }) {
+function AuthorityPanel({ title, authority, onNavigate }: {
+  title: 'PRESIDENTE' | 'GOBERNADOR'; authority: PublicAuthority | null; onNavigate?: (path: string) => void;
+}) {
+  const destination = authority ? `/profile/${authority.id}` : null;
+  const image = authority?.photo_url || '/assets/photos/nouser.png';
+  const countryFlag = authority?.country_code ? flagUrl(authority.country_code) : null;
+  const content = <>
+    <img className="aog-territory-authority-photo" src={image} alt="" onError={event => {
+      if (!event.currentTarget.src.endsWith('/assets/photos/nouser.png'))
+        event.currentTarget.src = '/assets/photos/nouser.png';
+    }} />
+    <div className="aog-territory-authority-description">
+      <strong>{authority?.name ?? 'VACANTE'}</strong>
+      {authority?.political_ideology && <span>{authority.political_ideology.toUpperCase()}</span>}
+      {countryFlag && <img className="aog-territory-authority-flag" src={countryFlag} alt="" />}
+    </div>
+  </>;
   return <Panel title={title} className="aog-territory-authority">
-    <img src="/assets/photos/nophoto.png" alt="" />
-    <div className="aog-territory-authority-description"><strong>DATOS NO DISPONIBLES</strong><span>Autoridad pendiente de conectar</span></div>
+    {destination ? <a className="aog-territory-authority-link" href={destination} onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+      if (!onNavigate || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault(); onNavigate(destination);
+    }}>{content}</a> : <div className="aog-territory-authority-link">{content}</div>}
   </Panel>;
 }
 
@@ -270,14 +329,18 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
   const [ownership, setOwnership] = useState<MapOwnership | null>(null);
   const [ownershipLoaded, setOwnershipLoaded] = useState(false);
   const [isCapital, setIsCapital] = useState(false);
+  const [president, setPresident] = useState<PublicAuthority | null>(null);
+  const [governor, setGovernor] = useState<PublicAuthority | null>(null);
   const [players, setPlayers] = useState<number | null>(null);
+  const [partyCount, setPartyCount] = useState<number | null>(null);
   const [resources, setResources] = useState<Map<ResourceName, ResourceStatus> | null>(null);
   const [resourceError, setResourceError] = useState('');
   const [loading, setLoading] = useState(true);
   const [warning, setWarning] = useState('');
   useEffect(() => {
     let active = true;
-    setOwnership(null); setOwnershipLoaded(false); setIsCapital(false); setPlayers(null); setLoading(true); setWarning('');
+    setOwnership(null); setOwnershipLoaded(false); setIsCapital(false); setPresident(null); setGovernor(null);
+    setPlayers(null); setPartyCount(null); setLoading(true); setWarning('');
     if (!id) { setLoading(false); return; }
     const load = async () => {
       const results = await Promise.allSettled([
@@ -286,13 +349,45 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
             .select('territory_id,region_id,nation_id,region_name,nation_name,region_flag,nation_flag,color')
             .eq('territory_id', id).maybeSingle();
           if (error) throw Error(error.message);
-          if (active) { setOwnership(data as MapOwnership | null); setOwnershipLoaded(true); }
-          // Las capitales fundadas no tienen gobernador ni vicegobernador.
-          if (data?.region_id) {
-            const capital = await supabase.from('aog_founded_regions')
-              .select('is_capital').eq('id', data.region_id).maybeSingle();
-            if (active && !capital.error) setIsCapital(capital.data?.is_capital === true);
+          let capital = false;
+          let governorId: number | null = null;
+          let presidentId: number | null = null;
+          // La capital carece de gobernador. Las regiones comunes sí pueden tenerlo.
+          const [regionResult, nationResult] = await Promise.all([
+            data?.region_id
+              ? supabase.from('aog_founded_regions').select('is_capital,governor_id')
+                  .eq('id', data.region_id).maybeSingle()
+              : Promise.resolve(null),
+            data?.nation_id
+              ? supabase.from('aog_founded_nations').select('capital_region_id,president_id')
+                  .eq('id', data.nation_id).maybeSingle()
+              : Promise.resolve(null),
+          ]);
+          if (regionResult && !regionResult.error && regionResult.data) {
+            capital = regionResult.data.is_capital === true;
+            governorId = regionResult.data.governor_id ?? null;
           }
+          if (nationResult && !nationResult.error && nationResult.data) {
+            if (data?.region_id && nationResult.data.capital_region_id === data.region_id) capital = true;
+            presidentId = nationResult.data.president_id ?? null;
+          }
+          const [nextGovernor, nextPresident] = await Promise.all([
+            !capital && governorId ? publicAuthority(governorId) : Promise.resolve(null),
+            presidentId ? publicAuthority(presidentId) : Promise.resolve(null),
+          ]);
+          if (active) {
+            setOwnership(data as MapOwnership | null);
+            setIsCapital(capital);
+            setGovernor(nextGovernor);
+            setPresident(nextPresident);
+            setOwnershipLoaded(true);
+          }
+
+        })(),
+        (async () => {
+          const { data, error } = await supabase.rpc('aog_party_count_territory', { p_territory_id: id });
+          if (error) throw Error(`Partidos: ${error.message}`);
+          if (active) setPartyCount(Number(data ?? 0));
         })(),
         (async () => {
           const { count, error } = await supabase.from('players').select('id', { count: 'exact', head: true }).eq('territory_id', id);
@@ -301,7 +396,9 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
         })(),
       ]);
       if (!active) return;
-      if (results.some(result => result.status === 'rejected')) setWarning('Algunos datos todavía no están disponibles.');
+      const failures = results.flatMap((result, index) => result.status === 'rejected'
+        ? [`${['Información política', 'Partidos', 'Jugadores'][index]}: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`] : []);
+      if (failures.length) { console.error('Error al cargar Territory:', failures); setWarning(`No se pudieron consultar: ${failures.map(s => s.split(':')[0]).join(', ')}.`); }
       setLoading(false);
     };
     void load();
@@ -338,19 +435,23 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
     <h1 className="aog-territory-heading">TERRITORIO #{format.format(id)}</h1>
     {warning && <p className="aog-territory-warning" role="status">{warning}</p>}
     {independent ? <IndependentFoundation territory={id} onFounded={handleFounded} /> : <div className="aog-territory-pair">
-      <EntityPanel title="REGIÓN" name={ownership?.region_name || (loading ? 'CARGANDO...' : 'SIN REGIÓN')}
-        flag={ownership?.region_flag || null} id={ownership?.region_id || null} path="region" onNavigate={onNavigate} />
-      <EntityPanel title="NACIÓN" name={ownership?.nation_name || (loading ? 'CARGANDO...' : 'SIN NACIÓN')}
-        flag={ownership?.nation_flag || null} id={ownership?.nation_id || null} path="nation" onNavigate={onNavigate} />
-      {isCapital ? <Panel title="CAPITAL" className="aog-territory-capital">
-        <strong>★ CAPITAL</strong><span>BAJO ADMINISTRACIÓN NACIONAL</span>
-      </Panel> : <><AuthorityPanel title="GOBERNADOR" /><AuthorityPanel title="PRESIDENTE" /></>}
+      <div className="aog-territory-political-column">
+        <EntityPanel title="REGIÓN" name={entityName(ownership?.region_name ?? null, ownership?.region_id ?? null, 'region')}
+          flag={ownership?.region_flag ?? null} id={ownership?.region_id ?? null} path="region" onNavigate={onNavigate} />
+        {ownership?.region_id && isCapital && <Panel title="CAPITAL" className="aog-territory-capital"><span aria-label="Región capital" role="img">★</span></Panel>}
+        {ownership?.region_id && !isCapital && <AuthorityPanel title="GOBERNADOR" authority={governor} onNavigate={onNavigate} />}
+      </div>
+      <div className="aog-territory-political-column">
+        <EntityPanel title="NACIÓN" name={entityName(ownership?.nation_name ?? null, ownership?.nation_id ?? null, 'nation')}
+          flag={ownership?.nation_flag ?? null} id={ownership?.nation_id ?? null} path="nation" onNavigate={onNavigate} />
+        {ownership?.nation_id && <AuthorityPanel title="PRESIDENTE" authority={president} onNavigate={onNavigate} />}
+      </div>
     </div>}
     <section className="aog-territory-section" aria-label="Datos del territorio">
       <h2 className="aog-territory-section-title">DATOS</h2>
       <div className="aog-territory-stats">{[
         { name: 'JUGADORES', value: players === null ? '—' : format.format(players) },
-        { name: 'PARTIDOS', value: '—' }, { name: 'CLUBES', value: '—' }, { name: 'TEMPERATURA', value: '—' },
+        { name: 'PARTIDOS', value: partyCount === null ? '—' : format.format(partyCount) }, { name: 'CLUBES', value: '—' }, { name: 'TEMPERATURA', value: '—' },
       ].map(stat => <Panel key={stat.name} title={stat.name} className="aog-territory-stat"><strong>{stat.value}</strong></Panel>)}</div>
     </section>
     <section className="aog-territory-section aog-territory-resources-section" aria-label="Recursos naturales del territorio">

@@ -8,6 +8,8 @@ const counters = [
   ['ORGANIZACIONES', 'organizations'], ['PARLAMENTOS', 'parliaments'],
 ] as const;
 
+type WorldNews = { id: number; kind:'foundation'|'update'; title:string; body:string; territory_id:number|null; nation_id:number|null; is_pinned:boolean; pinned_until:string|null; created_at:string };
+const newsTime = (iso:string, now:number) => { const published=new Date(iso).getTime(); if (!Number.isFinite(published) || published>now+60000) return 'FECHA NO VÁLIDA'; const minutes=Math.max(0,Math.floor((now-published)/60000)); return minutes<1?'AHORA':minutes<60?`HACE ${minutes} MIN`:minutes<1440?`HACE ${Math.floor(minutes/60)} H`:`HACE ${Math.floor(minutes/1440)} D`; };
 type ChatMessage = {
   id: number;
   player_id: number;
@@ -55,9 +57,39 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
   const [messages,setMessages]=useState<ChatMessage[]>([]);
   const [myId,setMyId]=useState<number|null>(null);
   const [sending,setSending]=useState(false);
+  const [news,setNews]=useState<WorldNews[]>([]);
+  const [newsError,setNewsError]=useState('');
+  const [newsLoading,setNewsLoading]=useState(true);
+  const [newsClock,setNewsClock]=useState(() => Date.now());
+  useEffect(() => {
+    const interval=window.setInterval(() => setNewsClock(Date.now()), 15000);
+    return () => window.clearInterval(interval);
+  }, []);
+  useEffect(() => {
+    let active=true;
+    const loadNews=async () => {
+      const {data,error}=await supabase.from('aog_world_news')
+        .select('id,kind,title,body,territory_id,nation_id,is_pinned,pinned_until,created_at')
+        .order('created_at',{ascending:false}).order('id',{ascending:false}).limit(200);
+      if(!active)return;
+      if(error)setNewsError('No se pudieron cargar las noticias');
+      else {setNews((data??[]) as WorldNews[]);setNewsError('');}
+      setNewsLoading(false);
+    };
+    void loadNews();
+    const channel=supabase.channel('aog-world-news-home')
+      .on('postgres_changes',{event:'*',schema:'public',table:'aog_world_news'},()=>{void loadNews();})
+      .subscribe();
+    // Realtime actualiza al publicarse una noticia; el intervalo solo recupera desconexiones.
+    const onVisible=()=>{if(document.visibilityState==='visible')void loadNews();};
+    document.addEventListener('visibilitychange',onVisible);
+    const refresh=window.setInterval(()=>{void loadNews();},30000);
+    return()=>{active=false;document.removeEventListener('visibilitychange',onVisible);window.clearInterval(refresh);void supabase.removeChannel(channel);};
+  },[]);
+  const pinnedNews=news.find(item=>item.kind==='update'&&item.is_pinned&&item.pinned_until&&new Date(item.pinned_until).getTime()>newsClock);
   const [playerCount,setPlayerCount]=useState<number|null>(null);
-  const [partyCount,setPartyCount]=useState<number|null>(null);
-  const [coalitionCount,setCoalitionCount]=useState<number|null>(null);
+  const [partyCount,setPartyCount]=useState<number|null>(0);
+  const [worldCounts,setWorldCounts]=useState<Record<string,number>>({coalition:0,territory:59960});
   useEffect(() => {
     let active = true;
 
@@ -66,8 +98,17 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
     void supabase.rpc('aog_party_count').then(({data,error}) => {
       if(active&&!error&&data!==null)setPartyCount(Number(data));
     });
-    void supabase.rpc('aog_coalition_count').then(({data,error}) => {
-      if(active&&!error&&data!==null)setCoalitionCount(Number(data));
+    void Promise.all([
+      supabase.from('aog_coalitions').select('id', { count:'exact', head:true }),
+      supabase.from('world_territories').select('id', { count:'exact', head:true }),
+      supabase.from('aog_founded_regions').select('id', { count:'exact', head:true }),
+      supabase.from('aog_founded_nations').select('id', { count:'exact', head:true }),
+    ]).then(results => {
+      if (!active) return;
+      const keys = ['coalition', 'territory', 'region', 'nation'];
+      const next: Record<string,number> = {};
+      results.forEach((result,index) => { if (!result.error && result.count !== null) next[keys[index]] = result.count; });
+      setWorldCounts(previous => ({ ...previous, ...next }));
     });
     void supabase.auth.getUser().then(async ({data:{user}}) => {
       if(!user || !active) return;
@@ -215,18 +256,28 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
         </section>
         <section className="aog-home-panel aog-home-news" aria-labelledby="aog-home-news-label">
           <h2 className="aog-home-panel-title" id="aog-home-news-label">NOTICIAS MUNDIALES</h2>
-          <p className="aog-home-empty">Las noticias del mundo aparecerán aquí</p>
+          <div className="aog-world-news-feed" aria-live="polite">
+            {pinnedNews && <article className="aog-world-news-item aog-world-news-update aog-world-news-pinned" key={`pin-${pinnedNews.id}`}>
+              <span className="aog-world-news-icon" aria-hidden="true">★</span>
+              <div className="aog-world-news-content"><strong>{pinnedNews.title}</strong><p>{pinnedNews.body}</p></div>
+              <time dateTime={pinnedNews.created_at}>{newsTime(pinnedNews.created_at,newsClock)}</time>
+            </article>}
+            {news.map(item=><article key={item.id} className={`aog-world-news-item ${item.kind==='update'?'aog-world-news-update':'aog-world-news-foundation'}`}>
+              <span className="aog-world-news-icon" aria-hidden="true">{item.kind==='update'?'★':'⚑'}</span>
+              <div className="aog-world-news-content"><strong>{item.title}</strong><p>{item.body}</p></div>
+              <time dateTime={item.created_at}>{newsTime(item.created_at,newsClock)}</time>
+            </article>)}
+            {newsLoading && <p className="aog-home-empty">CARGANDO...</p>}
+            {!newsLoading&&newsError&&<p className="aog-home-empty">{newsError}</p>}
+            {!newsLoading&&!newsError&&news.length===0&&<p className="aog-home-empty">SIN NOTICIAS</p>}
+          </div>
         </section>
       </div>
       <section className="aog-home-stats" aria-label="Estadísticas del mundo">
         {counters.map(([label, key]) => (
           <article className="aog-home-panel aog-home-counter" key={key}>
             <h2 className="aog-home-panel-title">{label}</h2>
-            <strong className="aog-home-counter-value" aria-label={`${label}: ${key==='players'&&playerCount!==null?playerCount:key==='party'&&partyCount!==null?partyCount:key==='coalition'&&coalitionCount!==null?coalitionCount:'datos pendientes'}`}>
-              {key==='players'&&playerCount!==null?playerCount.toLocaleString('es-AR'):
-                key==='party'&&partyCount!==null?partyCount.toLocaleString('es-AR'):
-                key==='coalition'&&coalitionCount!==null?coalitionCount.toLocaleString('es-AR'):'—'}
-            </strong>
+            <strong className="aog-home-counter-value" aria-label={`${label}: ${key === 'players' && playerCount !== null ? playerCount : key === 'party' && partyCount !== null ? partyCount : worldCounts[key] ?? 'datos pendientes'}`}>{key === 'players' && playerCount !== null ? playerCount.toLocaleString('es-AR') : key === 'party' && partyCount !== null ? partyCount.toLocaleString('es-AR') : worldCounts[key] !== undefined ? worldCounts[key].toLocaleString('es-AR') : '—'}</strong>
           </article>
         ))}
       </section>

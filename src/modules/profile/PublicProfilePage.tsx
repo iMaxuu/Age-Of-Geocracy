@@ -1,4 +1,3 @@
-import { coalitionForParty, type PartyCoalition } from '../coalition/coalitionApi';
 import { useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getXp } from '../auth/player';
@@ -104,14 +103,12 @@ function InformationCard({ title, children, href }: {
 
 export default function PublicProfilePage({ playerId }: { playerId: number }) {
   const [profile, setProfile] = useState<PublicPlayer | null>(null);
-  const [partyCoalition,setPartyCoalition]=useState<PartyCoalition|null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     setProfile(null);
-    setPartyCoalition(null);
     setError('');
     setLoading(true);
     void (async () => {
@@ -120,14 +117,19 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
         if (!active) return;
         if (rpcError) throw new Error(rpcError.message);
         if (!data) throw new Error('No existe ningún jugador con ese ID.');
-        const person=data as PublicPlayer;
-        setProfile(person);
-        if(person.party_id){
-          try{
-            const coalition=await coalitionForParty(person.party_id);
-            if(active)setPartyCoalition(coalition);
-          }catch(e){console.warn('No se pudo cargar la coalición del perfil público',e);}
+        const loaded = data as PublicPlayer;
+        if (loaded.territory_id) {
+          const { data:politics } = await supabase.from('map_territory_politics')
+            .select('region_id,region_name,region_flag,nation_id,nation_name,nation_flag')
+            .eq('territory_id',loaded.territory_id).maybeSingle();
+          if (politics) Object.assign(loaded, {
+            region_id:politics.region_id, region_name:politics.region_name || (politics.region_id ? `REGION #${politics.region_id}` : null),
+            region_flag:politics.region_flag,
+            nation_id:politics.nation_id, nation_name:politics.nation_name || (politics.nation_id ? `NATION #${politics.nation_id}` : null),
+            nation_flag:politics.nation_flag,
+          });
         }
+        if (active) setProfile(loaded);
       } catch (cause) {
         if (active) setError(cause instanceof Error ? cause.message : 'No se pudo cargar este perfil.');
       } finally {
@@ -188,7 +190,7 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
 
     <section className="pr-affiliations" aria-label="Afiliaciones del jugador">
       <EntityPanel title="PARTIDO" empty="SIN PARTIDO" id={profile.party_id} label={profile.party_name} image={profile.party_photo} type="party" />
-      <EntityPanel title="COALICIÓN" empty="SIN COALICIÓN" id={partyCoalition?.id??null} label={partyCoalition?.name??null} image={partyCoalition?.photo_url??null} type="coalition" />
+      <EntityPanel title="COALICIÓN" empty="SIN COALICIÓN" id={null} label={null} image={null} type="coalition" />
       <EntityPanel title="REGIÓN" empty="SIN REGIÓN" id={profile.region_id} label={profile.region_name} image={profile.region_flag} type="region" />
       <EntityPanel title="NACIÓN" empty="SIN NACIÓN" id={profile.nation_id} label={profile.nation_name} image={profile.nation_flag} type="nation" />
     </section>

@@ -1,46 +1,71 @@
-/* REGION comparte los paneles y las pestañas originales de HOME/NATION.
-   Solo definimos diferencias de distribución y los títulos largos de DATOS. */
-.aog-region-page .aog-nation-top > .aog-nation-box:nth-child(-n+2) {
-  height: 225px;
+/* Region v0.0.3: mismo lenguaje visual y retícula que Nation, pero sin panel Regiones. */
+.aog-region-redesign .aog-region-red-layout{grid-template-columns:minmax(0,31fr) minmax(0,34fr) minmax(0,35fr);grid-template-rows:auto;gap:10px;padding-right:0}
+.aog-region-redesign .aog-region-red-layout>.aog-nation-red-government{grid-row:1;grid-column:1;min-height:352px}
+.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{grid-row:1;min-width:0}
+.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(2){grid-column:2}
+.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(3){grid-column:3}
+.aog-region-redesign .aog-nation-red-hero-info a{color:#fff;text-decoration:none}
+.aog-region-redesign .aog-nation-red-hero-info a:hover{text-decoration:underline}
+.aog-region-redesign .aog-nation-red-votes .aog-region-red-voting-body{display:flex;flex-direction:column;gap:7px;align-items:stretch}
+.aog-region-redesign .aog-region-red-election-list{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.aog-region-redesign .aog-region-red-election{border:1px solid var(--home-accent);border-radius:5px;padding:6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;color:var(--home-accent);text-decoration:none;font-size:10px;align-items:center}
+.aog-region-redesign .aog-region-red-election span{min-width:0;overflow-wrap:anywhere}
+.aog-region-redesign .aog-region-red-election span:nth-child(2){text-align:right}
+.aog-region-redesign .aog-region-red-election-clock{grid-column:1/-1;text-align:center;color:#fff}
+.aog-region-redesign .aog-region-red-parliament-pending{display:flex;justify-content:space-between;gap:5px;flex-wrap:wrap;color:var(--home-accent);font-size:10px;border:1px solid var(--home-accent);padding:6px;border-radius:5px}
+.aog-region-redesign .aog-region-red-parliament-pending span:last-child{color:#fff}
+.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:0}
+.aog-region-redesign .aog-nation-red-person-info{font-size:10px}
+.aog-region-redesign .aog-nation-red-person-info a{color:#fff;text-decoration:none}
+.aog-region-redesign .aog-nation-red-panel-body{min-width:0}
+@media(max-width:750px){.aog-region-redesign .aog-region-red-layout{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-government{grid-column:1/-1;grid-row:auto;min-height:240px}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{grid-row:auto}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(2){grid-column:1}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(3){grid-column:2}.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:2px solid var(--home-accent)}}
+@media(max-width:480px){.aog-region-redesign .aog-region-red-layout{display:flex;flex-direction:column}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{display:flex;flex-direction:column}.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-region-redesign .aog-nation-red-stat:nth-child(even){border-right:0}.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:2px solid var(--home-accent)}}
+
+/* Region — corregir el selector de avatar del diseño compartido con Nation.
+   El JSX usa .aog-nation-red-person-photo, NO .aog-nation-avatar. */
+.aog-region-redesign .aog-nation-red-person > a {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
 }
-.aog-region-page .aog-nation-top > .aog-nation-official-box:nth-child(n+3) {
-  height: 190px;
+.aog-region-redesign .aog-nation-red-person-photo {
+  display: block;
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px;
+  max-height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
 }
-.aog-region-page .aog-nation-ministers .aog-nation-box {
-  height: 165px;
+.aog-region-redesign .aog-nation-red-person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
-.aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title {
-  font-size: clamp(10px, 1.05vw, 15px);
-  line-height: 1.1;
+.aog-region-redesign .aog-nation-red-person-info {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
 }
-.aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title {
-  min-width: min(160px, calc(100% - 58px));
+.aog-region-redesign .aog-nation-red-official {
+  min-height: 75px;
 }
-.aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) strong {
-  font-size: clamp(12px, 1.4vw, 18px);
+.aog-region-redesign .aog-region-red-layout > .aog-nation-red-government {
+  min-width: 0;
 }
-.aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title {
-  font-size: clamp(9px, 0.95vw, 13px);
-}
-.aog-region-official-photo-link { display: inline-flex; flex: none; }
-.aog-region-official-link { color: inherit; text-decoration: none; }
-.aog-region-official-link:hover { text-decoration: underline; }
-.aog-region-capital-authority { margin-inline: auto; text-align: center; font-size: clamp(13px, 1.4vw, 19px); }
-/* No inventamos curvas ni estilos propios: se usan .aog-home-panel-title. */
-@media (max-width: 767px) {
-  .aog-region-page .aog-nation-top,
-  .aog-region-page .aog-nation-ministers,
-  .aog-region-page .aog-nation-facts { grid-template-columns: minmax(0, 1fr); }
-  .aog-region-page .aog-nation-top > .aog-nation-box:nth-child(-n+2) { height: 205px; }
-  .aog-region-page .aog-nation-top > .aog-nation-official-box:nth-child(n+3) { height: 180px; }
-  .aog-region-page .aog-nation-ministers .aog-nation-box { height: 145px; }
-  .aog-region-page .aog-nation-facts .aog-nation-box { height: 105px; }
-  .aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title { font-size: 14px; }
-  .aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title { font-size: 12px; }
-  .aog-region-page .aog-nation-top .aog-nation-official { flex-direction: row; text-align: left; }
-  .aog-region-page .aog-nation-official-box .aog-nation-avatar { width: 105px; height: 105px; flex-basis: 105px; }
-}
-@media (max-width: 470px) {
-  .aog-region-page .aog-nation-facts .aog-nation-box > .aog-home-panel-title { font-size: 12px; }
-  .aog-region-page .aog-nation-facts .aog-nation-box:nth-child(n+7) > .aog-home-panel-title { font-size: 10px; }
+@media(max-width: 480px) {
+  .aog-region-redesign .aog-nation-red-person > a,
+  .aog-region-redesign .aog-nation-red-person-photo {
+    width: 42px !important;
+    height: 42px !important;
+    max-width: 42px;
+    max-height: 42px;
+    flex-basis: 42px;
+  }
 }

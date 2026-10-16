@@ -224,3 +224,138 @@
 .aog-party-coalition-link {width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;padding:10px;border:0;background:transparent;color:inherit;}
 .aog-party-coalition-link img {width:54px;height:54px;object-fit:contain;background:transparent;}
 .aog-party-coalition-link b {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+
+/* v0.0.3 — Party / Coalition: layout del nuevo boceto, sin modificar las RPC. */
+.aog-party:has(.aog-org-hero) {max-width:1390px;padding:12px clamp(12px,2vw,25px) 44px;}
+.aog-party .aog-org-hero,
+.aog-party .aog-org-panel {
+  background:#080808;
+  border:2px solid var(--home-accent);
+  border-radius:7px;
+  color:var(--home-accent);
+  min-width:0;
+}
+.aog-party .aog-org-hero {
+  display:grid;
+  grid-template-columns:minmax(135px,24%) minmax(0,1fr);
+  gap:16px;
+  padding:10px 14px;
+  min-height:248px;
+  align-items:center;
+}
+.aog-party .aog-org-logo,.aog-party .aog-org-logo-edit {
+  width:100%;height:215px;max-width:100%;object-fit:contain;background:transparent;border:0;
+}
+.aog-party .aog-org-logo-edit {padding:0;display:block;cursor:pointer;}
+.aog-party .aog-org-logo-edit img {width:100%;height:100%;object-fit:contain;}
+.aog-org-hero-main {display:flex;flex-direction:column;align-self:stretch;min-width:0;gap:1px;}
+.aog-party .aog-org-hero h1 {font-weight:400;color:#fff;font-size:clamp(22px,3.2vw,38px);line-height:1.12;margin:0;overflow-wrap:anywhere;}
+.aog-org-ideology {font-size:clamp(10px,1.25vw,14px);line-height:1.2;color:#fff;}
+.aog-org-description {
+  color:#fff;font:400 clamp(10px,1.03vw,13px)/1.35 'Black Ops One',system-ui,sans-serif;
+  white-space:pre-wrap;overflow-wrap:anywhere;overflow-y:auto;
+  height:110px;min-height:65px;margin:3px 0 6px;
+  border:2px solid var(--home-accent);border-radius:6px;padding:6px 8px;
+  scrollbar-color:var(--home-accent) #080808;
+}
+.aog-org-description-edit {height:115px;display:flex;flex-direction:column;gap:1px;}
+.aog-org-description-edit textarea {width:100%;flex:1;min-height:0;resize:none;color:#fff;}
+.aog-org-description-edit small {text-align:right;font-size:10px;}
+.aog-org-name-input {width:100%;font-size:20px!important;color:#fff!important;}
+.aog-org-hero-facts {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));min-height:48px;gap:0;margin-top:auto;}
+.aog-org-hero-facts>div {display:flex;align-items:center;justify-content:center;min-width:0;gap:8px;padding:4px 8px;border-right:2px solid var(--home-accent);}
+.aog-org-hero-facts>div:first-child{padding-left:0;}
+.aog-org-hero-facts>div:last-child{border:0;}
+.aog-org-hero-facts>div>span{display:flex;flex-direction:column;text-align:center;min-width:0;line-height:1.1;gap:3px;}
+.aog-org-hero-facts strong{font-size:clamp(12px,1.25vw,17px);font-weight:400;color:#fff;}
+.aog-org-hero-facts small{font-size:clamp(8px,.9vw,11px);color:#fff;}
+.aog-org-icon{width:19px;height:19px;display:inline-block;flex:0 0 19px;background-color:var(--home-accent);vertical-align:middle;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;}
+.aog-org-hero-facts .aog-org-icon{width:31px;height:31px;flex-basis:31px;}
+.aog-org-icon-players{-webkit-mask-image:url('/assets/icons/icons/players.svg');mask-image:url('/assets/icons/icons/players.svg')}
+.aog-org-icon-parliaments{-webkit-mask-image:url('/assets/icons/icons/parliaments.svg');mask-image:url('/assets/icons/icons/parliaments.svg')}
+.aog-org-icon-coalition{-webkit-mask-image:url('/assets/icons/icons/coalition.svg');mask-image:url('/assets/icons/icons/coalition.svg')}
+.aog-org-icon-party{-webkit-mask-image:url('/assets/icons/icons/party.svg');mask-image:url('/assets/icons/icons/party.svg')}
+.aog-org-icon-news{-webkit-mask-image:url('/assets/icons/icons/news.svg');mask-image:url('/assets/icons/icons/news.svg')}
+.aog-org-icon-events{-webkit-mask-image:url('/assets/icons/icons/events.svg');mask-image:url('/assets/icons/icons/events.svg')}
+.aog-org-leaders {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;}
+.aog-org-panel>h2 {display:flex;align-items:center;gap:7px;padding:7px 10px 6px;margin:0;min-height:33px;border-bottom:1px solid var(--home-accent);font-weight:400;font-size:clamp(11px,1.2vw,15px);line-height:1.15;color:var(--home-accent);}
+.aog-org-panel>h2 .aog-org-icon{flex-shrink:0;}
+.aog-org-leader-star{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#e9b92c;font:400 18px/1 system-ui,sans-serif;transform:translateY(-1px);}
+.aog-org-person-row {display:flex;align-items:center;gap:10px;min-width:0;min-height:72px;padding:7px 10px;}
+.aog-org-person-row .aog-party-person-photo{width:64px;height:64px;object-fit:cover;border-radius:5px;background:transparent;}
+.aog-org-person-row>div{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.aog-org-person-row>div>button,.aog-org-affiliation {font:400 clamp(14px,2vw,25px)/1.1 'Black Ops One',system-ui,sans-serif;color:#fff;border:0;background:transparent;padding:0;text-align:left;overflow-wrap:anywhere;}
+.aog-org-person-row>div>button:hover,.aog-org-member-name:hover{text-decoration:underline;}
+.aog-org-person-row>div>small{font-size:10px;line-height:1.2;color:#fff;overflow-wrap:anywhere;}
+.aog-org-affiliation {min-width:0;width:100%;display:flex;align-items:center;gap:10px;padding:7px 10px;min-height:72px;}
+.aog-org-affiliation>img {width:64px;height:64px;object-fit:contain;flex-shrink:0;}
+.aog-org-affiliation>span{min-width:0;font-size:clamp(12px,1.65vw,20px);}
+.aog-org-affiliation-empty{color:#fff;display:grid;place-items:center;min-height:72px;font-size:13px;}
+.aog-org-middle {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.aog-org-representation,.aog-org-actions{min-height:210px;}
+.aog-org-rep-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;padding:12px 15px;}
+.aog-org-rep {min-width:0;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;}
+.aog-org-rep>span{font-size:clamp(10px,1.25vw,15px);overflow-wrap:anywhere;min-height:28px;display:grid;place-items:center;}
+.aog-org-rep>strong {color:#fff;font-weight:400;font-size:15px;}
+.aog-org-rep-bar{height:23px;width:min(120px,90%);border-radius:7px;background:#282828;overflow:hidden;}
+.aog-org-rep-bar>span{display:block;width:0;height:100%;background:var(--home-accent);}
+.aog-org-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px;align-content:start;}
+.aog-org-action-grid button,.aog-org-list-button{
+  background:var(--home-accent);color:#080808;border:0;border-radius:7px;min-height:53px;
+  padding:8px;font:400 clamp(10px,1.3vw,14px)/1.3 'Black Ops One',system-ui,sans-serif;
+  overflow-wrap:anywhere;
+}
+.aog-org-action-grid button:hover,.aog-org-list-button:hover{filter:brightness(1.12)}
+.aog-org-action-grid .aog-org-action-secondary{background:transparent;border:1px solid var(--home-accent);color:var(--home-accent);}
+.aog-org-bottom{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-top:12px;}
+.aog-org-members-panel,.aog-org-history{min-height:280px;}
+.aog-org-members-panel{display:flex;flex-direction:column;}
+.aog-org-preview-list{padding:7px 9px;flex:1;}
+.aog-org-member-row{display:grid;grid-template-columns:48px minmax(0,1.2fr) minmax(70px,.75fr) minmax(65px,1fr);align-items:center;gap:9px;min-height:48px;padding:3px 0;color:#fff;}
+.aog-org-member-row .aog-party-person-photo{width:44px;height:44px;object-fit:cover;border-radius:5px;}
+.aog-org-member-name{background:transparent;color:#fff;border:0;text-align:left;padding:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(12px,1.65vw,20px);}
+.aog-org-member-row>span{font-size:clamp(9px,1vw,12px);text-align:center;}
+.aog-org-member-row>small{font-size:clamp(9px,1vw,12px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.aog-org-member-row .aog-org-role-highlight{color:#ffe15c;}
+.aog-org-list-button{width:calc(100% - 20px);min-height:34px;margin:6px 10px 10px;}
+.aog-org-history>div{min-height:230px;display:grid;place-items:center;color:#fff;font-size:14px;}
+.aog-org-modal-backdrop{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.8);display:grid;place-items:center;padding:15px;}
+.aog-org-modal{width:min(760px,100%);max-height:85vh;display:flex;flex-direction:column;min-width:0;color:var(--home-accent);border:2px solid var(--home-accent);border-radius:12px;background:#080808;}
+.aog-org-modal>header{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--home-accent);}
+.aog-org-modal>header h2{font-size:19px;font-weight:400;margin:0;}
+.aog-org-modal>header button{color:var(--home-accent);border:1px solid var(--home-accent);border-radius:5px;background:transparent;font:400 23px system-ui;width:36px;height:36px;}
+.aog-org-modal>input {margin:12px 14px;padding:10px;border:1px solid var(--home-accent);border-radius:6px;background:#101010;color:#fff;min-width:0;}
+.aog-org-modal-list{padding:0 14px 15px;overflow-y:auto;min-height:0;}
+.aog-org-modal-list .aog-org-member-row{grid-template-columns:48px minmax(0,1.2fr) minmax(60px,.7fr) minmax(65px,1fr) auto;border-bottom:1px solid color-mix(in srgb,var(--home-accent) 45%,transparent);}
+.aog-org-kick{border:1px solid var(--home-accent);color:var(--home-accent);background:transparent;padding:6px;border-radius:5px;font-size:10px;}
+.aog-org-modal-list p{padding:15px;text-align:center;}
+/* Keep the form and original browse experience intact. */
+.aog-party:has(.aog-org-hero) :is(h1,h2,b,strong){font-weight:400;}
+@media(max-width:900px){
+  .aog-org-hero-facts .aog-org-icon{width:23px;height:23px;flex-basis:23px;}
+  .aog-org-hero-facts>div{padding:4px;gap:5px;}
+  .aog-party .aog-org-hero{grid-template-columns:minmax(105px,24%) minmax(0,1fr);gap:9px;}
+  .aog-party .aog-org-logo,.aog-party .aog-org-logo-edit{height:185px;}
+  .aog-org-member-row{grid-template-columns:42px minmax(0,1fr) minmax(55px,.5fr) minmax(60px,.85fr);gap:6px;}
+}
+@media(max-width:640px){
+  .aog-party .aog-org-hero{grid-template-columns:100px minmax(0,1fr);align-items:start;padding:10px;min-height:0;}
+  .aog-party .aog-org-logo,.aog-party .aog-org-logo-edit{height:104px;}
+  .aog-party .aog-org-hero h1{font-size:clamp(19px,5vw,27px);}
+  .aog-org-description{height:82px;font-size:10px;}
+  .aog-org-hero-facts{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 0;margin-top:5px;}
+  .aog-org-hero-facts>div:nth-child(2){border:0;}
+  .aog-org-leaders{grid-template-columns:1fr;gap:8px;}
+  .aog-org-middle,.aog-org-bottom{grid-template-columns:1fr;}
+  .aog-org-representation,.aog-org-actions{min-height:0;}
+  .aog-org-member-row{grid-template-columns:46px minmax(0,1fr) minmax(55px,.5fr);}
+  .aog-org-member-row>small{display:none;}
+  .aog-org-modal-list .aog-org-member-row{grid-template-columns:42px minmax(0,1fr) minmax(50px,.6fr) auto;gap:5px;}
+}
+
+@media(max-width:640px){
+  .aog-party .aog-org-hero {display:flex;flex-direction:column;align-items:stretch;}
+  .aog-party .aog-org-logo,.aog-party .aog-org-logo-edit {width:150px;height:130px;align-self:center;}
+  .aog-org-hero-main{width:100%;}
+  .aog-org-hero-facts{width:100%;}
+}

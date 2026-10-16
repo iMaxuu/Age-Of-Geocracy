@@ -106,6 +106,13 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
   const loadMoreRef=useRef<HTMLDivElement>(null);
   const [mode,setMode]=useState<'normal'|'create'|'edit'>('normal');
   const [requestsOpen,setRequestsOpen]=useState(false);
+  const [membersOpen,setMembersOpen]=useState(false);
+  useEffect(()=>{
+    if(!membersOpen)return;
+    const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape')setMembersOpen(false);};
+    window.addEventListener('keydown',handleKey);
+    return ()=>window.removeEventListener('keydown',handleKey);
+  },[membersOpen]);
   const [name,setName]=useState('');
   const [ideology,setIdeology]=useState('');
   const [description,setDescription]=useState('');
@@ -197,7 +204,7 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
   },[selectedId,mode,hasMore,loadingList,page,query,refreshList]);
   const openParty=(id:number|null)=>{
     window.history.pushState({},'',id?`/party/${id}`:'/party');
-    setSelectedId(id);setMode('normal');setRequestsOpen(false);setError('');setNotice('');setVisibleMemberCount(9);setMemberQuery('');
+    setSelectedId(id);setMode('normal');setRequestsOpen(false);setMembersOpen(false);setError('');setNotice('');setVisibleMemberCount(9);setMemberQuery('');
   };
   async function action(fn:()=>Promise<void>,success?:string){
     if(busy)return;
@@ -296,95 +303,113 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
       {hasMore&&<div ref={loadMoreRef} className="aog-party-load-marker" aria-hidden="true"/>}
     </>}
     {selectedId&&detail&&<>
-      <div className="aog-party-info-grid">
-        <div className="aog-party-info-left">
-          <TitlePanel title="PARTIDO" className={`aog-party-header-card${isEditing?' is-editing':''}`}>
-            {isEditing
-              ? <button className="aog-party-logo-pick" type="button" title="Cambiar logo" aria-label="Cambiar logo del partido" onClick={()=>photoInput.current?.click()}>
-                  <img src={photo||DEFAULT_PHOTO} alt="Logo del partido" />
-                </button>
-              : <img src={detail.photo_url||DEFAULT_PHOTO} alt="Logo del partido" />}
-            <div className="aog-party-title-content">
-              {isEditing
-                ? <div className="aog-party-edit-name"><input className="aog-party-inline-control aog-party-inline-name" aria-label="Nombre del partido" required minLength={3} maxLength={50} value={name} onChange={e=>setName(e.target.value)} /><small>#{detail.id}</small></div>
-                : <b title={detail.name}>{detail.name} <small>#{detail.id}</small></b>}
-              {isEditing
-                ? <select className="aog-party-inline-control aog-party-inline-ideology" aria-label="Ideología del partido" value={ideology} onChange={e=>setIdeology(e.target.value)}>
-                    <option value="">SIN IDEOLOGÍA</option>
-                    {ideology&&!IDEOLOGIES.some(item=>item===ideology)&&<option value={ideology}>{ideology.toUpperCase()}</option>}
-                    {IDEOLOGIES.map(item=><option value={item} key={item}>{item.toUpperCase()}</option>)}
-                  </select>
-                : <span>{detail.ideology||'SIN IDEOLOGÍA'}</span>}
-            </div>
-            <div className="aog-party-header-actions">
-              {isEditing ? <>
-                <button className="aog-party-save" type="button" disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR'}</button>
-                <button className="aog-party-cancel" type="button" disabled={busy} onClick={cancelEdit}>CANCELAR</button>
-              </> : isLeader ? <>
-                {detail.requests.length>0&&<button className="aog-party-join" type="button" onClick={()=>setRequestsOpen(true)}>SOLICITUDES ({detail.requests.length})</button>}
-                <button className="aog-party-circle" type="button" aria-label="Editar partido" onClick={startEdit}>✎</button>
-              </> : !my.party_id ? <button className="aog-party-join" type="button" disabled={busy||my.pending_party_id!==null} onClick={()=>void action(async()=>{
-                await applyToParty(detail.id);await refresh();
-              },'Solicitud enviada.')}>{my.pending_party_id===detail.id?'SOLICITUD PENDIENTE':my.pending_party_id?'YA TENÉS UNA SOLICITUD':'SOLICITAR UNIRSE'}</button> : isMember ? <button type="button" className="aog-party-join" disabled={busy} onClick={()=>{if(window.confirm('¿Abandonar este partido?'))void action(async()=>{await leaveParty(detail.id);await refresh();},'Abandonaste el partido.');}}>ABANDONAR</button> : null}
-            </div>
-            {isEditing&&<input ref={photoInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onPickPhoto}/>}
-          </TitlePanel>
-          <div className="aog-party-mini-grid">
-            <TitlePanel title="MIEMBROS" className="aog-party-stat"><b>{formatNum.format(detail.member_count)}</b></TitlePanel>
-            <TitlePanel title="CREACIÓN" className="aog-party-stat"><span>{dateText(detail.created_at)}</span></TitlePanel>
+      <section className="aog-org-hero" aria-label="Datos del partido">
+        {isEditing
+          ? <button className="aog-org-logo-edit" type="button" title="Cambiar logo" onClick={()=>photoInput.current?.click()}><img src={photo||DEFAULT_PHOTO} alt="Logo del partido" /></button>
+          : <img className="aog-org-logo" src={detail.photo_url||DEFAULT_PHOTO} alt={`Logo de ${detail.name}`} />}
+        <div className="aog-org-hero-main">
+          {isEditing
+            ? <input className="aog-party-inline-control aog-org-name-input" aria-label="Nombre del partido" required minLength={3} maxLength={50} value={name} onChange={e=>setName(e.target.value)}/>
+            : <h1 title={detail.name}>{detail.name}</h1>}
+          {isEditing
+            ? <select className="aog-party-inline-control" value={ideology} onChange={e=>setIdeology(e.target.value)} aria-label="Ideología del partido">
+                <option value="">SIN IDEOLOGÍA</option>
+                {IDEOLOGIES.map(item=><option value={item} key={item}>{item.toUpperCase()}</option>)}
+              </select>
+            : <span className="aog-org-ideology">{detail.ideology||'SIN IDEOLOGÍA'}</span>}
+          {isEditing
+            ? <div className="aog-org-description-edit"><textarea className="aog-party-inline-control" maxLength={500} value={description} onChange={e=>setDescription(e.target.value)} aria-label="Descripción del partido"/><small>{description.length}/500</small></div>
+            : <p className="aog-org-description">{detail.description||'SIN DESCRIPCIÓN'}</p>}
+          <div className="aog-org-hero-facts">
+            <div><i className="aog-org-icon aog-org-icon-players"/><span><strong>{formatNum.format(detail.member_count)}</strong><small>MIEMBROS</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-parliaments"/><span><strong>—</strong><small>BANCAS N.</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-parliaments"/><span><strong>—</strong><small>BANCAS R.</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-events"/><span><strong>{new Date(detail.created_at).toLocaleDateString('es-AR')}</strong><small>FUNDACIÓN</small></span></div>
           </div>
         </div>
-        <TitlePanel title="DESCRIPCIÓN" className="aog-party-description">
-          {isEditing ? <>
-            <textarea className="aog-party-inline-control aog-party-inline-description" aria-label="Descripción del partido" maxLength={500} value={description} onChange={e=>setDescription(e.target.value)} placeholder="DESCRIPCIÓN DEL PARTIDO"/>
-            <small className="aog-party-description-count">{description.length}/500</small>
-          </> : <p>{detail.description||'SIN DESCRIPCIÓN'}</p>}
-        </TitlePanel>
-      </div>
+        {isEditing&&<input ref={photoInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onPickPhoto}/>} 
+      </section>
       {cropFile&&isEditing&&<Cropper file={cropFile} onApply={(blob,preview)=>{setCroppedBlob(blob);setPhoto(preview);setCropFile(null);}} onCancel={()=>setCropFile(null)}/>}
       {requestsOpen&&isLeader&&detail.requests.length>0&&<div className="aog-party-requests-backdrop" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setRequestsOpen(false);}}>
-        <section className="aog-party-requests" role="dialog" aria-modal="true" aria-labelledby="aog-party-requests-title">
-          <div className="aog-party-requests-heading"><h3 id="aog-party-requests-title">SOLICITUDES DE AFILIACIÓN ({detail.requests.length})</h3>
-            <button type="button" className="aog-party-requests-close" title="Cerrar solicitudes" aria-label="Cerrar solicitudes" onClick={()=>setRequestsOpen(false)}>×</button></div>
+        <section className="aog-party-requests" role="dialog" aria-modal="true" aria-label="Solicitudes de afiliación">
+          <div className="aog-party-requests-heading"><h3>SOLICITUDES DE AFILIACIÓN ({detail.requests.length})</h3><button type="button" className="aog-party-requests-close" onClick={()=>setRequestsOpen(false)} aria-label="Cerrar">×</button></div>
           <div className="aog-party-requests-list">{detail.requests.map(r=><div className="aog-party-request" key={r.id}>
-            <button type="button" className="aog-party-request-photo" onClick={()=>onNavigate(`/profile/${r.player_id}`)} title={`Ver perfil de ${r.name}`}><img src={r.photo_url||DEFAULT_PHOTO} alt={r.name}/></button>
+            <button type="button" className="aog-party-request-photo" onClick={()=>onNavigate(`/profile/${r.player_id}`)}><img src={r.photo_url||DEFAULT_PHOTO} alt={r.name}/></button>
             <div className="aog-party-request-name"><b>{r.name}</b><small>#{r.player_id}</small></div>
             <button disabled={busy} onClick={()=>void action(async()=>{await decidePartyRequest(r.id,true);await refreshDetail(detail.id);},'Solicitud aceptada.')}>ACEPTAR</button>
             <button disabled={busy} onClick={()=>void action(async()=>{await decidePartyRequest(r.id,false);await refreshDetail(detail.id);},'Solicitud rechazada.')}>RECHAZAR</button>
           </div>)}</div>
         </section>
       </div>}
-      <div className="aog-party-leadership">
-        <TitlePanel title="COALICIÓN" className="aog-party-coalition">
-          {partyCoalition?<button type="button" className="aog-party-coalition-link" onClick={()=>onNavigate(`/coalition/${partyCoalition.id}`)}>
-            {partyCoalition.photo_url&&<img src={partyCoalition.photo_url} alt=""/>}<b>{partyCoalition.name}</b>
-          </button>:<b>SIN COALICIÓN</b>}
-        </TitlePanel>
-        <PersonCard title="FUNDADOR" person={detail.founder} onNavigate={onNavigate}/>
-        <PersonCard title="LÍDER" person={detail.leader} onNavigate={onNavigate}/>
+      <div className="aog-org-leaders">
+        <section className="aog-org-panel aog-org-leader-panel">
+          <h2><i className="aog-org-icon aog-org-icon-players"/> LÍDER <span className="aog-org-leader-star" aria-hidden="true">★</span></h2>
+          <div className="aog-org-person-row"><PlayerAvatar person={detail.leader} onNavigate={onNavigate}/><div><button type="button" onClick={()=>onNavigate(`/profile/${detail.leader_id}`)}>{detail.leader?.name||'VACANTE'}</button><small>{detail.leader?.political_ideology||'SIN IDEOLOGÍA'}</small></div></div>
+        </section>
+        <section className="aog-org-panel aog-org-leader-panel">
+          <h2><i className="aog-org-icon aog-org-icon-players"/> FUNDADOR</h2>
+          <div className="aog-org-person-row"><PlayerAvatar person={detail.founder} onNavigate={onNavigate}/><div><button type="button" onClick={()=>onNavigate(`/profile/${detail.founder_id}`)}>{detail.founder?.name||'VACANTE'}</button><small>{detail.founder?.political_ideology||'SIN IDEOLOGÍA'}</small></div></div>
+        </section>
+        <section className="aog-org-panel aog-org-leader-panel">
+          <h2><i className="aog-org-icon aog-org-icon-coalition"/> COALICIÓN</h2>
+          {partyCoalition
+            ? <button type="button" className="aog-org-affiliation" onClick={()=>onNavigate(`/coalition/${partyCoalition.id}`)}><img src={partyCoalition.photo_url||DEFAULT_PHOTO} alt=""/><span>{partyCoalition.name}</span></button>
+            : <div className="aog-org-affiliation-empty">SIN COALICIÓN</div>}
+        </section>
       </div>
-      <section className="aog-party-members-section">
-        <h2>MIEMBROS</h2>
-        <input value={memberQuery} onChange={e=>{setMemberQuery(e.target.value);setVisibleMemberCount(9);}} placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar miembros" />
-        <div className="aog-party-members">
-          {displayed.map(m=><article className="aog-party-member" key={m.id}>
+      <div className="aog-org-middle">
+        <section className="aog-org-panel aog-org-representation">
+          <h2><i className="aog-org-icon aog-org-icon-parliaments"/> REPRESENTACIÓN POLÍTICA</h2>
+          <div className="aog-org-rep-grid">
+            {['PRESIDENCIAS','PARLAMENTARIOS NACIONALES','GOBERNACIONES','PARLAMENTARIOS REGIONALES'].map(item=><div className="aog-org-rep" key={item}><span>{item}</span><strong>—</strong><div className="aog-org-rep-bar"><span/></div></div>)}
+          </div>
+        </section>
+        <section className="aog-org-panel aog-org-actions">
+          <h2><i className="aog-org-icon aog-org-icon-party"/> ACCIONES</h2>
+          <div className="aog-org-action-grid">
+            {isEditing ? <>
+              <button disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR CAMBIOS'}</button>
+              <button disabled={busy} onClick={cancelEdit}>CANCELAR</button>
+            </> : <>
+              {!isMember&&!my.party_id&&<button disabled={busy||my.pending_party_id!==null} onClick={()=>void action(async()=>{await applyToParty(detail.id);await refresh();},'Solicitud enviada.')}>{my.pending_party_id===detail.id?'SOLICITUD PENDIENTE':my.pending_party_id?'YA TENÉS UNA SOLICITUD':'SOLICITAR UNIRSE'}</button>}
+              {isMember&&!isLeader&&<button disabled={busy} onClick={()=>{if(window.confirm('¿Abandonar este partido?'))void action(async()=>{await leaveParty(detail.id);await refresh();},'Abandonaste el partido.');}}>SALIR DEL PARTIDO</button>}
+              {isLeader&&<>
+                <button onClick={startEdit}>EDITAR PARTIDO</button>
+                {detail.requests.length>0&&<button onClick={()=>setRequestsOpen(true)}>SOLICITUDES ({detail.requests.length})</button>}
+                <button disabled={busy} onClick={()=>{if(window.confirm(`¿Disolver definitivamente ${detail.name}? Esta acción es irreversible.`))void action(async()=>{await disbandParty(detail.id);await refresh();openParty(null);},'El partido fue disuelto.');}}>DISOLVER PARTIDO</button>
+              </>}
+              <button className="aog-org-action-secondary" onClick={()=>openParty(null)}>EXPLORAR PARTIDOS</button>
+            </>}
+          </div>
+        </section>
+      </div>
+      <div className="aog-org-bottom">
+        <section className="aog-org-panel aog-org-members-panel">
+          <h2><i className="aog-org-icon aog-org-icon-players"/> MIEMBROS</h2>
+          <div className="aog-org-preview-list">{detail.members.slice(0,4).map(m=><div className="aog-org-member-row" key={m.id}>
             <PlayerAvatar person={m} onNavigate={onNavigate}/>
-            <div><b title={m.name}>{m.name}</b><span>{m.political_ideology||'SIN IDEOLOGÍA'}</span><small>#{m.id}</small></div>
-            {isLeader&&!isEditing&&m.id!==detail.leader_id&&<button type="button" className="aog-party-remove" title="Expulsar miembro" aria-label={`Expulsar a ${m.name}`} disabled={busy} onClick={()=>{
-              if(window.confirm(`¿Expulsar a ${m.name}?`))void action(async()=>{await kickPartyMember(detail.id,m.id);await refreshDetail(detail.id);},'Miembro expulsado.');
-            }}>🗑</button>}
-          </article>)}
-        </div>
-        <div className="aog-party-footer-actions">
-          {members.length>9&&<button type="button" onClick={()=>setVisibleMemberCount(count=>count>=members.length?9:count+9)}>{visibleMemberCount>=members.length?'VER MENOS':'VER MÁS'}</button>}
-          {isLeader&&!isEditing&&<button disabled={busy} onClick={()=>{
-            if(window.confirm(`¿Disolver definitivamente ${detail.name}? Esta acción es irreversible.`))void action(async()=>{
-              await disbandParty(detail.id);await refresh();openParty(null);
-            },'El partido fue disuelto.');
-          }}>DISOLVER</button>}
-          {!isEditing&&<button onClick={()=>openParty(null)}>EXPLORAR PARTIDOS</button>}
-        </div>
-      </section>
+            <button type="button" className="aog-org-member-name" onClick={()=>onNavigate(`/profile/${m.id}`)}>{m.name}</button>
+            <span className={m.id===detail.leader_id?'aog-org-role-highlight':''}>{m.id===detail.leader_id?'LÍDER':'MIEMBRO'}</span>
+            <small>{m.political_ideology||'SIN IDEOLOGÍA'}</small>
+          </div>)}</div>
+          <button className="aog-org-list-button" onClick={()=>{setMemberQuery('');setMembersOpen(true);}}>VER TODOS LOS MIEMBROS</button>
+        </section>
+        <section className="aog-org-panel aog-org-history">
+          <h2><i className="aog-org-icon aog-org-icon-news"/> HISTORIAL</h2>
+          <div>PRÓXIMAMENTE</div>
+        </section>
+      </div>
+      {membersOpen&&<div className="aog-org-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setMembersOpen(false);}}>
+        <section className="aog-org-modal" role="dialog" aria-modal="true" aria-label="Todos los miembros">
+          <header><h2>MIEMBROS ({detail.member_count})</h2><button onClick={()=>setMembersOpen(false)} aria-label="Cerrar">×</button></header>
+          <input value={memberQuery} onChange={e=>setMemberQuery(e.target.value)} placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar miembros"/>
+          <div className="aog-org-modal-list">{members.map(m=><div className="aog-org-member-row" key={m.id}>
+            <PlayerAvatar person={m} onNavigate={onNavigate}/><button className="aog-org-member-name" onClick={()=>onNavigate(`/profile/${m.id}`)}>{m.name}</button>
+            <span>{m.id===detail.leader_id?'LÍDER':'MIEMBRO'}</span><small>{m.political_ideology||'SIN IDEOLOGÍA'}</small>
+            {isLeader&&m.id!==detail.leader_id&&<button className="aog-org-kick" disabled={busy} onClick={()=>{if(window.confirm(`¿Expulsar a ${m.name}?`))void action(async()=>{await kickPartyMember(detail.id,m.id);await refreshDetail(detail.id);},'Miembro expulsado.');}}>EXPULSAR</button>}
+          </div>)}{members.length===0&&<p>SIN RESULTADOS</p>}</div>
+        </section>
+      </div>}
     </>}
   </main>;
 }

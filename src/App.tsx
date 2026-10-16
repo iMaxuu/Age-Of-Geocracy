@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AuthScreen } from './modules/auth/AuthScreen';
 import { fetchPlayer, getXp, logout, type Player } from './modules/auth/player';
 import { supabase } from './lib/supabase';
@@ -7,9 +7,16 @@ import PublicProfilePage from './modules/profile/PublicProfilePage';
 import HomePage from './modules/home/HomePage';
 import { MigratedPage } from './modules/MigratedPage';
 import MapPage from './modules/map/MapPage';
+import WorkPage from './modules/work/WorkPage';
+import StoragePage from './modules/storage/StoragePage';
 import PartyPage from './modules/party/PartyPage';
 import CoalitionPage from './modules/coalition/CoalitionPage';
 import TerritoryPage from './modules/territory/TerritoryPage';
+import ElectionPage from './modules/election/ElectionPage';
+import NewsPage from './modules/news/NewsPage';
+import MessagesPage from './modules/messages/MessagesPage';
+import { getUnreadDirectMessages } from './modules/messages/messagesApi';
+import LoadingScreen from './components/loading/LoadingScreen';
 import { Header, type HeaderAction, type HeaderSection } from './components/header/Header';
 import { useTheme } from './theme/theme';
 import { useAppRoute } from './app/router';
@@ -21,6 +28,12 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [authError,setAuthError] = useState('');
   const { accentColor, setAccentColor, resetAccentColor } = useTheme();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [messageFlashKey, setMessageFlashKey] = useState(0);
+  const [incomingMessageSignal, setIncomingMessageSignal] = useState(0);
+  const routeRef = useRef(pathname);
+  const refreshUnreadRef = useRef<() => void>(() => {});
+  routeRef.current = pathname;
 
   useEffect(() => {
     let current = true;
@@ -73,13 +86,70 @@ export default function App() {
     else if (player && publicRoute) navigate('/profile', true);
   }, [loading, player, route]);
 
-  if (loading) return <div className="min-h-screen bg-[#080808] p-8 text-white">CARGANDO AGE OF GEOCRACY...</div>;
+  // Sincronización global de mensajes: aviso visible incluso fuera de /messages.
+  // Realtime cuando esté habilitado, más sondeo de respaldo por si se desconecta.
+  useEffect(() => {
+    const selfId = player?.id;
+    if (!selfId) {setUnreadMessages(0); refreshUnreadRef.current = () => {}; return;}
+    let mounted = true;
+    let initialized = false;
+    let highestUnreadId = 0;
+    let busy = false;
+    let needsRefresh = false;
+    const refreshUnread = async () => {
+      if (busy) {needsRefresh = true; return;}
+      busy = true;
+      try {
+        const {count,lastId,senderId} = await getUnreadDirectMessages(selfId);
+        if (!mounted) return;
+        const isNew = initialized && lastId > highestUnreadId;
+        highestUnreadId = Math.max(highestUnreadId,lastId);
+        initialized = true;
+        setUnreadMessages(count);
+        if (isNew) {
+          setIncomingMessageSignal(value=>value+1);
+          // Un chat abierto se marca como leído y no genera una alarma persistente.
+          const currentChat = routeRef.current.match(/^\/messages\/(\d+)\/?$/);
+          if (!currentChat || Number(currentChat[1]) !== senderId) setMessageFlashKey(value=>value+1);
+        }
+      } catch (cause) {
+        console.warn('No se pudo verificar la mensajería:',cause);
+      } finally {
+        busy=false;
+        if (mounted && needsRefresh) {needsRefresh=false;void refreshUnread();}
+      }
+    };
+    refreshUnreadRef.current = () => {void refreshUnread();};
+    void refreshUnread();
+    const timer = window.setInterval(() => {void refreshUnread();},12000);
+    const onVisible = () => {if(document.visibilityState === 'visible')void refreshUnread();};
+    document.addEventListener('visibilitychange',onVisible);
+    const channel = supabase.channel(`aog-message-notify-${selfId}`)
+      .on('postgres_changes',{
+        event:'INSERT',schema:'public',table:'aog_direct_messages',filter:`recipient_id=eq.${selfId}`,
+      },()=>{
+        if (!mounted) return;
+        setIncomingMessageSignal(value=>value+1);
+        void refreshUnread();
+      }).subscribe();
+    return () => {
+      mounted=false;
+      refreshUnreadRef.current=()=>{};
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange',onVisible);
+      void supabase.removeChannel(channel);
+    };
+  },[player?.id]);
+
+  if (loading) return <LoadingScreen />;
   if (!player) return <>{authError && <p role="alert" className="bg-[#310909] p-3 text-white">{authError}</p>}<AuthScreen
     mode={route === 'register' ? 'register' : 'login'}
     onNavigate={navigate}
     onAuthenticated={() => { /* La sesión activa dispara el cambio de ruta cuando corresponda. */ }}
   /></>;
 
+  const chatMatch=pathname.match(/^\/messages\/(\d+)\/?$/);
+  const chatId=chatMatch?Number(chatMatch[1]):null;
   const pathMatch=pathname.match(/^\/profile\/(\d+)\/?$/);
   const viewedPlayerId=pathMatch?Number(pathMatch[1]):null;
   const isOtherProfile=section==='profile'&&viewedPlayerId!==null&&viewedPlayerId!==player.id;
@@ -88,6 +158,7 @@ export default function App() {
     <Header
       activeSection={(section === 'config' ? 'settings' : section) as HeaderAction | HeaderSection}
       level={level}
+      playerName={player.name}
       xp={xp}
       xpRequired={required}
       energy={Number(player.energy)||0}
@@ -98,19 +169,31 @@ export default function App() {
       onLink={(path, event) => { event.preventDefault(); navigate(path); }}
       onNavigate={(next) => navigate(`/${next}`)}
       onProfile={()=>navigate('/profile')}
+      unreadMessages={unreadMessages}
+      messageFlashKey={messageFlashKey}
     />
     {section === 'profile'
-      ? isOtherProfile ? <PublicProfilePage playerId={viewedPlayerId!}/> : <ProfilePage player={player} onPlayerChange={setPlayer} onLogout={() => { void logout().then(()=>{ setPlayer(null); navigate('/login',true); }); }}/>
+      ? isOtherProfile ? <PublicProfilePage playerId={viewedPlayerId!} onNavigate={navigate}/> : <ProfilePage player={player} onPlayerChange={setPlayer} onLogout={() => { void logout().then(()=>{ setPlayer(null); navigate('/login',true); }); }}/>
+      : section === 'messages'
+        ? <MessagesPage player={player} peerId={chatId} onNavigate={navigate} incomingSignal={incomingMessageSignal} onRead={()=>refreshUnreadRef.current()}/>
       : section === 'map'
         ? <MapPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
+      : section === 'work'
+        ? <WorkPage player={player} onPlayerChange={setPlayer}/>
+      : section === 'storage'
+        ? <StoragePage player={player} onNavigate={navigate}/>
       : section === 'party'
         ? <PartyPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
       : section === 'coalition'
         ? <CoalitionPage player={player} onPlayerChange={setPlayer} onNavigate={navigate}/>
       : section === 'home'
         ? <HomePage onNavigate={navigate}/>
+      : section === 'news'
+        ? <NewsPage player={player} onNavigate={navigate}/>
       : section === 'territory'
         ? <TerritoryPage player={player} onNavigate={navigate}/>
+      : section === 'election'
+        ? <ElectionPage player={player} onNavigate={navigate}/>
       : section === 'settings'
         ? <main className="mx-auto max-w-3xl px-4 py-8"><h1 className="mb-6 text-xl text-[var(--aog-accent)]">CONFIGURACIÓN</h1>
             <section className="rounded-lg bg-[#242424] p-6"><label htmlFor="theme-color" className="mr-4 text-sm">COLOR DE INTERFAZ</label>

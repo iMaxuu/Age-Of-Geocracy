@@ -3,13 +3,17 @@ import { supabase } from '../../lib/supabase';
 import './home.css';
 
 const counters = [
-  ['JUGADORES', 'players'], ['PARTIDOS', 'party'], ['COALICIONES', 'coalition'],
-  ['TERRITORIOS', 'territory'], ['REGIONES', 'region'], ['NACIONES', 'nation'],
-  ['ORGANIZACIONES', 'organizations'], ['PARLAMENTOS', 'parliaments'],
+  ['JUGADORES','players'],['NACIONES','nation'],['REGIONES','region'],['TERRITORIOS','territory'],
+  ['PARTIDOS','party'],['COALICIONES','coalition'],['PARLAMENTOS','parliaments'],['ORGANIZACIONES','organizations'],['CLUBES','clubs'],
 ] as const;
 
+const homeIcon = (name:string) => `/assets/icons/icons/${name}.svg?v=0.0.3-custom-2`;
+function HomeIcon({name,className=''}:{name:string,className?:string}) { return <span className={`aog-home-icon ${className}`} style={{maskImage:`url(${homeIcon(name)})`,WebkitMaskImage:`url(${homeIcon(name)})`}} aria-hidden="true"/>; }
+type LocalEvent={key:string;label:string;stage:string;ends:string;href:string};
+const localClock=(ends:string,now:number)=>{const d=Math.max(0,Math.ceil((new Date(ends).getTime()-now)/1000));const days=Math.floor(d/86400);const h=Math.floor((d%86400)/3600);const m=Math.floor((d%3600)/60);const sec=d%60;return `${days?`${days}D `:''}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;};
+
 type WorldNews = { id: number; kind:'foundation'|'update'; title:string; body:string; territory_id:number|null; nation_id:number|null; is_pinned:boolean; pinned_until:string|null; created_at:string };
-const newsTime = (iso:string, now:number) => { const published=new Date(iso).getTime(); if (!Number.isFinite(published) || published>now+60000) return 'FECHA NO VÁLIDA'; const minutes=Math.max(0,Math.floor((now-published)/60000)); return minutes<1?'AHORA':minutes<60?`HACE ${minutes} MIN`:minutes<1440?`HACE ${Math.floor(minutes/60)} H`:`HACE ${Math.floor(minutes/1440)} D`; };
+const newsTime = (iso:string) => { const minutes=Math.max(0,Math.floor((Date.now()-new Date(iso).getTime())/60000)); return minutes<1?'AHORA':minutes<60?`HACE ${minutes} MIN`:minutes<1440?`HACE ${Math.floor(minutes/60)} H`:`HACE ${Math.floor(minutes/1440)} D`; };
 type ChatMessage = {
   id: number;
   player_id: number;
@@ -56,15 +60,16 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
   const [notice, setNotice] = useState('');
   const [messages,setMessages]=useState<ChatMessage[]>([]);
   const [myId,setMyId]=useState<number|null>(null);
+  const [location, setLocation] = useState<{territory_id:number;region_id:number|null;nation_id:number|null;nation_name:string|null;region_name:string|null}|null>(null);
+  const [localEvents,setLocalEvents]=useState<LocalEvent[]>([]);
+  const [clock,setClock]=useState(()=>Date.now());
+  useEffect(()=>{const timer=window.setInterval(()=>setClock(Date.now()),1000);return()=>window.clearInterval(timer)},[]);
   const [sending,setSending]=useState(false);
   const [news,setNews]=useState<WorldNews[]>([]);
   const [newsError,setNewsError]=useState('');
   const [newsLoading,setNewsLoading]=useState(true);
-  const [newsClock,setNewsClock]=useState(() => Date.now());
-  useEffect(() => {
-    const interval=window.setInterval(() => setNewsClock(Date.now()), 15000);
-    return () => window.clearInterval(interval);
-  }, []);
+  const [newsTick,setNewsTick]=useState(0);
+  useEffect(()=>{const timer=window.setInterval(()=>setNewsTick(v=>v+1),15000);return()=>window.clearInterval(timer)},[]);
   useEffect(() => {
     let active=true;
     const loadNews=async () => {
@@ -86,7 +91,8 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
     const refresh=window.setInterval(()=>{void loadNews();},30000);
     return()=>{active=false;document.removeEventListener('visibilitychange',onVisible);window.clearInterval(refresh);void supabase.removeChannel(channel);};
   },[]);
-  const pinnedNews=news.find(item=>item.kind==='update'&&item.is_pinned&&item.pinned_until&&new Date(item.pinned_until).getTime()>newsClock);
+  void newsTick;
+  const pinnedNews=news.find(item=>item.kind==='update'&&item.is_pinned&&item.pinned_until&&new Date(item.pinned_until).getTime()>Date.now());
   const [playerCount,setPlayerCount]=useState<number|null>(null);
   const [partyCount,setPartyCount]=useState<number|null>(0);
   const [worldCounts,setWorldCounts]=useState<Record<string,number>>({coalition:0,territory:59960});
@@ -112,12 +118,47 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
     });
     void supabase.auth.getUser().then(async ({data:{user}}) => {
       if(!user || !active) return;
-      const {data} = await supabase.from('players').select('id').eq('auth_id',user.id).single();
-      if(active && data) setMyId(data.id);
+      const {data} = await supabase.from('players').select('id,territory_id').eq('auth_id',user.id).single();
+      if(active && data) {
+        setMyId(data.id);
+        if (data.territory_id != null) {
+          const territoryId=Number(data.territory_id);
+          setLocation({territory_id:territoryId,region_id:null,nation_id:null,nation_name:null,region_name:null});
+          const {data:pol}=await supabase.from('map_territory_politics')
+            .select('region_id,nation_id,nation_name,region_name').eq('territory_id',territoryId).maybeSingle();
+          if(active && pol) setLocation({territory_id:territoryId,region_id:pol.region_id??null,nation_id:pol.nation_id??null,nation_name:pol.nation_name??null,region_name:pol.region_name??null});
+        }
+      }
     });
 
     return () => { active = false; };
   }, []);
+
+  // Mostrar únicamente elecciones de la nación/región donde está ubicado el jugador.
+  useEffect(()=>{
+    if(!location){setLocalEvents([]);return;}
+    let active=true;
+    const load=async()=>{
+      const events:LocalEvent[]=[];
+      const ingest=(items:any[],kind:'presidential'|'governor')=>{
+        for(const item of items){
+          const start=new Date(item.pre_starts_at).getTime();
+          const voting=new Date(item.voting_starts_at).getTime();
+          const end=new Date(item.voting_ends_at).getTime();
+          const now=Date.now();
+          if(item.completed_at || !Number.isFinite(start) || now<start || now>=end)continue;
+          events.push({key:`${kind}-${item.id}`,label:kind==='presidential'?'ELECCIÓN PRESIDENCIAL':'ELECCIÓN DE GOBERNADOR',stage:now<voting?'EN PREPARACIÓN':'EN VOTACIÓN',ends:now<voting?item.voting_starts_at:item.voting_ends_at,href:`/election?id=${item.id}${kind==='governor'?'&type=governor':''}`});
+        }
+      };
+      const jobs:Promise<void>[]=[];
+      if(location.nation_id) jobs.push((async()=>{const {data,error}=await supabase.rpc('aog_nation_election_summaries',{p_nation_id:location.nation_id});if(!error)ingest(Array.isArray(data)?data:[],'presidential')})());
+      if(location.region_id) jobs.push((async()=>{const {data,error}=await supabase.rpc('aog_governor_region_elections',{p_region_id:location.region_id});if(!error)ingest(Array.isArray(data)?data:[],'governor')})());
+      await Promise.all(jobs);
+      if(active)setLocalEvents(events.sort((a,b)=>new Date(a.ends).getTime()-new Date(b.ends).getTime()));
+    };
+    void load();const interval=window.setInterval(()=>void load(),15000);
+    return()=>{active=false;window.clearInterval(interval)};
+  },[location?.territory_id,location?.region_id,location?.nation_id]);
 
   useEffect(() => {
     let active = true;
@@ -179,31 +220,22 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
   }
 
   return (
-    <main className="aog-home" aria-labelledby="aog-home-title">
-      <h1 className="aog-home-heading" id="aog-home-title">INICIO</h1>
+    <main className="aog-home" aria-label="Inicio">
       <div className="aog-home-top">
         <section className="aog-home-panel aog-home-chat" aria-labelledby="aog-home-chat-label">
-          <h2 className="aog-home-panel-title" id="aog-home-chat-label">CHAT GLOBAL</h2>
+          <h2 className="aog-home-panel-title" id="aog-home-chat-label">CHAT GLOBAL <small className="aog-home-chat-online">GLOBAL</small></h2>
           <div className="aog-home-chat-messages" aria-live="polite">
             {messages.length ? messages.map(msg => (
               <article key={msg.id} className={`aog-chat-message ${msg.player_id===myId ? 'aog-chat-own' : ''}`}>
-                <div className="aog-chat-author">
-                  <button type="button" className="aog-chat-profile-link" onClick={()=>onNavigate(`/profile/${msg.player_id}`)}
-                    aria-label={`Ver perfil de ${msg.players?.name||'jugador'} #${msg.player_id}`} title="Ver perfil">
-                    <img src={msg.players?.photo_url || DEFAULT_AVATAR} alt=""
-                      onError={event => { event.currentTarget.src = DEFAULT_AVATAR; }} />
-                  </button>
-                  <div className="aog-chat-author-info">
-                    <div className="aog-chat-name">
-                      <strong>{msg.players?.name || 'JUGADOR'}</strong>
-                      <span>#{msg.player_id}</span>
-                    </div>
-                    <time dateTime={msg.created_at}>
-                      {new Date(msg.created_at).toLocaleString('es-AR')}
-                    </time>
-                  </div>
+                <button type="button" className="aog-chat-profile-link" onClick={()=>onNavigate(`/profile/${msg.player_id}`)}
+                  aria-label={`Ver perfil de ${msg.players?.name||'jugador'} #${msg.player_id}`} title="Ver perfil">
+                  <img src={msg.players?.photo_url || DEFAULT_AVATAR} alt="" onError={event=>{event.currentTarget.src=DEFAULT_AVATAR;}} />
+                </button>
+                <div className="aog-chat-body">
+                  <div className="aog-chat-name"><strong>{msg.players?.name || 'JUGADOR'}</strong><span>#{msg.player_id}</span></div>
+                  <p>{msg.content}</p>
                 </div>
-                <p>{msg.content}</p>
+                <time className="aog-chat-timestamp" dateTime={msg.created_at}><span>{new Date(msg.created_at).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})}</span><span>{new Date(msg.created_at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</span></time>
               </article>
             )) : <p className="aog-home-empty">Sin mensajes en este canal</p>}
             <div ref={messagesEnd} />
@@ -255,17 +287,17 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
           {notice && <p className="aog-home-notice" role="status">{notice}</p>}
         </section>
         <section className="aog-home-panel aog-home-news" aria-labelledby="aog-home-news-label">
-          <h2 className="aog-home-panel-title" id="aog-home-news-label">NOTICIAS MUNDIALES</h2>
+          <h2 className="aog-home-panel-title" id="aog-home-news-label">NOTICIAS GLOBALES</h2>
           <div className="aog-world-news-feed" aria-live="polite">
             {pinnedNews && <article className="aog-world-news-item aog-world-news-update aog-world-news-pinned" key={`pin-${pinnedNews.id}`}>
-              <span className="aog-world-news-icon" aria-hidden="true">★</span>
+              <span className="aog-world-news-icon" aria-hidden="true"><HomeIcon name="update"/></span>
               <div className="aog-world-news-content"><strong>{pinnedNews.title}</strong><p>{pinnedNews.body}</p></div>
-              <time dateTime={pinnedNews.created_at}>{newsTime(pinnedNews.created_at,newsClock)}</time>
+              <time dateTime={pinnedNews.created_at}>{newsTime(pinnedNews.created_at)}</time>
             </article>}
-            {news.map(item=><article key={item.id} className={`aog-world-news-item ${item.kind==='update'?'aog-world-news-update':'aog-world-news-foundation'}`}>
-              <span className="aog-world-news-icon" aria-hidden="true">{item.kind==='update'?'★':'⚑'}</span>
+            {news.filter(item=>item.id!==pinnedNews?.id).map(item=><article key={item.id} className={`aog-world-news-item ${item.kind==='update'?'aog-world-news-update':'aog-world-news-foundation'}`}>
+              <span className="aog-world-news-icon" aria-hidden="true"><HomeIcon name={item.kind==='update'?'update':'foundation'}/></span>
               <div className="aog-world-news-content"><strong>{item.title}</strong><p>{item.body}</p></div>
-              <time dateTime={item.created_at}>{newsTime(item.created_at,newsClock)}</time>
+              <time dateTime={item.created_at}>{newsTime(item.created_at)}</time>
             </article>)}
             {newsLoading && <p className="aog-home-empty">CARGANDO...</p>}
             {!newsLoading&&newsError&&<p className="aog-home-empty">{newsError}</p>}
@@ -273,13 +305,32 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
           </div>
         </section>
       </div>
-      <section className="aog-home-stats" aria-label="Estadísticas del mundo">
-        {counters.map(([label, key]) => (
-          <article className="aog-home-panel aog-home-counter" key={key}>
-            <h2 className="aog-home-panel-title">{label}</h2>
-            <strong className="aog-home-counter-value" aria-label={`${label}: ${key === 'players' && playerCount !== null ? playerCount : key === 'party' && partyCount !== null ? partyCount : worldCounts[key] ?? 'datos pendientes'}`}>{key === 'players' && playerCount !== null ? playerCount.toLocaleString('es-AR') : key === 'party' && partyCount !== null ? partyCount.toLocaleString('es-AR') : worldCounts[key] !== undefined ? worldCounts[key].toLocaleString('es-AR') : '—'}</strong>
-          </article>
-        ))}
+      <section className="aog-home-location aog-flat-panel" aria-label="Ubicación actual">
+        <h2>UBICACIÓN ACTUAL</h2>
+        <button className="aog-home-location-link" type="button" onClick={()=>onNavigate(location?`/territory?id=${location.territory_id}`:'/map')}>
+          <strong>{location?`TERRITORIO #${location.territory_id}`:'UBICACIÓN NO DISPONIBLE'}</strong>
+          <span>{location?.nation_name||'INDEPENDIENTE'}</span>
+        </button>
+      </section>
+      <section className="aog-home-events aog-flat-panel" aria-labelledby="aog-home-events-label">
+        <h2 id="aog-home-events-label">EVENTOS ACTIVOS</h2>
+        <div className="aog-home-events-list">
+          {localEvents.length?localEvents.map(item=><button key={item.key} type="button" className="aog-home-event-row" onClick={()=>onNavigate(item.href)}>
+            <span>{item.label} <b>{item.stage}</b></span>
+            <time>{localClock(item.ends,clock)}</time><span className="aog-home-event-arrow">⟶</span>
+          </button>):<p className="aog-home-empty">SIN EVENTOS ACTIVOS EN TU TERRITORIO</p>}
+        </div>
+      </section>
+      <section className="aog-home-stats aog-flat-panel" aria-label="Estadísticas mundiales">
+        <h2>ESTADÍSTICAS MUNDIALES</h2>
+        <div className="aog-home-stats-grid">
+          {counters.map(([label,key])=>(
+            <article className="aog-home-stat" key={key}>
+              <HomeIcon name={key} className="aog-home-stat-icon"/>
+              <div><strong>{key==='players'&&playerCount!==null?playerCount.toLocaleString('es-AR'):key==='party'&&partyCount!==null?partyCount.toLocaleString('es-AR'):worldCounts[key]!==undefined?worldCounts[key].toLocaleString('es-AR'):'—'}</strong><span>{label.charAt(0)+label.slice(1).toLowerCase()}</span></div>
+            </article>
+          ))}
+        </div>
       </section>
     </main>
   );

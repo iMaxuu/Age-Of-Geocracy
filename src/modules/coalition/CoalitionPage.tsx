@@ -105,6 +105,13 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
   const marker=useRef<HTMLDivElement>(null);
   const [mode,setMode]=useState<'normal'|'create'|'edit'>('normal');
   const [requestsOpen,setRequestsOpen]=useState(false);
+  const [membersOpen,setMembersOpen]=useState(false);
+  useEffect(()=>{
+    if(!membersOpen)return;
+    const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape')setMembersOpen(false);};
+    window.addEventListener('keydown',handleKey);
+    return ()=>window.removeEventListener('keydown',handleKey);
+  },[membersOpen]);
   const [name,setName]=useState('');
   const [ideology,setIdeology]=useState('');
   const [description,setDescription]=useState('');
@@ -185,7 +192,7 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
   },[selectedId,mode,hasMore,loadingList,page,query,refreshList]);
   function openCoalition(id:number|null){
     window.history.pushState({},'',id?`/coalition/${id}`:'/coalition');
-    setSelectedId(id);setMode('normal');setRequestsOpen(false);setError('');setNotice('');
+    setSelectedId(id);setMode('normal');setRequestsOpen(false);setMembersOpen(false);setError('');setNotice('');
     setVisibleMemberCount(9);setMemberQuery('');
   }
   async function action(fn:()=>Promise<void>,success?:string){
@@ -278,111 +285,85 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
       {hasMore&&<div className="aog-party-load-marker" ref={marker} aria-hidden="true"/>}
     </>}
     {selectedId&&detail&&<>
-      <div className="aog-party-info-grid">
-        <div className="aog-party-info-left">
-          <TitlePanel title="COALICIÓN" className={`aog-party-header-card${isEditing?' is-editing':''}`}>
-            {isEditing
-              ? <button type="button" className="aog-party-logo-pick" title="Cambiar logo" onClick={()=>inputFile.current?.click()}>
-                  <img src={photo||DEFAULT_PHOTO} alt="Logo de la coalición"/>
-                </button>
-              : <img src={detail.photo_url||DEFAULT_PHOTO} alt="Logo de la coalición"/>}
-            <div className="aog-party-title-content">
-              {isEditing
-                ? <div className="aog-party-edit-name"><input className="aog-party-inline-control aog-party-inline-name" aria-label="Nombre de la coalición"
-                    minLength={3} maxLength={50} value={name} onChange={e=>setName(e.target.value)}/><small>#{detail.id}</small></div>
-                : <b title={detail.name}>{detail.name} <small>#{detail.id}</small></b>}
-              {isEditing
-                ? <select className="aog-party-inline-control aog-party-inline-ideology" aria-label="Ideología de la coalición" value={ideology} onChange={e=>setIdeology(e.target.value)}>
-                    <option value="">SIN IDEOLOGÍA</option>
-                    {ideology&&!IDEOLOGIES.some(item=>item===ideology)&&<option value={ideology}>{ideology.toUpperCase()}</option>}
-                    {IDEOLOGIES.map(item=><option value={item} key={item}>{item.toUpperCase()}</option>)}
-                  </select>
-                : <span>{detail.ideology||'SIN IDEOLOGÍA'}</span>}
-            </div>
-            <div className="aog-party-header-actions">
-              {isEditing?<>
-                <button type="button" className="aog-party-save" disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR'}</button>
-                <button type="button" className="aog-party-cancel" disabled={busy} onClick={cancelEdit}>CANCELAR</button>
-              </>:isLeader?<>
-                {detail.requests.length>0&&<button type="button" className="aog-party-join" onClick={()=>setRequestsOpen(true)}>SOLICITUDES ({detail.requests.length})</button>}
-                <button type="button" className="aog-party-circle" aria-label="Editar coalición" onClick={startEdit}>✎</button>
-              </>:my.is_party_leader&&!!my.party_id&&!my.coalition_id?
-                <button type="button" className="aog-party-join" disabled={busy||my.pending_coalition_id!==null} onClick={()=>void action(async()=>{
-                  await applyToCoalition(detail.id);await refresh();
-                },'Solicitud enviada.')}>{my.pending_coalition_id===detail.id?'SOLICITUD PENDIENTE':my.pending_coalition_id?'YA TENÉS UNA SOLICITUD':'SOLICITAR UNIRSE'}</button>
-                :isMember&&my.is_party_leader&&my.party_id!==detail.leader_party_id?
-                  <button type="button" className="aog-party-join" disabled={busy} onClick={()=>{
-                    if(window.confirm('¿Tu partido abandonará esta coalición?'))void action(async()=>{
-                      await leaveCoalition(detail.id);await refresh();await refreshDetail(detail.id);
-                    },'Tu partido abandonó la coalición.');
-                  }}>ABANDONAR</button>:null}
-            </div>
-            {isEditing&&<input type="file" ref={inputFile} accept="image/png,image/jpeg,image/webp" hidden onChange={onPickPhoto}/>} 
-          </TitlePanel>
-          <div className="aog-party-mini-grid">
-            <TitlePanel title="PARTIDOS" className="aog-party-stat"><b>{fmt.format(detail.member_count)}</b></TitlePanel>
-            <TitlePanel title="CREACIÓN" className="aog-party-stat"><span>{dateText(detail.created_at)}</span></TitlePanel>
+      <section className="aog-org-hero" aria-label="Datos de la coalición">
+        {isEditing
+          ? <button className="aog-org-logo-edit" type="button" title="Cambiar logo" onClick={()=>inputFile.current?.click()}><img src={photo||DEFAULT_PHOTO} alt="Logo de la coalición"/></button>
+          : <img className="aog-org-logo" src={detail.photo_url||DEFAULT_PHOTO} alt={`Logo de ${detail.name}`}/>}
+        <div className="aog-org-hero-main">
+          {isEditing
+            ? <input className="aog-party-inline-control aog-org-name-input" value={name} onChange={e=>setName(e.target.value)} aria-label="Nombre de la coalición" minLength={3} maxLength={50}/>
+            : <h1 title={detail.name}>{detail.name}</h1>}
+          {isEditing
+            ? <select className="aog-party-inline-control" value={ideology} onChange={e=>setIdeology(e.target.value)} aria-label="Ideología de la coalición"><option value="">SIN IDEOLOGÍA</option>{IDEOLOGIES.map(item=><option value={item} key={item}>{item.toUpperCase()}</option>)}</select>
+            : <span className="aog-org-ideology">{detail.ideology||'SIN IDEOLOGÍA'}</span>}
+          {isEditing
+            ? <div className="aog-org-description-edit"><textarea className="aog-party-inline-control" maxLength={500} value={description} onChange={e=>setDescription(e.target.value)} aria-label="Descripción de la coalición"/><small>{description.length}/500</small></div>
+            : <p className="aog-org-description">{detail.description||'SIN DESCRIPCIÓN'}</p>}
+          <div className="aog-org-hero-facts">
+            <div><i className="aog-org-icon aog-org-icon-party"/><span><strong>{fmt.format(detail.member_count)}</strong><small>PARTIDOS</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-parliaments"/><span><strong>—</strong><small>BANCAS N.</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-parliaments"/><span><strong>—</strong><small>BANCAS R.</small></span></div>
+            <div><i className="aog-org-icon aog-org-icon-events"/><span><strong>{new Date(detail.created_at).toLocaleDateString('es-AR')}</strong><small>FUNDACIÓN</small></span></div>
           </div>
         </div>
-        <TitlePanel title="DESCRIPCIÓN" className="aog-party-description">
-          {isEditing?<><textarea className="aog-party-inline-control aog-party-inline-description" aria-label="Descripción de la coalición" maxLength={500}
-              value={description} onChange={e=>setDescription(e.target.value)} placeholder="DESCRIPCIÓN DE LA COALICIÓN"/>
-              <small className="aog-party-description-count">{description.length}/500</small></>
-            :<p>{detail.description||'SIN DESCRIPCIÓN'}</p>}
-        </TitlePanel>
-      </div>
+        {isEditing&&<input type="file" ref={inputFile} accept="image/png,image/jpeg,image/webp" hidden onChange={onPickPhoto}/>}
+      </section>
       {cropFile&&isEditing&&<Cropper file={cropFile} onApply={(blob,preview)=>{setCroppedBlob(blob);setPhoto(preview);setCropFile(null);}} onCancel={()=>setCropFile(null)}/>}
-      {requestsOpen&&isLeader&&detail.requests.length>0&&<div className="aog-party-requests-backdrop" role="presentation" onMouseDown={event=>{
-        if(event.target===event.currentTarget)setRequestsOpen(false);
-      }}>
-        <section className="aog-party-requests" role="dialog" aria-modal="true" aria-labelledby="coalition-request-heading">
-          <div className="aog-party-requests-heading"><h3 id="coalition-request-heading">SOLICITUDES DE PARTIDOS ({detail.requests.length})</h3>
-            <button type="button" className="aog-party-requests-close" aria-label="Cerrar solicitudes" onClick={()=>setRequestsOpen(false)}>×</button></div>
+      {requestsOpen&&isLeader&&detail.requests.length>0&&<div className="aog-party-requests-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setRequestsOpen(false);}}>
+        <section className="aog-party-requests" role="dialog" aria-modal="true" aria-label="Solicitudes de partidos">
+          <div className="aog-party-requests-heading"><h3>SOLICITUDES DE PARTIDOS ({detail.requests.length})</h3><button type="button" className="aog-party-requests-close" onClick={()=>setRequestsOpen(false)} aria-label="Cerrar">×</button></div>
           <div className="aog-party-requests-list">{detail.requests.map(req=><div className="aog-party-request" key={req.id}>
-            <button type="button" className="aog-party-request-photo" onClick={()=>onNavigate(`/party/${req.party_id}`)} title={`Ver partido ${req.name}`}>
-              <img src={req.photo_url||DEFAULT_PHOTO} alt={req.name}/>
-            </button>
+            <button className="aog-party-request-photo" onClick={()=>onNavigate(`/party/${req.party_id}`)}><img src={req.photo_url||DEFAULT_PHOTO} alt={req.name}/></button>
             <div className="aog-party-request-name"><b>{req.name}</b><small>#{req.party_id}</small></div>
-            <button type="button" disabled={busy} onClick={()=>void action(async()=>{
-              await decideCoalitionRequest(req.id,true);await refreshDetail(detail.id);
-            },'Partido aceptado.')}>ACEPTAR</button>
-            <button type="button" disabled={busy} onClick={()=>void action(async()=>{
-              await decideCoalitionRequest(req.id,false);await refreshDetail(detail.id);
-            },'Solicitud rechazada.')}>RECHAZAR</button>
+            <button disabled={busy} onClick={()=>void action(async()=>{await decideCoalitionRequest(req.id,true);await refreshDetail(detail.id);},'Partido aceptado.')}>ACEPTAR</button>
+            <button disabled={busy} onClick={()=>void action(async()=>{await decideCoalitionRequest(req.id,false);await refreshDetail(detail.id);},'Solicitud rechazada.')}>RECHAZAR</button>
           </div>)}</div>
         </section>
       </div>}
-      <div className="aog-party-leadership aog-coalition-leadership">
-        <PartyCard title="PARTIDO FUNDADOR" party={detail.founder} onNavigate={onNavigate}/>
-        <PartyCard title="PARTIDO LÍDER" party={detail.leader} onNavigate={onNavigate}/>
+      <div className="aog-org-leaders">
+        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDO LÍDER <span className="aog-org-leader-star" aria-hidden="true">★</span></h2>
+          <div className="aog-org-person-row"><PartyAvatar party={detail.leader} onNavigate={onNavigate}/><div><button onClick={()=>onNavigate(`/party/${detail.leader_party_id}`)}>{detail.leader?.name||'VACANTE'}</button><small>{detail.leader?.ideology||'SIN IDEOLOGÍA'}</small></div></div>
+        </section>
+        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDO FUNDADOR</h2>
+          <div className="aog-org-person-row"><PartyAvatar party={detail.founder} onNavigate={onNavigate}/><div><button disabled={!detail.founder?.id} onClick={()=>{if(detail.founder?.id)onNavigate(`/party/${detail.founder.id}`);}}>{detail.founder?.name||'SIN PARTIDO FUNDADOR'}</button><small>{detail.founder?.ideology||'SIN IDEOLOGÍA'}</small></div></div>
+        </section>
+        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-coalition"/> COALICIÓN</h2><div className="aog-org-affiliation aog-org-affiliation-static"><img src={detail.photo_url||DEFAULT_PHOTO} alt=""/><span>{detail.name}</span></div></section>
       </div>
-      <section className="aog-party-members-section">
-        <h2>PARTIDOS</h2>
-        <input value={memberQuery} onChange={e=>{setMemberQuery(e.target.value);setVisibleMemberCount(9);}}
-          placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar partidos miembros"/>
-        <div className="aog-party-members">
-          {visible.map(member=><article className="aog-party-member" key={member.id}>
-            <PartyAvatar party={member} onNavigate={onNavigate}/>
-            <div><b title={member.name}>{member.name}</b><span>{member.ideology||'SIN IDEOLOGÍA'}</span><small>#{member.id}</small></div>
-            {isLeader&&!isEditing&&member.id!==detail.leader_party_id&&<button type="button" className="aog-party-remove" title="Expulsar partido"
-              aria-label={`Expulsar a ${member.name}`} disabled={busy} onClick={()=>{
-                if(window.confirm(`¿Expulsar al partido ${member.name}?`))void action(async()=>{
-                  await kickCoalitionParty(detail.id,member.id);await refreshDetail(detail.id);
-                },'Partido expulsado.');
-              }}>🗑</button>}
-          </article>)}
-        </div>
-        <div className="aog-party-footer-actions">
-          {members.length>9&&<button type="button" onClick={()=>setVisibleMemberCount(current=>current>=members.length?9:current+9)}>
-            {visibleMemberCount>=members.length?'VER MENOS':'VER MÁS'}</button>}
-          {isLeader&&!isEditing&&<button type="button" disabled={busy} onClick={()=>{
-            if(window.confirm(`¿Disolver definitivamente ${detail.name}? Esta acción es irreversible.`))void action(async()=>{
-              await disbandCoalition(detail.id);await refresh();openCoalition(null);
-            },'Coalición disuelta.');
-          }}>DISOLVER</button>}
-          {!isEditing&&<button type="button" onClick={()=>openCoalition(null)}>EXPLORAR COALICIONES</button>}
-        </div>
-      </section>
+      <div className="aog-org-middle">
+        <section className="aog-org-panel aog-org-representation"><h2><i className="aog-org-icon aog-org-icon-parliaments"/> REPRESENTACIÓN POLÍTICA</h2>
+          <div className="aog-org-rep-grid">{['PRESIDENCIAS','PARLAMENTARIOS NACIONALES','GOBERNACIONES','PARLAMENTARIOS REGIONALES'].map(item=><div className="aog-org-rep" key={item}><span>{item}</span><strong>—</strong><div className="aog-org-rep-bar"><span/></div></div>)}</div>
+        </section>
+        <section className="aog-org-panel aog-org-actions"><h2><i className="aog-org-icon aog-org-icon-coalition"/> ACCIONES</h2>
+          <div className="aog-org-action-grid">
+            {isEditing?<><button disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR CAMBIOS'}</button><button disabled={busy} onClick={cancelEdit}>CANCELAR</button></>:<>
+              {!isMember&&my.is_party_leader&&!!my.party_id&&!my.coalition_id&&<button disabled={busy||my.pending_coalition_id!==null} onClick={()=>void action(async()=>{await applyToCoalition(detail.id);await refresh();},'Solicitud enviada.')}>{my.pending_coalition_id===detail.id?'SOLICITUD PENDIENTE':my.pending_coalition_id?'YA TENÉS UNA SOLICITUD':'SOLICITAR UNIRSE'}</button>}
+              {isMember&&my.is_party_leader&&my.party_id!==detail.leader_party_id&&<button disabled={busy} onClick={()=>{if(window.confirm('¿Tu partido abandonará esta coalición?'))void action(async()=>{await leaveCoalition(detail.id);await refresh();await refreshDetail(detail.id);},'Tu partido abandonó la coalición.');}}>SALIR DE LA COALICIÓN</button>}
+              {isLeader&&<><button onClick={startEdit}>EDITAR COALICIÓN</button>{detail.requests.length>0&&<button onClick={()=>setRequestsOpen(true)}>SOLICITUDES ({detail.requests.length})</button>}
+                <button disabled={busy} onClick={()=>{if(window.confirm(`¿Disolver definitivamente ${detail.name}? Esta acción es irreversible.`))void action(async()=>{await disbandCoalition(detail.id);await refresh();openCoalition(null);},'Coalición disuelta.');}}>DISOLVER COALICIÓN</button></>}
+              <button className="aog-org-action-secondary" onClick={()=>openCoalition(null)}>EXPLORAR COALICIONES</button>
+            </>}
+          </div>
+        </section>
+      </div>
+      <div className="aog-org-bottom">
+        <section className="aog-org-panel aog-org-members-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDOS MIEMBROS</h2>
+          <div className="aog-org-preview-list">{detail.members.slice(0,4).map(m=><div className="aog-org-member-row" key={m.id}>
+            <PartyAvatar party={m} onNavigate={onNavigate}/><button type="button" className="aog-org-member-name" onClick={()=>onNavigate(`/party/${m.id}`)}>{m.name}</button><span className={m.id===detail.leader_party_id?'aog-org-role-highlight':''}>{m.id===detail.leader_party_id?'LÍDER':'MIEMBRO'}</span><small>{m.ideology||'SIN IDEOLOGÍA'}</small>
+          </div>)}</div>
+          <button className="aog-org-list-button" onClick={()=>{setMemberQuery('');setMembersOpen(true);}}>VER TODOS LOS PARTIDOS</button>
+        </section>
+        <section className="aog-org-panel aog-org-history"><h2><i className="aog-org-icon aog-org-icon-news"/> HISTORIAL</h2><div>PRÓXIMAMENTE</div></section>
+      </div>
+      {membersOpen&&<div className="aog-org-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setMembersOpen(false);}}>
+        <section className="aog-org-modal" role="dialog" aria-modal="true" aria-label="Todos los partidos de la coalición">
+          <header><h2>PARTIDOS ({detail.member_count})</h2><button onClick={()=>setMembersOpen(false)} aria-label="Cerrar">×</button></header>
+          <input value={memberQuery} onChange={e=>setMemberQuery(e.target.value)} placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar partidos"/>
+          <div className="aog-org-modal-list">{members.map(m=><div className="aog-org-member-row" key={m.id}>
+            <PartyAvatar party={m} onNavigate={onNavigate}/><button type="button" className="aog-org-member-name" onClick={()=>onNavigate(`/party/${m.id}`)}>{m.name}</button><span>{m.id===detail.leader_party_id?'LÍDER':'MIEMBRO'}</span><small>{m.ideology||'SIN IDEOLOGÍA'}</small>
+            {isLeader&&m.id!==detail.leader_party_id&&<button className="aog-org-kick" disabled={busy} onClick={()=>{if(window.confirm(`¿Expulsar al partido ${m.name}?`))void action(async()=>{await kickCoalitionParty(detail.id,m.id);await refreshDetail(detail.id);},'Partido expulsado.');}}>EXPULSAR</button>}
+          </div>)}{members.length===0&&<p>SIN RESULTADOS</p>}</div>
+        </section>
+      </div>}
     </>}
   </main>;
 }

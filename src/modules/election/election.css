@@ -1,0 +1,145 @@
+/* Age of Geocracy — Elecciones nacionales y regionales.
+   Paneles planos, SVG y proporciones en línea con Home / Profile. */
+.aog-election-page {
+  --el-accent: var(--aog-accent,#e3261d);
+  --el-background: #080808;
+  width:100%;max-width:1500px;min-width:0;margin:0 auto;
+  padding:16px 20px 35px;background:var(--el-background);
+  color:#fff;font:400 14px/1.35 'Black Ops One',system-ui,sans-serif;
+}
+.aog-election-page *,.aog-election-page *::before,.aog-election-page *::after {box-sizing:border-box;}
+.aog-election-page button{font-family:inherit;font-weight:400;}
+.aog-election-page strong,.aog-election-page b{font-weight:400;}
+.aog-election-page .aog-election-icon{display:inline-block;flex:0 0 25px;width:25px;height:25px;color:var(--el-accent);vertical-align:middle;}
+.aog-election-panel{margin:0 0 12px;border:3px solid var(--el-accent);border-radius:9px;background:var(--el-background);min-width:0;overflow:hidden;}
+.aog-election-panel-title{display:flex;align-items:center;gap:9px;min-height:47px;margin:0;padding:8px 14px;border-bottom:1px solid var(--el-accent);color:var(--el-accent);font-size:clamp(13px,1.2vw,18px);line-height:1.2;text-align:left;}
+.aog-election-panel-title .aog-election-icon{flex-basis:25px;}
+.aog-election-title-row{justify-content:space-between;gap:12px;}
+.aog-election-title-text{display:flex;align-items:center;gap:9px;min-width:0;}
+.aog-election-stage{flex-shrink:0;border:1px solid var(--el-accent);border-radius:5px;padding:5px 10px;font-size:11px;line-height:1.1;white-space:nowrap;}
+.aog-election-stage-curso{color:#080808;background:var(--el-accent);}
+.aog-election-stage-post{opacity:.8;}
+.aog-election-overview-body{display:flex;align-items:center;gap:19px;min-width:0;padding:16px 17px;}
+.aog-election-flag{display:block;width:112px;height:76px;flex:0 0 112px;object-fit:contain;border-radius:5px;}
+.aog-election-jurisdiction{display:flex;flex-direction:column;gap:3px;min-width:0;}
+.aog-election-jurisdiction small{font-size:11px;color:var(--el-accent);}
+.aog-election-jurisdiction strong{font-size:clamp(21px,2.25vw,31px);line-height:1.07;overflow-wrap:anywhere;}
+.aog-election-jurisdiction span{font-size:10px;color:var(--el-accent);line-height:1.3;}
+/* Mismo estilo de indicadores que la grilla de Estadísticas Mundiales de Home. */
+.aog-election-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:2px 12px 11px;}
+.aog-election-metric{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:8px;min-width:0;min-height:62px;padding:4px 10px;border-right:3px solid var(--el-accent);}
+.aog-election-metric:last-child{border-right:0;}
+.aog-election-metric .aog-election-icon{width:36px;height:36px;flex-basis:36px;}
+.aog-election-metric>div{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;text-align:center;}
+.aog-election-metric strong{display:block;max-width:100%;font-size:clamp(11px,.98vw,16px);line-height:1.2;overflow-wrap:anywhere;}
+.aog-election-metric span:not(.aog-election-icon){display:block;font-size:clamp(9px,.75vw,12px);line-height:1.2;overflow-wrap:anywhere;}
+.aog-election-metric .aog-election-timer{font-variant-numeric:tabular-nums;font-size:clamp(11px,1.15vw,17px)!important;white-space:nowrap;}
+.aog-election-notice{margin:0 14px 13px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--el-accent) 58%,transparent);border-radius:6px;color:#fff;font-size:clamp(10px,.85vw,13px);line-height:1.45;overflow-wrap:anywhere;}
+.aog-election-offices{position:relative;}
+.aog-election-office-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:15px 20px 12px;}
+.aog-election-office{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0;text-align:center;}
+.aog-election-office + .aog-election-office{border-left:2px solid var(--el-accent);}
+.aog-election-office>b{color:var(--el-accent);font-size:clamp(13px,1.15vw,18px);}
+.aog-election-office-photo{display:grid;place-items:center;padding:3px;border:2px solid transparent;border-radius:9px;background:transparent;color:inherit;cursor:default;}
+.aog-election-office-photo img{display:block;width:98px;height:98px;object-fit:cover;border-radius:6px;}
+.aog-election-office-photo:disabled{opacity:1;}
+.aog-election-office-photo.pickable{border-color:var(--el-accent);cursor:pointer;}
+.aog-election-office-photo.pickable:hover,.aog-election-office-photo.active{background:color-mix(in srgb,var(--el-accent) 20%,#080808);}
+.aog-election-office-name{color:#fff;max-width:100%;overflow-wrap:anywhere;font-size:clamp(11px,1vw,15px);}
+.aog-election-elected{display:block;text-align:center;padding:0 10px 12px;font-size:12px;color:var(--el-accent);}
+.aog-election-nomination-inline{display:flex;flex-direction:column;align-items:center;gap:9px;padding:0 12px 14px;text-align:center;}
+.aog-election-hint{color:var(--el-accent);font-size:12px;margin:0;}
+.aog-election-nomination-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;}
+.aog-election-action{display:inline-flex;justify-content:center;align-items:center;min-height:42px;min-width:165px;border:2px solid var(--el-accent);border-radius:7px;padding:8px 15px;background:var(--el-accent);color:#080808;cursor:pointer;text-align:center;font-size:clamp(11px,1vw,14px);line-height:1.2;}
+.aog-election-action:hover:not(:disabled){filter:brightness(1.12);}
+.aog-election-action:disabled{opacity:.5;cursor:not-allowed;}
+.aog-election-action-outline{background:transparent;color:var(--el-accent);}
+.aog-election-candidates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px;}
+.aog-election-candidate{min-width:0;display:flex;flex-direction:column;overflow:hidden;border:2px solid var(--el-accent);border-radius:8px;background:transparent;color:#fff;}
+.aog-election-candidate.selectable{cursor:pointer;}
+.aog-election-candidate.selectable:hover,.aog-election-candidate.selected{background:color-mix(in srgb,var(--el-accent) 12%,#080808);}
+.aog-election-candidate.selected{outline:2px solid var(--el-accent);outline-offset:-4px;}
+.aog-election-candidate.is-winner{border-color:var(--el-accent);background:color-mix(in srgb,var(--el-accent) 8%,#080808);}
+.aog-election-candidate-heading{display:flex;align-items:center;gap:8px;min-height:43px;border-bottom:1px solid var(--el-accent);padding:7px 10px;color:var(--el-accent);}
+.aog-election-candidate-heading .aog-election-icon{width:21px;height:21px;flex-basis:21px;}
+.aog-election-candidate-heading>span:nth-child(2){min-width:0;flex:1;overflow-wrap:anywhere;font-size:clamp(11px,1vw,14px);}
+.aog-election-check{margin-left:auto;font:400 26px/1 system-ui,sans-serif;}
+.aog-election-winner-label{white-space:nowrap;font-size:10px;color:#fff;}
+.aog-election-candidate-content{flex:1;padding:10px 11px 6px;}
+.aog-election-person{min-width:0;}
+.aog-election-role{display:block;font-size:10px;color:var(--el-accent);margin-bottom:7px;}
+.aog-election-person-body{display:flex;align-items:center;gap:10px;min-width:0;}
+.aog-election-photo{display:block;flex:0 0 58px;width:58px;height:58px;border:0;border-radius:5px;background:transparent;padding:0;cursor:pointer;overflow:hidden;}
+.aog-election-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+.aog-election-person-text{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;overflow-wrap:anywhere;}
+.aog-election-person-text strong{font-size:clamp(12px,1.05vw,16px);line-height:1.15;}
+.aog-election-person-text small{font-size:10px;color:var(--el-accent);}
+.aog-election-person-divider{height:1px;background:color-mix(in srgb,var(--el-accent) 45%,transparent);margin:10px 0;}
+.aog-election-candidate-footer{display:flex;align-items:center;gap:6px;min-height:36px;padding:6px 10px;border-top:1px solid var(--el-accent);color:#fff;font-size:10px;overflow-wrap:anywhere;}
+.aog-election-candidate-footer .aog-election-icon{width:18px;height:18px;flex-basis:18px;}
+.aog-election-result{display:flex;flex-direction:column;gap:6px;padding:9px 10px 11px;border-top:1px solid var(--el-accent);}
+.aog-election-result>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.aog-election-result strong{font-size:18px;color:var(--el-accent);}
+.aog-election-result>div:first-child span{font-size:10px;color:#fff;}
+.aog-election-result-track{height:9px;border-radius:5px;overflow:hidden;background:#292929;}
+.aog-election-result-track>span{display:block;height:100%;background:var(--el-accent);border-radius:5px;}
+.aog-election-empty{grid-column:1/-1;display:grid;place-items:center;min-height:95px;margin:0;color:var(--el-accent);font-size:14px;text-align:center;}
+.aog-election-vote-area{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:0 14px 16px;}
+.aog-election-blank{display:flex;align-items:center;justify-content:center;min-height:42px;min-width:170px;padding:8px 15px;border:2px solid var(--el-accent);border-radius:7px;background:transparent;color:var(--el-accent);font:400 13px/1.2 'Black Ops One',system-ui,sans-serif;cursor:pointer;}
+.aog-election-blank.selected{background:color-mix(in srgb,var(--el-accent) 22%,#080808);}
+.aog-election-blank:disabled{opacity:.6;cursor:default;}
+.aog-election-vote-button{min-width:210px;}
+.aog-election-blank-results{display:flex;align-items:center;justify-content:center;gap:13px;margin:2px 14px 14px;padding:10px;border:1px solid var(--el-accent);border-radius:6px;color:#fff;font-size:12px;}
+.aog-election-blank-results strong{color:var(--el-accent);font-size:18px;}
+.aog-election-feedback{text-align:center;margin:16px auto;padding:12px;color:var(--el-accent);font-size:14px;}
+.aog-election-page button:focus-visible,.aog-election-candidate:focus-visible{outline:2px solid #fff;outline-offset:2px;}
+.aog-election-modal-backdrop{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:16px;}
+.aog-election-modal{display:flex;flex-direction:column;gap:10px;width:min(540px,100%);max-height:min(80vh,650px);padding:0;background:#080808;color:#fff;border:3px solid var(--el-accent);border-radius:9px;overflow:hidden;}
+.aog-election-modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--el-accent);padding:11px 15px;color:var(--el-accent);}
+.aog-election-modal-header h3{font-size:15px;font-weight:400;margin:0;}
+.aog-election-modal-header button{border:1px solid var(--el-accent);border-radius:6px;padding:5px 11px;background:transparent;color:var(--el-accent);font-size:19px;cursor:pointer;}
+.aog-election-modal>p{color:#fff;font-size:11px;margin:0 12px;text-align:center;}
+.aog-election-picker{display:grid;gap:6px;min-height:70px;max-height:55vh;overflow-y:auto;padding:2px 12px 12px;scrollbar-width:thin;scrollbar-color:var(--el-accent) transparent;}
+.aog-election-picker button{display:flex;align-items:center;gap:10px;min-width:0;border:1px solid var(--el-accent);border-radius:6px;padding:6px;background:transparent;color:#fff;text-align:left;font-size:13px;cursor:pointer;}
+.aog-election-picker button:hover{background:color-mix(in srgb,var(--el-accent) 12%,#080808);}
+.aog-election-picker img{width:45px;height:45px;object-fit:cover;border-radius:5px;}
+.aog-election-picker button>span{min-width:0;overflow-wrap:anywhere;}
+.aog-election-picker small{display:block;margin-top:4px;font-size:10px;color:var(--el-accent);}
+.aog-election-picker>p{text-align:center;color:var(--el-accent);}
+@media(max-width:1100px){
+  .aog-election-candidates{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .aog-election-metrics{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:9px;}
+  .aog-election-metric:nth-child(2){border-right:0;}
+}
+@media(max-width:620px){
+  .aog-election-page{padding:10px 10px 25px;}
+  .aog-election-panel{border-width:2px;}
+  .aog-election-panel-title{min-height:43px;padding:8px 10px;font-size:13px;}
+  .aog-election-stage{padding:5px 6px;font-size:9px;}
+  .aog-election-overview-body{padding:12px 10px;gap:12px;}
+  .aog-election-flag{width:78px;height:57px;flex-basis:78px;}
+  .aog-election-jurisdiction strong{font-size:21px;}
+  .aog-election-jurisdiction span{font-size:9px;}
+  .aog-election-metrics{margin:2px 6px 9px;}
+  .aog-election-metric{grid-template-columns:30px minmax(0,1fr);gap:5px;padding:5px;min-height:54px;border-right-width:2px;}
+  .aog-election-metric .aog-election-icon{width:30px;height:30px;flex-basis:30px;}
+  .aog-election-metric strong{font-size:11px;}
+  .aog-election-metric .aog-election-timer{font-size:11px!important;}
+  .aog-election-metric span:not(.aog-election-icon){font-size:9px;}
+  .aog-election-notice{margin:0 9px 11px;}
+  .aog-election-office-people{padding:11px 8px;gap:4px;}
+  .aog-election-office-photo img{width:77px;height:77px;}
+  .aog-election-office-name{font-size:11px;}
+  .aog-election-candidates{grid-template-columns:1fr;padding:10px;gap:10px;}
+  .aog-election-vote-area{flex-direction:column;}
+  .aog-election-blank,.aog-election-vote-button{width:100%;}
+  .aog-election-modal-backdrop{padding:8px;}
+  .aog-election-modal-header h3{font-size:13px;}
+}
+@media(max-width:360px){
+  .aog-election-title-text{font-size:11px;}
+  .aog-election-flag{width:62px;flex-basis:62px;}
+  .aog-election-metric{grid-template-columns:23px minmax(0,1fr);}
+  .aog-election-metric .aog-election-icon{width:23px;height:23px;flex-basis:23px;}
+  .aog-election-metric .aog-election-timer{font-size:9px!important;}
+}

@@ -50,3 +50,321 @@ button.aog-map-card:hover{background:var(--map-dark)}
   .aog-map-controls .aog-map-reset,.aog-map-controls button:last-child{font-size:8px}
   .aog-map-legend{bottom:49px;right:6px;min-width:118px;max-width:145px}
 }
+
+/* v0.0.3 - mapa a pantalla completa, controles superpuestos y panel lateral plegable */
+.aog-map-root{--map-accent:var(--aog-accent,#e3281d);font-weight:400}
+.aog-map-panel-wrap{position:absolute;z-index:4;left:0;top:clamp(38px,9vh,78px);display:flex;align-items:flex-start;max-height:calc(100% - 110px);pointer-events:none}
+.aog-map-sidebar{position:relative;top:auto;left:auto;width:278px;max-width:calc(100vw - 60px);max-height:calc(100dvh - 190px);overflow-y:auto;display:flex;align-items:stretch;gap:0;padding:12px 10px 8px;background:#080808;border:3px solid var(--map-accent);border-left:0;border-radius:0 10px 10px 0;pointer-events:auto;scrollbar-width:thin;scrollbar-color:var(--map-accent) transparent}
+.aog-map-sidebar>.aog-map-card{width:100%}
+.aog-map-card,.aog-map-sidebar>.aog-map-card{height:auto;min-height:0;max-height:none;border:0;border-radius:0;background:transparent;padding:3px 4px 9px;gap:5px;align-items:flex-start;text-align:left;color:#f0f0f0}
+.aog-map-card .aog-map-tab{position:static;transform:none;max-width:none;background:transparent;border:0;border-radius:0;padding:0;color:var(--map-accent);font-size:13px;line-height:1.3;font-weight:400;text-align:left}
+.aog-map-card .aog-map-tab::before,.aog-map-card .aog-map-tab::after{display:none}
+.aog-map-card-flag{width:94px;height:55px;object-fit:contain;align-self:flex-start}
+.aog-map-card strong,.aog-map-card .aog-map-card-small{font-size:12px;font-weight:400;line-height:1.25;color:#f7f7f7;max-width:100%;text-align:left}
+.aog-map-sidebar button.aog-map-card:hover{background:color-mix(in srgb,var(--map-accent) 10%,#080808)}
+.aog-map-sidebar>.aog-map-travel{width:100%;height:64px;margin-top:4px;padding:5px 7px;border:0;border-radius:10px;background:var(--map-accent);color:#080808;gap:2px;align-items:center;justify-content:center;font-weight:400}
+.aog-map-travel-heading{font-size:15px;font-weight:400;line-height:1.15}
+.aog-map-travel-time{font-size:18px;font-weight:400;line-height:1.2}
+.aog-map-panel-toggle{position:relative;z-index:1;margin:0 0 0 7px;padding:0;width:42px;height:42px;flex:none;display:grid;place-items:center;background:transparent;border:2px solid var(--map-accent);border-radius:50%;color:var(--map-accent);font:28px system-ui,sans-serif;cursor:pointer;pointer-events:auto}
+.aog-map-panel-wrap.is-collapsed .aog-map-panel-toggle{margin-left:10px}
+.aog-map-layer-tools{top:14px;right:16px}
+.aog-map-layer-tools .aog-map-layer-trigger{min-width:244px;min-height:66px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:5px;padding:8px 13px;border:3px solid var(--map-accent);border-radius:10px;background:#080808;color:#fff;text-align:left}
+.aog-map-layer-label{color:var(--map-accent);font-size:15px;font-weight:400}
+.aog-map-layer-current{display:flex;justify-content:space-between;gap:15px;font-size:14px;font-weight:400}
+.aog-map-layers{top:70px;border-radius:10px;width:244px}
+.aog-map-controls{bottom:16px;right:16px;z-index:4}
+.aog-map-controls button,.aog-map-layers button{font-weight:400}
+@media(max-width:720px){
+  .aog-map-panel-wrap{top:55px;max-height:calc(100% - 135px)}
+  .aog-map-sidebar{width:182px;max-width:calc(100vw - 54px);max-height:calc(100dvh - 220px);padding:9px 7px 6px;transform:none;gap:0}
+  .aog-map-card,.aog-map-sidebar>.aog-map-card{padding:2px 3px 7px}
+  .aog-map-card .aog-map-tab{font-size:10px}
+  .aog-map-card strong,.aog-map-card .aog-map-card-small{font-size:10px}
+  .aog-map-card-flag{width:68px;height:38px}
+  .aog-map-sidebar>.aog-map-travel{height:53px}
+  .aog-map-travel-heading{font-size:11px}.aog-map-travel-time{font-size:13px}
+  .aog-map-panel-toggle{width:31px;height:31px;font-size:21px;margin-left:5px}
+  .aog-map-layer-tools{top:7px;right:7px}
+  .aog-map-layer-tools .aog-map-layer-trigger{min-width:135px;min-height:48px;padding:6px 8px;border-width:2px}
+  .aog-map-layer-label{font-size:10px}.aog-map-layer-current{font-size:9px}
+  .aog-map-layers{top:51px;width:170px}
+  .aog-map-controls{bottom:10px;right:7px}
+}
+
+/* Íconos compartidos con Home: public/assets/icons/icons/ */
+.aog-map-card .aog-map-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.aog-map-shared-icon {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  background-color: var(--map-accent);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.aog-map-shared-nation {
+  -webkit-mask-image: url('/assets/icons/icons/nation.svg');
+  mask-image: url('/assets/icons/icons/nation.svg');
+}
+.aog-map-shared-region {
+  -webkit-mask-image: url('/assets/icons/icons/region.svg');
+  mask-image: url('/assets/icons/icons/region.svg');
+}
+.aog-map-shared-territory {
+  -webkit-mask-image: url('/assets/icons/icons/territory.svg');
+  mask-image: url('/assets/icons/icons/territory.svg');
+}
+
+/* Pestaña lateral discreta, con chevrón en vez de flecha textual. */
+.aog-map-panel-toggle {
+  align-self: flex-start;
+  margin-left: -2px;
+  width: 27px;
+  height: 46px;
+  border: 2px solid var(--map-accent);
+  border-left: 0;
+  border-radius: 0 9px 9px 0;
+  background: #080808;
+  font-size: inherit;
+  transition: background-color .15s ease;
+}
+.aog-map-panel-toggle:hover {
+  background: color-mix(in srgb, var(--map-accent) 12%, #080808);
+}
+.aog-map-panel-wrap.is-collapsed .aog-map-panel-toggle { margin-left: 0; }
+.aog-map-chevron {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--map-accent);
+  border-right: 2px solid var(--map-accent);
+  transform: rotate(-135deg);
+  transition: transform .15s ease;
+}
+.aog-map-panel-wrap.is-collapsed .aog-map-chevron { transform: rotate(45deg); }
+@media (max-width:720px) {
+  .aog-map-shared-icon { width: 13px; height: 13px; flex-basis: 13px; }
+  .aog-map-panel-toggle { width: 24px; height: 36px; margin-left: -2px; }
+  .aog-map-panel-wrap.is-collapsed .aog-map-panel-toggle { margin-left: 0; }
+  .aog-map-chevron { width: 8px; height: 8px; }
+}
+
+/* Corrección de proporciones y márgenes: referencia del boceto Map */
+.aog-map-panel-wrap{left:0;}
+.aog-map-sidebar{
+  box-sizing:border-box;
+  width:278px;
+  padding:13px 10px 12px 8px;
+  gap:0;
+  border-width:3px;
+  border-radius:0 10px 10px 0;
+}
+.aog-map-sidebar>.aog-map-card{
+  box-sizing:border-box;
+  padding:2px 0 12px;
+  margin:0;
+  width:100%;
+  align-items:flex-start;
+  gap:4px;
+}
+.aog-map-card .aog-map-tab{margin:0 0 2px;font-size:12px;min-height:17px;}
+.aog-map-card .aog-map-card-flag{
+  width:98px;height:61px;
+  margin:0;
+  object-fit:contain;
+  align-self:flex-start;
+}
+.aog-map-card strong,.aog-map-card .aog-map-card-small{
+  font-size:11px;
+  line-height:1.2;
+  font-weight:400;
+  margin:0;
+}
+.aog-map-sidebar>.aog-map-travel{
+  box-sizing:border-box;
+  width:calc(100% + 17px);
+  align-self:center;
+  margin:3px 0 0 -17px;
+  height:63px;
+  padding:6px;
+  border-radius:9px;
+  flex:none;
+}
+.aog-map-sidebar>.aog-map-travel .aog-map-travel-heading{font-size:15px;line-height:1.1;}
+.aog-map-sidebar>.aog-map-travel .aog-map-travel-time{font-size:16px;line-height:1.1;}
+.aog-map-panel-toggle{margin-left:0;}
+@media(max-width:720px){
+  .aog-map-sidebar{width:182px;padding:9px 7px 8px 6px;max-width:calc(100vw - 54px);}
+  .aog-map-sidebar>.aog-map-card{padding-bottom:8px;gap:3px;}
+  .aog-map-card .aog-map-tab{font-size:9px;min-height:13px;margin-bottom:1px;}
+  .aog-map-card .aog-map-card-flag{width:68px;height:40px;}
+  .aog-map-card strong,.aog-map-card .aog-map-card-small{font-size:9px;}
+  .aog-map-sidebar>.aog-map-travel{width:calc(100% + 10px);margin-left:-10px;height:52px;}
+  .aog-map-sidebar>.aog-map-travel .aog-map-travel-heading{font-size:11px;}
+  .aog-map-sidebar>.aog-map-travel .aog-map-travel-time{font-size:12px;}
+}
+
+/* Alinear contenido con el TEXTO del título (no con el ícono). */
+.aog-map-sidebar > .aog-map-card {
+  --aog-map-icon-size: 17px;
+  --aog-map-icon-gap: 7px;
+}
+.aog-map-sidebar > .aog-map-card .aog-map-card-flag,
+.aog-map-sidebar > .aog-map-card strong,
+.aog-map-sidebar > .aog-map-card .aog-map-card-small {
+  margin-left: calc(var(--aog-map-icon-size) + var(--aog-map-icon-gap));
+}
+.aog-map-sidebar > .aog-map-card .aog-map-card-flag {
+  border-radius: 9px;
+  overflow: hidden;
+  object-fit: cover;
+}
+@media (max-width:720px) {
+  .aog-map-sidebar > .aog-map-card { --aog-map-icon-size:13px; }
+  .aog-map-sidebar > .aog-map-card .aog-map-card-flag { border-radius:7px; }
+}
+
+
+/* Botón VIAJAR: respetar los márgenes internos del panel.
+   Anula los márgenes negativos usados en una versión anterior. */
+.aog-map-sidebar > .aog-map-travel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 10px 0 0;
+  align-self: stretch;
+}
+@media (max-width: 720px) {
+  .aog-map-sidebar > .aog-map-travel {
+    width: 100%;
+    max-width: 100%;
+    margin: 8px 0 0;
+  }
+}
+
+
+/* MAP v0.0.3 — Panel lateral y pestaña en un mismo contorno.
+   Se reemplazaron todas las versiones previas de la animación. */
+.aog-map-panel-wrap {
+  --map-panel-width: 278px;
+  --map-tab-width: 38px;
+  --map-tab-height: 55px;
+  position: absolute;
+  left: 0;
+  top: clamp(38px,9vh,78px);
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: calc(var(--map-panel-width) + var(--map-tab-width));
+  max-width: none;
+  max-height: calc(100% - 110px);
+  pointer-events: none;
+  transform: translate3d(0,0,0);
+  animation: aog-map-panel-open 480ms ease-in-out both;
+  will-change: transform;
+}
+.aog-map-panel-wrap.is-collapsed {
+  transform: translate3d(calc(3px - var(--map-panel-width)),0,0);
+  animation: aog-map-panel-close 480ms ease-in-out both;
+}
+.aog-map-panel-wrap > .aog-map-sidebar {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  top: auto;
+  left: auto;
+  flex: 0 0 var(--map-panel-width);
+  width: var(--map-panel-width);
+  max-width: none;
+  margin: 0;
+  padding: 14px 14px 12px 12px;
+  max-height: calc(100dvh - 190px);
+  transform: none;
+  opacity: 1;
+  border: 3px solid var(--map-accent);
+  border-left: 0;
+  border-radius: 0 0 14px 0;
+  background: #080808;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--map-accent) transparent;
+  pointer-events: auto;
+  transition: none;
+}
+.aog-map-panel-wrap.is-collapsed > .aog-map-sidebar { pointer-events: none; }
+.aog-map-panel-wrap > .aog-map-panel-toggle,
+.aog-map-panel-wrap.is-collapsed > .aog-map-panel-toggle {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 3;
+  flex: 0 0 var(--map-tab-width);
+  width: var(--map-tab-width);
+  min-width: var(--map-tab-width);
+  height: var(--map-tab-height);
+  margin: 0 0 0 -3px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--map-accent);
+  border-left: 0;
+  border-radius: 0 13px 13px 0;
+  background: #080808;
+  color: var(--map-accent);
+  pointer-events: auto;
+  cursor: pointer;
+  transform: none;
+}
+/* Tapar SOLO el segmento de borde compartido: sin tocar la línea superior.
+   Se dibuja sobre el contenedor, no sobre la sidebar con scroll. */
+.aog-map-panel-wrap::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  left: calc(var(--map-panel-width) - 4px);
+  top: 3px;
+  width: 5px;
+  height: calc(var(--map-tab-height) - 6px);
+  background: #080808;
+  pointer-events: none;
+}
+.aog-map-panel-wrap > .aog-map-panel-toggle::before { content: none; display: none; }
+.aog-map-panel-wrap > .aog-map-panel-toggle .aog-map-chevron { position: relative; z-index: 4; }
+.aog-map-panel-wrap > .aog-map-sidebar > .aog-map-travel {
+  width: 100%;
+  max-width: 100%;
+  margin: 12px 0 0;
+  align-self: stretch;
+}
+@media (max-width:720px) {
+  .aog-map-panel-wrap {
+    --map-panel-width: 182px;
+    --map-tab-width: 30px;
+    --map-tab-height: 43px;
+    top: 55px;
+    max-height: calc(100% - 135px);
+  }
+  .aog-map-panel-wrap > .aog-map-sidebar {
+    padding: 9px 8px 8px 7px;
+    max-height: calc(100dvh - 220px);
+  }
+}
+/* Dos animaciones distintas: React cambia is-collapsed sin desmontar el panel. */
+@keyframes aog-map-panel-close {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(calc(3px - var(--map-panel-width)),0,0); }
+}
+@keyframes aog-map-panel-open {
+  from { transform: translate3d(calc(3px - var(--map-panel-width)),0,0); }
+  to { transform: translate3d(0,0,0); }
+}
+

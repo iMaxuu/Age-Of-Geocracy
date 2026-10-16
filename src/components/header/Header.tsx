@@ -1,257 +1,97 @@
-import { MailIcon, SettingsIcon, ShopIcon, UserIcon } from './icons';
-import { PlayerStatCard } from './PlayerStatCard';
+import { useState } from 'react';
+import './header.css';
 
 export type HeaderAction = 'messages' | 'profile' | 'shop' | 'settings';
-
-export type HeaderSection =
-  | 'home'
-  | 'map'
-  | 'nation'
-  | 'region'
-  | 'territory'
-  | 'party'
-  | 'coalition'
-  | 'news'
-  | 'wars'
-  | 'work'
-  | 'storage';
+export type HeaderSection = 'home' | 'map' | 'nation' | 'region' | 'territory' | 'party' | 'coalition' | 'news' | 'wars' | 'work' | 'storage';
 
 type HeaderProps = {
   activeSection?: HeaderSection | HeaderAction;
-  level?: number;
-  money?: number;
-  geocracy?: number;
+  level?: number; money?: number; geocracy?: number;
+  playerName?: string;
   profileImageUrl?: string | null;
-  xp?: number;
-  xpRequired?: number;
-  energy?: number;
-  energyMax?: number;
+  xp?: number; xpRequired?: number; energy?: number; energyMax?: number;
   version?: string;
+  unreadMessages?: number; messageFlashKey?: number;
   onNavigate?: (section: HeaderSection) => void;
   onLink?: (path: string, event: React.MouseEvent<HTMLAnchorElement>) => void;
-  onMail?: () => void;
-  onProfile?: () => void;
-  onShop?: () => void;
-  onSettings?: () => void;
+  onMail?: () => void; onProfile?: () => void; onShop?: () => void; onSettings?: () => void;
 };
 
-type NavItem = {
-  key: HeaderSection;
-  label: string;
-};
-
-const NAV_ITEMS: NavItem[] = [
-  { key: 'home', label: 'INICIO' },
-  { key: 'map', label: 'MAPA' },
-  { key: 'nation', label: 'NACIÓN' },
-  { key: 'region', label: 'REGIÓN' },
-  { key: 'territory', label: 'TERRITORIO' },
-  { key: 'party', label: 'PARTIDO' },
-  { key: 'coalition', label: 'COALICIÓN' },
-  { key: 'news', label: 'NOTICIAS' },
-  { key: 'wars', label: 'GUERRAS' },
-  { key: 'work', label: 'TRABAJO' },
-  { key: 'storage', label: 'ALMACÉN' },
+type Item = { key: HeaderSection | 'profile'; label: string; file: string; path: string; fallback: string };
+const items: Item[] = [
+  {key:'home',label:'INICIO',file:'home.svg',path:'/home',fallback:'⌂'},
+  {key:'map',label:'MAPA',file:'map.svg',path:'/map',fallback:'◎'},
+  {key:'nation',label:'NACIÓN',file:'nation.svg',path:'/nation',fallback:'⚑'},
+  {key:'region',label:'REGIÓN',file:'region.svg',path:'/region',fallback:'♧'},
+  {key:'territory',label:'TERRITORIO',file:'territory.svg',path:'/territory',fallback:'●'},
+  {key:'party',label:'PARTIDO',file:'party.svg',path:'/party',fallback:'●'},
+  {key:'coalition',label:'COALICIÓN',file:'coalition.svg',path:'/coalition',fallback:'●'},
+  {key:'news',label:'NOTICIAS',file:'news.svg',path:'/news',fallback:'●'},
+  {key:'wars',label:'GUERRAS',file:'war.svg',path:'/wars',fallback:'●'},
+  {key:'work',label:'TRABAJO',file:'work.svg',path:'/work',fallback:'●'},
+  {key:'storage',label:'ALMACÉN',file:'storage.svg',path:'/storage',fallback:'●'},
+  {key:'profile',label:'PERFIL',file:'profile.svg',path:'/profile',fallback:'♟'},
 ];
-
-const numberFormatter = new Intl.NumberFormat('es-AR');
-
-function formatNumber(value: number) {
-  return numberFormatter.format(Math.max(0, Math.floor(value)));
+const formatNumber = (n:number) => new Intl.NumberFormat('es-AR').format(Math.max(0,Math.floor(n)));
+function AssetIcon({file,fallback,className=''}:{file:string;fallback:string;className?:string}) {
+  const [broken,setBroken]=useState(false);
+  const url = `/assets/icons/topbar/${file}`;
+  return broken ? <span className={`aog-topbar-icon-fallback ${className}`} aria-hidden="true">{fallback}</span> :
+    <span className={`aog-topbar-svg-mask ${className}`} aria-hidden="true" style={{maskImage:`url("${url}")`,WebkitMaskImage:`url("${url}")`}}>
+      <img className="aog-topbar-svg-preload" src={url} alt="" onError={()=>setBroken(true)} draggable={false}/>
+    </span>;
 }
-
-function NavButton({
-  item,
-  active,
-  href,
-  onClick,
-}: {
-  item: NavItem;
-  active: boolean;
-  href: string;
-  onClick: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-}) {
-  return (
-    <a
-      href={href}
-      aria-current={active ? 'page' : undefined}
-      onClick={onClick}
-      className={`
-        flex h-8 w-[118px] shrink-0 items-center justify-center rounded-[999px] border-2 border-[var(--aog-accent)] lg:w-auto lg:min-w-0 lg:flex-1
-        px-1.5 text-center text-[clamp(9px,0.68vw,12px)] font-black tracking-[0.01em]
-        text-[var(--aog-accent)] whitespace-nowrap
-        transition-[background,color,transform] duration-150
-        hover:bg-[color-mix(in_srgb,var(--aog-accent)_16%,transparent)]
-        active:scale-[0.98]
-        ${active ? 'bg-[color-mix(in_srgb,var(--aog-accent)_13%,transparent)]' : 'bg-black'}
-      `}
-    >
-      {item.label}
-    </a>
-  );
-}
-
-function ActionButton({
-  label,
-  onClick,
-  href,
-  active,
-  children,
-}: {
-  label: string;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-  href: string;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      aria-label={label}
-      aria-current={active ? 'page' : undefined}
-      onClick={onClick}
-      className={`grid h-8 w-[clamp(36px,2.65vw,44px)] shrink-0 place-items-center rounded-[999px] border-2 border-[var(--aog-accent)] text-[var(--aog-accent)] transition-colors hover:bg-[color-mix(in_srgb,var(--aog-accent)_16%,transparent)] ${active ? 'bg-[color-mix(in_srgb,var(--aog-accent)_20%,transparent)]' : 'bg-black'}`}
-    >
-      {children}
-    </a>
-  );
-}
-
-export function Header({
-  activeSection = 'home',
-  level = 1,
-  money = 25_000,
-  geocracy = 500_000,
-  profileImageUrl = null,
-  xp = 35,
-  xpRequired = 100,
-  energy = 72,
-  energyMax = 100,
-  version = 'PRE-ALPHA v0.0.3',
-  onNavigate,
-  onLink,
-  onMail,
-  onProfile,
-  onShop,
-  onSettings,
-}: HeaderProps) {
-  const xpProgress = xpRequired > 0 ? (xp / xpRequired) * 100 : 0;
-  const energyProgress = energyMax > 0 ? (energy / energyMax) * 100 : 0;
-
-  return (
-    <header className="relative z-40 w-full border-b-[3px] border-[var(--aog-accent)] bg-black text-white md:sticky md:top-0 md:z-50">
-      <div className="mx-auto flex min-h-[76px] w-full items-start gap-2 px-1.5 pt-1.5 max-md:relative max-md:min-h-[96px] max-md:gap-1.5 max-md:pt-[48px] max-md:pb-1">
-        <div className="flex shrink-0 gap-2 max-md:gap-[5px]">
-          <div className="max-md:relative max-md:h-[41px] max-md:w-[42px] max-md:shrink-0">
-            <div className="max-md:absolute max-md:left-0 max-md:top-0 max-md:origin-top-left max-md:scale-[0.6]">
-          <PlayerStatCard
-            value={level}
-            progress={xpProgress}
-            ariaLabel={`Nivel ${Math.max(1, Math.floor(level))}. Experiencia ${Math.max(0, Math.floor(xp))} de ${Math.max(1, Math.floor(xpRequired))}.`}
-          />
-            </div>
-          </div>
-
-          <div className="max-md:relative max-md:h-[41px] max-md:w-[42px] max-md:shrink-0">
-            <div className="max-md:absolute max-md:left-0 max-md:top-0 max-md:origin-top-left max-md:scale-[0.6]">
-          <PlayerStatCard
-            label=""
-            imageUrl={profileImageUrl || "/assets/photos/nophoto.png"}
-            progress={energyProgress}
-            ariaLabel={`Abrir perfil. Energía ${Math.max(0, Math.floor(energy))} de ${Math.max(1, Math.floor(energyMax))}.`}
-            onClick={onProfile}
-            />
-            </div>
+export function Header({activeSection='home',level=1,money=25_000,geocracy=5_000,playerName='JUGADOR',profileImageUrl=null,xp=0,xpRequired=100,energy=0,energyMax=100,version='PRE-ALPHA v0.0.3',unreadMessages=0,messageFlashKey=0,onNavigate,onLink,onMail,onProfile,onShop,onSettings}:HeaderProps){
+  const xpPct = xpRequired>0 ? Math.max(0,Math.min(100,xp/xpRequired*100)) : 0;
+  const energyPct = energyMax>0 ? Math.max(0,Math.min(100,energy/energyMax*100)) : 0;
+  const follow=(path:string,event:React.MouseEvent<HTMLAnchorElement>,fn?:()=>void,key?:HeaderSection)=>{
+    if(event.button!==0 || event.ctrlKey||event.metaKey||event.altKey||event.shiftKey)return;
+    if(onLink){onLink(path,event);return;}
+    event.preventDefault();if(fn)fn();else if(key)onNavigate?.(key);
+  };
+  const tools = [
+    {label:'Configuración',path:'/settings',file:'settings.svg',fallback:'⚙',fn:onSettings},
+    {label:'Notificaciones',path:'/notifications',file:'notifications.svg',fallback:'♟',fn:undefined},
+    {label:'Mensajes',path:'/messages',file:'messages.svg',fallback:'✉',fn:onMail},
+  ];
+  const toolClass = (file:string) => file==='messages.svg' && unreadMessages>0 ? `aog-messages-unread ${messageFlashKey?'aog-messages-flash':''}` : '';
+  const toolLabel = (label:string) => label==='Mensajes' && unreadMessages>0 ? `Mensajes (${unreadMessages} sin leer)` : label;
+  return <header className="aog-topbar" aria-label="Barra principal de Age of Geocracy">
+    <div className="aog-topbar-content">
+      <div className="aog-topbar-player-zone">
+        <div className="aog-topbar-player-card">
+          <div className="aog-topbar-level-track" title={`Energía: ${formatNumber(energy)} / ${formatNumber(energyMax)}`} style={{'--aog-energy-fill':`${energyPct}%`} as React.CSSProperties} />
+          <a className="aog-topbar-avatar" href="/profile" onClick={e=>follow('/profile',e,onProfile)} title="Abrir perfil">
+            <img src={profileImageUrl||'/assets/photos/nophoto.png'} alt="Foto de perfil" />
+          </a>
+          <div className="aog-topbar-player-data">
+            <div className="aog-topbar-name" title={playerName}>{playerName}</div>
+            <span className="aog-topbar-level">NIVEL {formatNumber(level)}</span>
+            <div className="aog-topbar-energy" title={`Experiencia: ${formatNumber(xp)} / ${formatNumber(xpRequired)}`}><span style={{width:`${xpPct}%`}}/></div>
+            <span className="aog-topbar-money">$ {formatNumber(money)}</span>
+            <span className="aog-topbar-gold">G {formatNumber(geocracy)}</span>
           </div>
         </div>
-
-        <div className="min-w-[170px] shrink-0 pt-2 font-black leading-none max-md:min-w-0 max-md:pt-1">
-          <div className="text-[20px] tracking-[0.02em] text-[var(--aog-accent)] max-md:text-[12px]">
-            $ {formatNumber(money)}
-          </div>
-          <div className="mt-2 text-[20px] tracking-[0.02em] text-[var(--aog-gold)] max-md:mt-1 max-md:text-[12px]">
-            G {formatNumber(geocracy)}
-          </div>
-        </div>
-
-        <div className="ml-auto flex min-w-0 flex-col items-end pr-1 pt-1 text-right max-md:absolute max-md:top-[5px] max-md:left-0 max-md:right-0 max-md:ml-0 max-md:w-full max-md:items-center max-md:pr-0 max-md:pt-0 max-md:text-center">
-          <div className="max-w-full whitespace-nowrap font-black tracking-[-0.025em] text-[30px] leading-[0.95] text-[var(--aog-accent)] max-md:text-[clamp(15px,3.9vw,21px)] lg:text-[31px]">
-            AGE OF GEOCRACY
-          </div>
-          <div className="mt-1 text-[15px] font-black tracking-[0.08em] text-[var(--aog-accent)] max-md:mt-1 max-md:text-[9px]">
-            {version}
-          </div>
+        <div className="aog-topbar-quick-actions" aria-label="Accesos rápidos">
+          {tools.map(t=><a key={`${t.label}-${t.file==='messages.svg'?messageFlashKey:0}`} className={toolClass(t.file)} href={t.path} title={toolLabel(t.label)} aria-label={toolLabel(t.label)} onClick={e=>follow(t.path,e,t.fn)}>
+            <AssetIcon file={t.file} fallback={t.fallback}/>
+          </a>)}
         </div>
       </div>
-
-      <div className="flex min-h-[41px] w-full items-center gap-1 overflow-x-auto overflow-y-hidden px-1.5 pb-1.5 [scrollbar-width:thin] lg:overflow-x-hidden">
-        <nav className="flex w-max shrink-0 items-center gap-1 lg:w-auto lg:min-w-0 lg:flex-1" aria-label="Navegación principal">
-          {NAV_ITEMS.map((item) => (
-            <NavButton
-              key={item.key}
-              item={item}
-              active={activeSection === item.key}
-              href={`/${item.key}`}
-              onClick={(event) => {
-                if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                if (onLink) onLink(`/${item.key}`, event);
-                else { event.preventDefault(); onNavigate?.(item.key); }
-              }}
-            />
-          ))}
-        </nav>
-
-        <div className="ml-0.5 flex shrink-0 items-center gap-1">
-          <ActionButton
-            label="Mensajes"
-            href="/messages"
-            active={activeSection === 'messages'}
-            onClick={(event) => {
-              if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              if (onLink) onLink('/messages', event);
-              else { event.preventDefault(); onMail?.(); }
-            }}
-          >
-            <MailIcon className="h-6 w-6" />
-          </ActionButton>
-          <ActionButton
-            label="Perfil"
-            href="/profile"
-            active={activeSection === 'profile'}
-            onClick={(event) => {
-              if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              if (onLink) onLink('/profile', event);
-              else { event.preventDefault(); onProfile?.(); }
-            }}
-          >
-            <UserIcon className="h-6 w-6" />
-          </ActionButton>
-          <ActionButton
-            label="Tienda"
-            href="/shop"
-            active={activeSection === 'shop'}
-            onClick={(event) => {
-              if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              if (onLink) onLink('/shop', event);
-              else { event.preventDefault(); onShop?.(); }
-            }}
-          >
-            <ShopIcon className="h-6 w-6" />
-          </ActionButton>
-          <ActionButton
-            label="Configuración"
-            href="/settings"
-            active={activeSection === 'settings'}
-            onClick={(event) => {
-              if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              if (onLink) onLink('/settings', event);
-              else { event.preventDefault(); onSettings?.(); }
-            }}
-          >
-            <SettingsIcon className="h-6 w-6" />
-          </ActionButton>
+      <nav className="aog-topbar-nav" aria-label="Navegación principal">
+        <div className="aog-topbar-mobile-actions" aria-label="Accesos rápidos">
+          {tools.map(t=><a key={`${t.label}-${t.file==='messages.svg'?messageFlashKey:0}`} className={toolClass(t.file)} href={t.path} title={toolLabel(t.label)} aria-label={toolLabel(t.label)} onClick={e=>follow(t.path,e,t.fn)}>
+            <AssetIcon file={t.file} fallback={t.fallback}/>
+          </a>)}
         </div>
-      </div>
-    </header>
-  );
+        <div className="aog-topbar-nav-scroll">
+        {items.map(i=><a key={i.key} href={i.path} className={`aog-topbar-nav-item ${activeSection===i.key?'is-active':''}`} aria-current={activeSection===i.key?'page':undefined} onClick={e=>follow(i.path,e,i.key==='profile'?onProfile:undefined,i.key==='profile'?undefined:i.key)}>
+          <AssetIcon file={i.file} fallback={i.fallback} className="aog-topbar-nav-icon"/>
+          <span>{i.label}</span>
+        </a>)}
+        </div>
+      </nav>
+      <div className="aog-topbar-brand"><div className="aog-topbar-brand-prefix">AGE OF</div><div className="aog-topbar-brand-main">GEOCRACY</div><div className="aog-topbar-brand-version">{version}</div></div>
+    </div>
+  </header>;
 }

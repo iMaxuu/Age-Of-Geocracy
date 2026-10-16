@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { getXp } from '../auth/player';
 import type { Player } from '../auth/player';
 import './profile.css';
+import { ProfileIcon, PROFILE_INFO_ICONS } from './ProfileIcon';
 
 const PHOTO = '/assets/photos/nophoto.png';
 const FLAG = '/assets/photos/noflag.png';
@@ -84,7 +85,7 @@ function EntityPanel({ title, empty, id, label, image, type }: {
     <span>{entityId ? label || `#${entityId}` : empty}</span>
   </>;
   return <section className={`pr-card pr-entity pr-${type}`}>
-    <h2>{title}</h2>
+    <h2><ProfileIcon name={type}/>{title}</h2>
     {entityId
       ? <a className="pr-entity-link" href={`/${type}/${entityId}`}>{content}</a>
       : <div className="pr-entity-link" aria-disabled="true">{content}</div>}
@@ -95,13 +96,13 @@ function InformationCard({ title, children, href }: {
   children: ReactNode;
   href?: string;
 }) {
-  const contents = <><h2>{title}</h2><strong>{children}</strong></>;
+  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong>{children}</strong><small>{title}</small></span></>;
   return href
     ? <a className="pr-card pr-info-card pr-info-link" href={href}>{contents}</a>
     : <section className="pr-card pr-info-card">{contents}</section>;
 }
 
-export default function PublicProfilePage({ playerId }: { playerId: number }) {
+export default function PublicProfilePage({ playerId, onNavigate }: { playerId: number; onNavigate: (path: string) => void }) {
   const [profile, setProfile] = useState<PublicPlayer | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -160,14 +161,14 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
   return <main className="profile-page is-public-profile" aria-label={`Perfil de ${profile.name}`}>
     <section className="pr-top-grid">
       <section className="pr-card pr-documentation">
-        <h2>IDENTIFICACIÓN</h2>
+        <h2><ProfileIcon name="players"/>IDENTIFICACIÓN</h2>
         <div className="pr-documentation-body">
           <div className="pr-avatar-column">
             <div className="pr-photo-button"><img src={profile.photo_url || PHOTO} alt={`Foto de ${profile.name}`} /></div>
+            <strong className="pr-level-label">NIVEL: {xp.level}</strong>
             <div className="pr-level-track" role="progressbar" aria-label="Experiencia"
               aria-valuenow={xp.xp} aria-valuemax={xp.required} aria-valuemin={0}>
               <span style={{ width: `${xpPercentage}%` }} />
-              <strong className="pr-level-number">{xp.level}</strong>
             </div>
           </div>
           <div className="pr-personal">
@@ -175,16 +176,18 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
               <span>{profile.name || `PLAYER #${profile.id}`}</span>
               <span className="pr-id">#{profile.id}</span>
             </div>
+            <div className="pr-ideology-inline">{profile.political_ideology || 'SIN IDEOLOGÍA'}</div>
             <div className="pr-country" title={countryLabel || 'Sin país de origen'}>
               {code ? <img src={`/assets/flags/${code}.svg`} alt={countryLabel || code} /> : 'SIN PAÍS DE ORIGEN'}
             </div>
-            <div className="pr-ideology-inline">{profile.political_ideology || 'SIN IDEOLOGÍA'}</div>
           </div>
+          <div className="pr-actions pr-public-actions"><div className="pr-action-group">
+            <button type="button" onClick={() => onNavigate(`/messages/${profile.id}`)}>ENVIAR MENSAJE</button>
+          </div></div>
         </div>
-      </section>
-      <section className="pr-card pr-biography-card">
-        <h2>BIOGRAFÍA</h2>
-        <div className="pr-biography">{profile.biography || 'SIN BIOGRAFÍA'}</div>
+        <div className="pr-biography-area" aria-label="Biografía">
+          <div className="pr-biography">{profile.biography || 'SIN BIOGRAFÍA'}</div>
+        </div>
       </section>
     </section>
 
@@ -195,8 +198,8 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
       <EntityPanel title="NACIÓN" empty="SIN NACIÓN" id={profile.nation_id} label={profile.nation_name} image={profile.nation_flag} type="nation" />
     </section>
 
-    <section className="pr-section pr-information-section">
-      <h1>DATOS</h1>
+    <section className="pr-section pr-information-section pr-card">
+      <h2><ProfileIcon name="statistics"/>ESTADÍSTICAS DEL JUGADOR</h2>
       <div className="pr-info-grid">
         <InformationCard title="REGISTRO">{formatDate(profile.created_at)}</InformationCard>
         <InformationCard title="EXPERIENCIA">{formatter.format(xp.totalXp)}</InformationCard>
@@ -209,8 +212,7 @@ export default function PublicProfilePage({ playerId }: { playerId: number }) {
       </div>
     </section>
 
-    <section className="pr-section pr-statistics-section">
-      <h1>ESTADÍSTICAS</h1>
+    <section className="pr-section pr-statistics-section" aria-label="Estadísticas">
       <div className="pr-stats">
         {(Object.keys(STAT_LABELS) as (keyof typeof STAT_LABELS)[]).map(key => (
           <section className="pr-card pr-stat-card" key={key}>

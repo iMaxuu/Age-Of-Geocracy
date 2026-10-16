@@ -6,6 +6,7 @@ import { coalitionForParty } from '../coalition/coalitionApi';
 import './profile.css';
 import { FLAG_COUNTRY_CODES } from './countryFlags';
 import { IDEOLOGIES } from './ideologies';
+import { ProfileIcon, PROFILE_INFO_ICONS } from './ProfileIcon';
 
 const PHOTO = '/assets/photos/nophoto.png';
 const FLAG = '/assets/photos/noflag.png';
@@ -104,7 +105,7 @@ function EntityPanel({
     <span>{entity?.label ?? empty}</span>
   </>;
   return <section className={`pr-card pr-entity pr-${type}`}>
-    <h2>{title}</h2>
+    <h2><ProfileIcon name={type}/>{title}</h2>
     {entity?.id
       ? <a className="pr-entity-link" href={`/${type}/${entity.id}`}>{content}</a>
       : <div className="pr-entity-link" aria-disabled="true">{content}</div>}
@@ -114,7 +115,7 @@ function EntityPanel({
 function InformationCard({ title, children, href }: {
   title: string; children: ReactNode; href?: string;
 }) {
-  const contents = <><h2>{title}</h2><strong>{children}</strong></>;
+  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong>{children}</strong><small>{title}</small></span></>;
   return href
     ? <a className="pr-card pr-info-card pr-info-link" href={href}>{contents}</a>
     : <section className="pr-card pr-info-card">{contents}</section>;
@@ -318,7 +319,7 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
   return <main className={`profile-page is-own-profile${editing ? ' is-editing' : ''}`}>
     <section className="pr-top-grid">
       <section className="pr-card pr-documentation">
-        <h2>IDENTIFICACIÓN</h2>
+        <h2><ProfileIcon name="players"/>IDENTIFICACIÓN</h2>
         <div className="pr-documentation-body">
           <div className="pr-avatar-column">
             <button
@@ -327,10 +328,10 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
               disabled={!editing}
               onClick={() => fileInput.current?.click()}
             ><img src={photo || player.photo?.url || PHOTO} alt="Foto del jugador" /></button>
+            <strong className="pr-level-label">NIVEL: {xp.level}</strong>
             <div className="pr-level-track" role="progressbar" aria-label="Experiencia"
               aria-valuenow={xp.xp} aria-valuemax={xp.required} aria-valuemin={0}>
               <span style={{ width: `${xpPercentage}%` }} />
-              <strong className="pr-level-number">{xp.level}</strong>
             </div>
           </div>
           <div className="pr-personal">
@@ -339,6 +340,14 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
                 ? <input className="pr-inline-input pr-inline-name" aria-label="Nombre del jugador" value={name} maxLength={30} onChange={event => setName(event.target.value)} />
                 : <span>{player.name || `PLAYER #${player.id}`}</span>}
               <span className="pr-id">#{player.id}</span>
+            </div>
+            <div className="pr-ideology-inline">
+              {editing
+                ? <select className="pr-inline-select pr-inline-ideology" aria-label="Ideología política" value={ideology} onChange={event => setIdeology(event.target.value)}>
+                    <option value="">SIN IDEOLOGÍA</option>
+                    {IDEOLOGIES.map(item => <option key={item} value={item}>{item.toUpperCase()}</option>)}
+                  </select>
+                : stringOrNull(player.politicalIdeology) ?? 'SIN IDEOLOGÍA'}
             </div>
             <div className="pr-country" title={country ? (countryName(country) || country) : 'Sin país de origen'}>
               {editing
@@ -353,29 +362,20 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
                   ? <img src={`/assets/flags/${player.countryCode.toLowerCase()}.svg`} alt={countryName(player.countryCode) || player.countryCode} />
                   : 'SIN PAÍS DE ORIGEN'}
             </div>
-            <div className="pr-ideology-inline">
-              {editing
-                ? <select className="pr-inline-select pr-inline-ideology" aria-label="Ideología política" value={ideology} onChange={event => setIdeology(event.target.value)}>
-                    <option value="">SIN IDEOLOGÍA</option>
-                    {IDEOLOGIES.map(item => <option key={item} value={item}>{item.toUpperCase()}</option>)}
-                  </select>
-                : stringOrNull(player.politicalIdeology) ?? 'SIN IDEOLOGÍA'}
-            </div>
           </div>
           <div className="pr-actions">
             {editing
               ? <div className="pr-action-group"><button type="button" className="pr-green" onClick={save}>GUARDAR</button><button type="button" onClick={cancelEdit}>CANCELAR</button></div>
-              : <div className="pr-action-group"><button type="button" className="pr-red" onClick={onLogout}>CERRAR SESIÓN</button><button type="button" className="pr-edit-icon" onClick={beginEdit} aria-label="Editar perfil" title="Editar perfil">✎</button></div>}
+              : <div className="pr-action-group"><button type="button" className="pr-red" onClick={onLogout}>CERRAR SESIÓN</button><button type="button" onClick={beginEdit}>EDITAR</button></div>}
           </div>
         </div>
+        <div className="pr-biography-area" aria-label="Biografía">
+          {editing
+            ? <textarea className="pr-control pr-biography-input" rows={5} maxLength={500} value={biography} onChange={event => setBiography(event.target.value)} placeholder="Biografía (máximo 500 caracteres)" />
+            : <div className="pr-biography">{player.biography || 'SIN BIOGRAFÍA'}</div>}
+          {editing && <small className="pr-character-count">{biography.length}/500</small>}
+        </div>
         <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={choosePhoto} />
-      </section>
-      <section className="pr-card pr-biography-card">
-        <h2>BIOGRAFÍA</h2>
-        {editing
-          ? <textarea className="pr-control pr-biography-input" rows={7} maxLength={500} value={biography} onChange={event => setBiography(event.target.value)} placeholder="Biografía (máximo 500 caracteres)" />
-          : <div className="pr-biography">{player.biography || 'SIN BIOGRAFÍA'}</div>}
-        {editing && <small className="pr-character-count">{biography.length}/500</small>}
       </section>
     </section>
 
@@ -410,8 +410,8 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
       <EntityPanel title="NACIÓN" empty="SIN NACIÓN" entity={currentNation} type="nation" />
     </section>
 
-    <section className="pr-section pr-information-section">
-      <h1>DATOS</h1>
+    <section className="pr-section pr-information-section pr-card">
+      <h2><ProfileIcon name="statistics"/>ESTADÍSTICAS DEL JUGADOR</h2>
       <div className="pr-info-grid">
         <InformationCard title="REGISTRO">{formatDate(player.createdAt)}</InformationCard>
         <InformationCard title="EXPERIENCIA">{formatter.format(xp.totalXp)}</InformationCard>
@@ -424,8 +424,7 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
       </div>
     </section>
 
-    <section className="pr-section pr-statistics-section">
-      <h1>ESTADÍSTICAS</h1>
+    <section className="pr-section pr-statistics-section" aria-label="Estadísticas y entrenamiento">
       <div className="pr-stats">
         {(Object.keys(STAT_LABELS) as StatKey[]).map(key => {
           const currentLevel = Math.max(1, numeric(stat[key], 1));

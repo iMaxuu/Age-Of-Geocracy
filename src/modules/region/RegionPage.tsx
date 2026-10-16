@@ -23,6 +23,8 @@ type Official = {
   coalition_name?: string | null;
 };
 type Census = { players_count: number; citizens_count: number; parties_count: number };
+type GovernorElection={id:number;pre_starts_at:string;voting_starts_at:string;voting_ends_at:string;completed_at:string|null};
+const timerText=(date:string,now:number)=>{const seconds=Math.max(0,Math.floor((new Date(date).getTime()-now)/1000));return `${Math.floor(seconds/86400)}D ${String(Math.floor(seconds%86400/3600)).padStart(2,'0')}:${String(Math.floor(seconds%3600/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;};
 type State = 'loading' | 'ready' | 'error';
 const FLAG = '/assets/photos/noflag.png';
 const PHOTO = '/assets/photos/nouser.png';
@@ -122,6 +124,11 @@ function OfficialCard({ role, person, state, isCapital = false }: {
 
 export default function RegionPage() {
   const [region, setRegion] = useState<Region | null>(null);
+  const [nationName, setNationName] = useState<string>('');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [governorElections,setGovernorElections]=useState<GovernorElection[]>([]);
+  const [electionError,setElectionError]=useState('');
+  const [timeNow,setTimeNow]=useState(Date.now());
   const [flag, setFlag] = useState<string | null>(null);
   const [message, setMessage] = useState('CARGANDO REGIÓN...');
   const [governor, setGovernor] = useState<Official | null>(null);
@@ -168,6 +175,9 @@ export default function RegionPage() {
         const current = row as Region;
         setRegion(current);
         setMessage('');
+        void supabase.from('aog_founded_nations').select('name').eq('id',current.nation_id).maybeSingle().then(({data})=>{
+          if(active) setNationName(data?.name || `NATION #${current.nation_id}`);
+        });
         const [flagResult, countResult] = await Promise.all([
           supabase.from('map_territory_politics').select('region_flag')
             .eq('territory_id', current.founding_territory_id).maybeSingle(),
@@ -246,49 +256,93 @@ export default function RegionPage() {
     return () => { active = false; window.clearInterval(interval); };
   }, [region?.id]);
 
+  useEffect(()=>{const id=region?.id;if(!id)return;let active=true;const fetchElections=async()=>{const {data,error}=await supabase.rpc('aog_governor_region_elections',{p_region_id:id});if(!active)return;if(error){setElectionError(error.message);return;}setElectionError('');setGovernorElections((data||[]) as GovernorElection[]);};void fetchElections();const refresh=window.setInterval(()=>void fetchElections(),15000);const clock=window.setInterval(()=>setTimeNow(Date.now()),1000);return()=>{active=false;clearInterval(refresh);clearInterval(clock)}},[region?.id]);
+  const currentGovernorElections=governorElections.filter(e=>!e.completed_at && new Date(e.voting_ends_at).getTime()>timeNow && new Date(e.pre_starts_at).getTime()<=timeNow);
+  const lastGovernorElection=governorElections.filter(e=>Boolean(e.completed_at)).sort((a,b)=>new Date(b.voting_ends_at).getTime()-new Date(a.voting_ends_at).getTime())[0];
+  const nextGovernorElection=governorElections.filter(e=>!e.completed_at && new Date(e.voting_starts_at).getTime()>timeNow).sort((a,b)=>new Date(a.voting_starts_at).getTime()-new Date(b.voting_starts_at).getTime())[0];
+  const electoralDate=(date?:string)=>date?new Date(date).toLocaleDateString('es-AR'):'—';
+
   const factValue = (value: number | null | undefined) =>
     populationState === 'loading' ? 'CARGANDO' : value == null ? '—' : format.format(value);
 
-  return <main className="aog-nation-page aog-region-page">
-    {message && !region ? <p className="aog-nation-status" role="status">{message}</p> : <>
-      <h1>GOBIERNO</h1>
-      <div className="aog-nation-top">
-        <Panel title="REGIÓN" className="aog-nation-identity">
-          <Picture className="aog-nation-flag" src={flag} fallback={FLAG} alt="Bandera regional" />
-          <strong>{regionName(region)}</strong>
-        </Panel>
-        <Panel title="ELECCIONES"><p className="aog-nation-pending">SIN ELECCIONES CONFIGURADAS</p></Panel>
-        <OfficialCard role="GOBERNADOR" person={governor} state={governorState} isCapital={region?.is_capital} />
-        <OfficialCard role="VICEGOBERNADOR" person={vice} state={viceState} isCapital={region?.is_capital} />
+  const title=(person:Official|null,role:string,state:State)=><div className="aog-nation-red-official">
+    <div className="aog-nation-red-role">{role}</div><div className="aog-nation-red-person">
+      <a href={person?`/profile?id=${person.id}`:'#'} onClick={e=>{if(!person)e.preventDefault()}}>
+        <Picture className="aog-nation-red-person-photo" src={person?.photo_url} fallback={PHOTO} alt={role}/>
+      </a>
+      <div className="aog-nation-red-person-info">{region?.is_capital?'BAJO ADMINISTRACIÓN NACIONAL':state==='loading'?'CARGANDO':state==='error'?'NO DISPONIBLE':person?<>
+      <a href={`/profile?id=${person.id}`} className="aog-nation-red-person-name">{person.name}</a>
+      <span>{person.party_name?`PARTIDO ${person.party_name}`:'SIN PARTIDO'}</span>
+      {person.coalition_name&&<span>COALICIÓN {person.coalition_name}</span>}
+      </>:'VACANTE'}</div></div></div>;
+  const formatDate=(value?:string|null)=>value?new Date(value).toLocaleDateString('es-AR'):'—';
+  const numbers:[string,string,string][]=[
+    ['JUGADORES',factValue(population?.players_count),'players'],
+    ['CIUDADANOS',factValue(population?.citizens_count),'players'],
+    ['TERRITORIOS',territories==null?'—':format.format(territories),'territory'],
+    ['PARTIDOS',factValue(population?.parties_count),'party'],
+    ['CLUBES','—','clubs'],
+  ];
+  const electionsList=<div className="aog-region-red-election-list">
+    {electionError?<p>NO SE PUDIERON CARGAR LAS ELECCIONES</p>:region?.is_capital?<p>ADMINISTRACIÓN NACIONAL</p>:currentGovernorElections.length===0?<p>SIN ELECCIONES ACTIVAS</p>:
+      currentGovernorElections.map(e=>{const voting=timeNow>=new Date(e.voting_starts_at).getTime();return <a href={`/election?type=governor&id=${e.id}`} key={e.id} className="aog-region-red-election">
+        <span>ELECCIÓN DE GOBERNADOR</span><span>{voting?'EN VOTACIÓN':'EN PREPARACIÓN'}</span>
+        <span className="aog-region-red-election-clock">{timerText(voting?e.voting_ends_at:e.voting_starts_at,timeNow)}</span>
+      </a>})}
+    <div className="aog-region-red-parliament-pending"><span>ELECCIONES PARLAMENTARIAS</span><span>PRÓXIMAMENTE</span></div>
+  </div>;
+  return <main className="aog-nation-page aog-nation-redesign aog-region-redesign">
+    {message&&!region?<p className="aog-nation-status" role="status">{message}</p>:<>
+    <section className="aog-nation-red-hero">
+      <Picture className="aog-nation-red-hero-flag" src={flag} fallback={FLAG} alt="Bandera regional"/>
+      <div className="aog-nation-red-hero-info"><h1>{regionName(region)}</h1>
+        <div className="aog-nation-red-government-type"><a href={`/nation?id=${region?.nation_id}`}>{nationName||'NACIÓN'}</a></div>
+        <div className="aog-nation-red-hero-facts">
+          <div><span className="aog-nation-red-hero-emoji aog-nation-svg-icon aog-nation-icon-territory" aria-hidden="true"/><div><span>TERRITORIOS</span><b>{territories==null?'—':format.format(territories)}</b></div></div>
+          <div><span className="aog-nation-red-hero-emoji aog-nation-svg-icon aog-nation-icon-foundation" aria-hidden="true"/><div><span>FUNDACIÓN</span><b>—</b></div></div>
+          <div><span className="aog-nation-red-hero-emoji aog-nation-svg-icon aog-nation-icon-players" aria-hidden="true"/><div><span>CIUDADANOS</span><b>{factValue(population?.citizens_count)}</b></div></div>
+        </div></div>
+    </section>
+    <div className="aog-nation-red-layout aog-region-red-layout">
+      <section className="aog-nation-red-panel aog-nation-red-government">
+        <h2><span className="aog-nation-svg-icon aog-nation-icon-players" aria-hidden="true"/>GOBIERNO</h2>
+        <div className="aog-nation-red-panel-body">
+          {title(governor,'GOBERNADOR',governorState)}
+          {title(vice,'VICEGOBERNADOR',viceState)}
+          <div className="aog-nation-red-ministers"><span>MINISTROS</span><p>{ministersLoading?'CARGANDO...':region?.is_capital?'ADMINISTRACIÓN NACIONAL':'SIN MINISTROS'}</p></div>
+        </div>
+      </section>
+      <div className="aog-nation-red-column">
+        <section className="aog-nation-red-panel aog-nation-red-parliament"><h2><span className="aog-nation-svg-icon aog-nation-icon-parliaments" aria-hidden="true"/>PARLAMENTO</h2><div className="aog-nation-red-panel-body aog-nation-red-center">SIN PARLAMENTO</div></section>
+        <section className="aog-nation-red-panel aog-nation-red-placeholder"><h2><span className="aog-nation-svg-icon aog-nation-icon-organizations" aria-hidden="true"/>INSTITUCIONES Y LEYES</h2><div className="aog-nation-red-panel-body aog-nation-red-center">PRÓXIMAMENTE</div></section>
       </div>
-      <h2>MINISTROS</h2>
-      <div className="aog-nation-ministers">
-        {['ECONOMÍA', 'MIGRACIÓN', 'INFRAESTRUCTURA', 'DEFENSA'].map(name =>
-          <Panel key={name} title={name}>
-            <div className="aog-nation-official">
-              <Picture className="aog-nation-avatar" fallback={PHOTO} alt={name} />
-              <span>{ministersLoading ? 'CARGANDO' : region?.is_capital ? 'ADMINISTRACIÓN NACIONAL' : 'VACANTE'}</span>
-            </div>
-          </Panel>)}
+      <div className="aog-nation-red-column">
+        <section className="aog-nation-red-panel aog-nation-red-votes"><h2><span className="aog-nation-svg-icon aog-nation-icon-events" aria-hidden="true"/>ELECCIONES</h2><div className="aog-nation-red-panel-body aog-region-red-voting-body">
+          {electionsList}
+          <button type="button" className="aog-nation-modal-trigger" onClick={()=>setCalendarOpen(true)}>VER CALENDARIO ELECTORAL</button>
+        </div></section>
+        <section className="aog-nation-red-panel aog-nation-red-placeholder"><h2><span className="aog-nation-svg-icon aog-nation-icon-news" aria-hidden="true"/>HISTORIAL REGIONAL</h2><div className="aog-nation-red-panel-body aog-nation-red-center">PRÓXIMAMENTE</div></section>
       </div>
-      <h2>REGIÓN</h2>
-      <Panel title="PARLAMENTO" className="aog-nation-parliament">
-        <p className="aog-nation-pending">SIN PARLAMENTO</p>
-      </Panel>
-      <div className="aog-nation-facts">
-        {([
-          ['JUGADORES', factValue(population?.players_count)],
-          ['CIUDADANOS', factValue(population?.citizens_count)],
-          ['PARTIDOS', factValue(population?.parties_count)],
-          ['FÁBRICAS', '—'],
-          ['TERRITORIOS', territories == null ? 'CARGANDO' : format.format(territories)],
-          ['CLUBES', '—'],
-          ['ÚLTIMA ELECCIÓN PAR.', '—'],
-          ['PRÓXIMA ELECCIÓN PAR.', '—'],
-          ['ÚLTIMA ELECCIÓN GOB.', '—'],
-          ['PRÓXIMA ELECCIÓN GOB.', '—'],
-        ] as const).map(([label, value]) => <Panel key={label} title={label}><strong>{value}</strong></Panel>)}
-      </div>
+    </div>
+    <section className="aog-nation-red-panel aog-nation-red-statistics"><h2><span className="aog-nation-svg-icon aog-nation-icon-statistics" aria-hidden="true"/>ESTADÍSTICAS REGIONALES</h2>
+      <div className="aog-nation-red-stat-grid">{numbers.map(([label,value,icon])=><div className="aog-nation-red-stat" key={label}>
+        <span className={`aog-nation-red-stat-icon aog-nation-stat-${icon}`} aria-hidden="true"/>
+        <span className="aog-nation-red-stat-value">{value}<small>{label}</small></span>
+      </div>)}</div>
+      <div className="aog-nation-red-election-dates"><span>ÚLT. GOBERNADOR: {electoralDate(lastGovernorElection?.completed_at||undefined)}</span><span>PRÓX. GOBERNADOR: {electoralDate(nextGovernorElection?.voting_starts_at)}</span></div>
+    </section>
+    {calendarOpen&&<div className="aog-nation-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setCalendarOpen(false)}}>
+      <section className="aog-nation-modal" role="dialog" aria-modal="true" aria-label="CALENDARIO ELECTORAL REGIONAL">
+        <header className="aog-nation-modal-heading"><h2>CALENDARIO ELECTORAL</h2><button type="button" onClick={()=>setCalendarOpen(false)} aria-label="Cerrar">×</button></header>
+        <div className="aog-nation-modal-content"><h3>ELECCIONES DE GOBERNADOR</h3>
+        {region?.is_capital?<p>REGIÓN BAJO ADMINISTRACIÓN NACIONAL</p>:electionError?<p>NO SE PUDIERON CARGAR LAS ELECCIONES</p>:governorElections.length===0?<p>SIN ELECCIONES REGISTRADAS</p>:[...governorElections].sort((a,b)=>new Date(b.voting_starts_at).getTime()-new Date(a.voting_starts_at).getTime()).map(e=>{
+          const ended=Boolean(e.completed_at)||new Date(e.voting_ends_at).getTime()<=timeNow;
+          const voting=!ended&&new Date(e.voting_starts_at).getTime()<=timeNow;
+          return <a key={e.id} href={`/election?type=governor&id=${e.id}`} className="aog-nation-calendar-row"><div><span>ELECCIÓN DE GOBERNADOR</span><small>{ended?'FINALIZADA':voting?'EN VOTACIÓN':'EN PREPARACIÓN'}</small></div><div><span>{formatDate(e.voting_starts_at)}</span><small>{ended?'VER RESULTADOS':timerText(voting?e.voting_ends_at:e.voting_starts_at,timeNow)}</small></div></a>
+        })}
+        <h3>ELECCIONES PARLAMENTARIAS</h3><p>PRÓXIMAMENTE</p>
+        </div>
+      </section></div>}
     </>}
   </main>;
 }

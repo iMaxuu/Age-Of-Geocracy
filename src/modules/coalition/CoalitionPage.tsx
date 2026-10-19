@@ -8,9 +8,11 @@ import {
   ownCoalition, updateCoalition, uploadCoalitionLogo,
   type CoalitionParty, type CoalitionSummary, type CoalitionDetail, type MyCoalitionState,
 } from './coalitionApi';
+import OrganizationHeading from '../party/OrganizationHeading';
 import '../home/home.css';
 import '../party/party.css'; // Reutiliza EXACTAMENTE curvas, tamaños y CSS de Party.
 import './coalition.css';
+import '../party/organization-redesign.css';
 
 const DEFAULT_PHOTO='/assets/photos/nophoto.png';
 const PAGE_SIZE=8;
@@ -260,12 +262,13 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
       <button type="button" disabled={busy} onClick={()=>setMode('normal')}>CANCELAR</button></div>
   </form>;
 
-  return <main className="aog-party aog-coalition" aria-label="Coaliciones políticas">
+  return <main className="aog-party aog-coalition aog-org-modern" aria-label="Coaliciones políticas">
     {error&&<p className="aog-party-feedback" role="alert">{error}</p>}
     {notice&&<p className="aog-party-feedback aog-party-notice" role="status">{notice}</p>}
     {loading&&!detail&&<p className="aog-party-loading">CARGANDO COALICIONES...</p>}
     {!selectedId&&mode==='create'&&my.party_id&&my.is_party_leader&&!my.coalition_id&&createEditor}
-    {!selectedId&&mode!=='create'&&<>
+    {!selectedId&&mode!=='create'&&<section className="aog-org-directory-panel">
+      <OrganizationHeading title="COALICIONES" icon="coalition"/>
       <div className="aog-party-findbar">
         <input value={query} onChange={e=>{requestSerial.current++;setHasMore(false);setLoadingList(false);setQuery(e.target.value);}}
           placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar coaliciones"/>
@@ -283,9 +286,10 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
       {!loading&&!coalitions.length&&<p className="aog-party-empty">NO SE ENCONTRARON COALICIONES.</p>}
       {loadingList&&<p className="aog-party-loading">CARGANDO COALICIONES...</p>}
       {hasMore&&<div className="aog-party-load-marker" ref={marker} aria-hidden="true"/>}
-    </>}
+    </section>}
     {selectedId&&detail&&<>
       <section className="aog-org-hero" aria-label="Datos de la coalición">
+        <OrganizationHeading title="COALICIÓN" icon="coalition"/>
         {isEditing
           ? <button className="aog-org-logo-edit" type="button" title="Cambiar logo" onClick={()=>inputFile.current?.click()}><img src={photo||DEFAULT_PHOTO} alt="Logo de la coalición"/></button>
           : <img className="aog-org-logo" src={detail.photo_url||DEFAULT_PHOTO} alt={`Logo de ${detail.name}`}/>}
@@ -321,19 +325,19 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
         </section>
       </div>}
       <div className="aog-org-leaders">
-        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDO LÍDER <span className="aog-org-leader-star" aria-hidden="true">★</span></h2>
+        <section className="aog-org-panel aog-org-leader-panel"><OrganizationHeading title="PARTIDO LÍDER" icon="party" star/>
           <div className="aog-org-person-row"><PartyAvatar party={detail.leader} onNavigate={onNavigate}/><div><button onClick={()=>onNavigate(`/party/${detail.leader_party_id}`)}>{detail.leader?.name||'VACANTE'}</button><small>{detail.leader?.ideology||'SIN IDEOLOGÍA'}</small></div></div>
         </section>
-        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDO FUNDADOR</h2>
+        <section className="aog-org-panel aog-org-leader-panel"><OrganizationHeading title="PARTIDO FUNDADOR" icon="party"/>
           <div className="aog-org-person-row"><PartyAvatar party={detail.founder} onNavigate={onNavigate}/><div><button disabled={!detail.founder?.id} onClick={()=>{if(detail.founder?.id)onNavigate(`/party/${detail.founder.id}`);}}>{detail.founder?.name||'SIN PARTIDO FUNDADOR'}</button><small>{detail.founder?.ideology||'SIN IDEOLOGÍA'}</small></div></div>
         </section>
-        <section className="aog-org-panel aog-org-leader-panel"><h2><i className="aog-org-icon aog-org-icon-coalition"/> COALICIÓN</h2><div className="aog-org-affiliation aog-org-affiliation-static"><img src={detail.photo_url||DEFAULT_PHOTO} alt=""/><span>{detail.name}</span></div></section>
+        <section className="aog-org-panel aog-org-leader-panel"><OrganizationHeading title="COALICIÓN" icon="coalition"/><div className="aog-org-affiliation aog-org-affiliation-static"><img src={detail.photo_url||DEFAULT_PHOTO} alt=""/><span>{detail.name}</span></div></section>
       </div>
       <div className="aog-org-middle">
-        <section className="aog-org-panel aog-org-representation"><h2><i className="aog-org-icon aog-org-icon-parliaments"/> REPRESENTACIÓN POLÍTICA</h2>
+        <section className="aog-org-panel aog-org-representation"><OrganizationHeading title="REPRESENTACIÓN POLÍTICA" icon="parliaments"/>
           <div className="aog-org-rep-grid">{['PRESIDENCIAS','PARLAMENTARIOS NACIONALES','GOBERNACIONES','PARLAMENTARIOS REGIONALES'].map(item=><div className="aog-org-rep" key={item}><span>{item}</span><strong>—</strong><div className="aog-org-rep-bar"><span/></div></div>)}</div>
         </section>
-        <section className="aog-org-panel aog-org-actions"><h2><i className="aog-org-icon aog-org-icon-coalition"/> ACCIONES</h2>
+        <section className="aog-org-panel aog-org-actions"><OrganizationHeading title="ACCIONES" icon="coalition"/>
           <div className="aog-org-action-grid">
             {isEditing?<><button disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR CAMBIOS'}</button><button disabled={busy} onClick={cancelEdit}>CANCELAR</button></>:<>
               {!isMember&&my.is_party_leader&&!!my.party_id&&!my.coalition_id&&<button disabled={busy||my.pending_coalition_id!==null} onClick={()=>void action(async()=>{await applyToCoalition(detail.id);await refresh();},'Solicitud enviada.')}>{my.pending_coalition_id===detail.id?'SOLICITUD PENDIENTE':my.pending_coalition_id?'YA TENÉS UNA SOLICITUD':'SOLICITAR UNIRSE'}</button>}
@@ -346,13 +350,13 @@ export default function CoalitionPage({player,onPlayerChange,onNavigate}:Props){
         </section>
       </div>
       <div className="aog-org-bottom">
-        <section className="aog-org-panel aog-org-members-panel"><h2><i className="aog-org-icon aog-org-icon-party"/> PARTIDOS MIEMBROS</h2>
+        <section className="aog-org-panel aog-org-members-panel"><OrganizationHeading title="PARTIDOS MIEMBROS" icon="party"/>
           <div className="aog-org-preview-list">{detail.members.slice(0,4).map(m=><div className="aog-org-member-row" key={m.id}>
             <PartyAvatar party={m} onNavigate={onNavigate}/><button type="button" className="aog-org-member-name" onClick={()=>onNavigate(`/party/${m.id}`)}>{m.name}</button><span className={m.id===detail.leader_party_id?'aog-org-role-highlight':''}>{m.id===detail.leader_party_id?'LÍDER':'MIEMBRO'}</span><small>{m.ideology||'SIN IDEOLOGÍA'}</small>
           </div>)}</div>
           <button className="aog-org-list-button" onClick={()=>{setMemberQuery('');setMembersOpen(true);}}>VER TODOS LOS PARTIDOS</button>
         </section>
-        <section className="aog-org-panel aog-org-history"><h2><i className="aog-org-icon aog-org-icon-news"/> HISTORIAL</h2><div>PRÓXIMAMENTE</div></section>
+        <section className="aog-org-panel aog-org-history"><OrganizationHeading title="HISTORIAL" icon="news"/><div>PRÓXIMAMENTE</div></section>
       </div>
       {membersOpen&&<div className="aog-org-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setMembersOpen(false);}}>
         <section className="aog-org-modal" role="dialog" aria-modal="true" aria-label="Todos los partidos de la coalición">

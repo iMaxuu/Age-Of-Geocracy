@@ -1,220 +1,652 @@
-/* Nation v0.0.3: composición de boceto, sin modificar consultas Supabase */
-.aog-nation-redesign{--home-accent:var(--aog-accent,#e32219);width:100%;max-width:1366px;margin:0 auto;padding:14px 16px 38px;background:#080808;color:var(--home-accent);font-family:'Black Ops One',system-ui,sans-serif;font-weight:400}
-.aog-nation-redesign *{box-sizing:border-box}
-.aog-nation-redesign h1,.aog-nation-redesign h2,.aog-nation-redesign h3{font-weight:400;margin:0}
-.aog-nation-red-hero,.aog-nation-red-panel{border:2px solid var(--home-accent);border-radius:7px;background:#080808;overflow:hidden}
-.aog-nation-red-hero{display:flex;gap:12px;padding:9px;margin-bottom:10px;min-height:142px}
-.aog-nation-red-hero-flag{width:200px;height:132px;max-width:26%;object-fit:cover;border-radius:8px;flex-shrink:0}
-.aog-nation-red-hero-info{flex:1;min-width:0;display:flex;flex-direction:column}
-.aog-nation-red-hero h1{color:#fff;font-size:clamp(22px,3.4vw,43px);line-height:1.08;overflow-wrap:anywhere;text-align:left}
-.aog-nation-red-government-type{font-size:12px;color:#fff;border-bottom:1px solid var(--home-accent);padding-bottom:5px}
-.aog-nation-red-hero-facts{flex:1;display:flex;align-items:center;margin-top:8px;gap:0}
-.aog-nation-red-hero-facts>div{min-width:0;display:flex;align-items:center;gap:9px;padding:0 18px;border-right:1px solid var(--home-accent);font-size:12px}
-.aog-nation-red-hero-facts>div:first-child{padding-left:0}.aog-nation-red-hero-facts>div:last-child{border:0}
-.aog-nation-red-hero-facts>div>div{display:flex;flex-direction:column;gap:3px;min-width:0}
-.aog-nation-red-hero-facts b{font-weight:400;color:#fff;overflow-wrap:anywhere}
-.aog-nation-red-hero-emoji{font-size:34px;line-height:1}
-.aog-nation-red-layout{display:grid;grid-template-columns:31% 34% minmax(0,35%);grid-template-rows:auto auto auto;align-items:stretch;gap:9px 10px;padding-right:10px}
-.aog-nation-red-panel{min-width:0;display:flex;flex-direction:column}
-.aog-nation-red-panel>h2{padding:7px 12px;font-size:clamp(12px,1.15vw,16px);border-bottom:1px solid var(--home-accent);text-align:left;color:var(--home-accent)}
-.aog-nation-red-panel-body{padding:8px;min-width:0;flex:1}
-.aog-nation-red-government{grid-column:1;grid-row:1 / span 3}
-.aog-nation-red-column{display:flex;flex-direction:column;gap:9px;min-width:0;grid-row:1 / span 2}
-.aog-nation-red-column:nth-child(2){grid-column:2}.aog-nation-red-column:nth-child(3){grid-column:3}
-.aog-nation-red-parliament,.aog-nation-red-votes{height:178px}
-.aog-nation-red-placeholder{height:165px}
-.aog-nation-red-center{display:grid;place-items:center;color:#fff;font-size:13px;text-align:center}
-.aog-nation-red-regions{grid-column:2 / 4;grid-row:3;min-height:240px}
-.aog-nation-red-official{padding:4px 0 10px;border-bottom:1px solid var(--home-accent);margin-bottom:8px}
-.aog-nation-red-role{font-size:12px;margin-bottom:4px}.aog-nation-red-person{display:flex;align-items:center;gap:8px;min-width:0}
-.aog-nation-red-person .aog-nation-avatar{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0}
-.aog-nation-red-person-info{font-size:10px;min-width:0;overflow-wrap:anywhere;line-height:1.3}
-.aog-nation-red-person-name{display:block;text-decoration:none;color:#fff;font-size:15px}
-.aog-nation-red-ministers{font-size:12px}.aog-nation-red-ministers p{color:#fff;margin:5px 0}
-.aog-nation-red-votes .aog-nation-red-panel-body{display:flex;flex-direction:column;gap:5px}
-.aog-nation-red-votes .aog-nation-elections{padding:0;border:0;border-radius:0;background:transparent;min-height:0;display:block;text-align:initial;flex:1;overflow-y:auto}
-.aog-nation-red-votes .aog-nation-elections>.aog-home-panel-title{display:none}
-.aog-nation-red-votes .aog-nation-election-list{display:flex;flex-direction:column;gap:4px}
-.aog-nation-red-votes .aog-nation-election-link,.aog-nation-red-parliamentary-pending{font-size:10px;text-decoration:none;color:var(--home-accent);border:1px solid var(--home-accent);border-radius:5px;display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;gap:4px;padding:5px}
-.aog-nation-red-votes .aog-nation-election-link strong{font-weight:400}
-.aog-nation-red-votes .aog-nation-election-link small{width:100%;text-align:right;font-size:10px}
-.aog-nation-red-parliamentary-pending span{color:#fff;font-size:9px}
-.aog-nation-modal-trigger{width:100%;background:var(--home-accent);border:0;border-radius:6px;color:#080808;min-height:32px;padding:6px 9px;font:400 12px 'Black Ops One',system-ui,sans-serif;cursor:pointer}
-.aog-nation-modal-trigger:hover{filter:brightness(1.15)}
-.aog-nation-red-region-list{flex:1;min-height:0;overflow:hidden}
-.aog-nation-red-region-row{display:flex;align-items:center;gap:12px;background:transparent;color:#fff;border:0;border-bottom:1px solid var(--home-accent);padding:6px 4px;width:100%;font:400 12px 'Black Ops One',system-ui,sans-serif;cursor:pointer;text-align:left}
-.aog-nation-red-region-row:hover{background:color-mix(in srgb,var(--home-accent) 10%,black)}
-.aog-nation-red-region-flag{width:53px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0}
-.aog-nation-red-region-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.aog-nation-red-region-name small{display:block;color:var(--home-accent);margin-top:5px;font-size:10px}
-.aog-nation-red-region-count{font-size:10px;white-space:nowrap;align-self:flex-end}
-.aog-nation-red-regions .aog-nation-red-panel-body{display:flex;flex-direction:column;gap:12px}
-.aog-nation-red-statistics{margin-top:10px}.aog-nation-red-stat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;padding:18px 10px}
-.aog-nation-red-stat{display:flex;justify-content:center;align-items:center;gap:8px;padding:4px 9px;border-right:2px solid var(--home-accent);min-width:0}
-.aog-nation-red-stat:last-child{border:0}.aog-nation-red-stat-icon{width:22px;height:22px;flex-shrink:0;background:var(--home-accent);mask:url('/assets/icons/icons/players.svg') center/contain no-repeat;-webkit-mask:url('/assets/icons/icons/players.svg') center/contain no-repeat}
-.aog-nation-red-stat-value{display:block;text-align:center;color:#fff;font-size:17px;overflow-wrap:anywhere;min-width:0}
-.aog-nation-red-stat-value small{font-size:10px;display:block;margin-top:2px}
-.aog-nation-red-election-dates{display:flex;justify-content:center;gap:25px;padding:0 10px 9px;color:var(--home-accent);font-size:10px}
-.aog-nation-status{text-align:center;margin:25px auto}
-@media(max-width:750px){.aog-nation-redesign{padding:10px}.aog-nation-red-layout{grid-template-columns:repeat(2,minmax(0,1fr));padding-right:0}.aog-nation-red-government{grid-column:1 / 3;grid-row:auto}.aog-nation-red-column,.aog-nation-red-column:nth-child(2),.aog-nation-red-column:nth-child(3){grid-column:auto;grid-row:auto}.aog-nation-red-regions{grid-column:1 / 3;grid-row:auto}.aog-nation-red-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:14px}.aog-nation-red-hero-flag{width:130px;height:100px}.aog-nation-red-hero-facts>div{padding:0 8px}.aog-nation-red-hero-emoji{font-size:23px}}
-@media(max-width:480px){.aog-nation-red-hero{flex-direction:column}.aog-nation-red-hero-flag{max-width:100%;width:100px;height:65px}.aog-nation-red-hero-facts{flex-wrap:wrap;gap:7px}.aog-nation-red-hero-facts>div{border:0;padding:0 9px 0 0;font-size:10px}.aog-nation-red-layout{display:flex;flex-direction:column}.aog-nation-red-column{display:contents}.aog-nation-red-parliament,.aog-nation-red-votes,.aog-nation-red-placeholder{height:165px}.aog-nation-red-regions{min-height:240px}.aog-nation-red-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-nation-red-stat:nth-child(even){border:0}.aog-nation-red-region-count{font-size:9px}.aog-nation-red-election-dates{flex-wrap:wrap}}
-
-/* Modal nacional: calendario electoral y lista completa de regiones */
-.aog-nation-election-area{min-width:0;display:flex;flex-direction:column;gap:10px}
-.aog-nation-election-area>.aog-nation-box{flex:1}
-.aog-nation-modal-trigger{cursor:pointer;display:block;width:100%;min-height:39px;border:2px solid var(--home-accent);border-radius:9px;background:var(--home-accent);color:#080808;font:400 14px/1.3 'Black Ops One',system-ui,sans-serif;padding:9px 12px;text-align:center}
-.aog-nation-modal-trigger:hover{filter:brightness(1.12)}
-.aog-nation-region-trigger{margin-top:12px}
-.aog-nation-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px}
-.aog-nation-modal{width:min(740px,100%);max-height:min(82vh,850px);display:flex;flex-direction:column;background:#080808;color:var(--home-accent);border:2px solid var(--home-accent);border-radius:18px;overflow:hidden;font-weight:400}
-.aog-nation-modal-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--home-accent);padding:16px 20px}
-.aog-nation-modal-heading h2{border:0;padding:0;margin:0;color:var(--home-accent);font-size:clamp(16px,2vw,24px);text-align:left;font-weight:400}
-.aog-nation-modal-heading button{flex:0 0 auto;cursor:pointer;border:1px solid var(--home-accent);border-radius:8px;background:transparent;color:var(--home-accent);font:400 28px/1 system-ui;width:36px;height:36px}
-.aog-nation-modal-content{overflow-y:auto;min-height:0;padding:18px 20px 24px}
-.aog-nation-modal-content h3{font-weight:400;font-size:17px;margin:4px 0 12px}
-.aog-nation-modal-content h3:not(:first-child){margin-top:24px}
-.aog-nation-calendar-row,.aog-nation-modal-region{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid color-mix(in srgb,var(--home-accent) 60%,transparent);border-radius:10px;padding:13px 14px;margin:0 0 9px;text-decoration:none;color:var(--home-accent);background:transparent;font:400 13px/1.3 'Black Ops One',system-ui,sans-serif}
-.aog-nation-calendar-row:hover,.aog-nation-modal-region:hover{background:color-mix(in srgb,var(--home-accent) 10%,transparent)}
-.aog-nation-calendar-row>div{display:flex;flex-direction:column;gap:5px}
-.aog-nation-calendar-row>div:last-child{text-align:right}
-.aog-nation-calendar-row small,.aog-nation-modal-region small{font:400 11px/1.4 system-ui,sans-serif;opacity:.85}
-.aog-nation-modal-region{width:100%;cursor:pointer;text-align:left}
-.aog-nation-modal-region-flag{width:62px;height:42px;object-fit:cover;border-radius:7px;flex-shrink:0}
-.aog-nation-modal-region>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:5px}
-.aog-nation-modal-placeholder{opacity:.8}
-@media(max-width:650px){.aog-nation-modal-backdrop{padding:8px}.aog-nation-modal-content{padding:12px}.aog-nation-modal-heading{padding:12px}.aog-nation-calendar-row{padding:10px;font-size:11px}}
-
-/* Ajustes de alineación: misma retícula y márgenes en todos los paneles */
-.aog-nation-red-layout {
-  grid-template-columns: minmax(0,31fr) minmax(0,34fr) minmax(0,35fr);
-  padding-right: 0;
-  align-items: stretch;
-}
-.aog-nation-red-layout > *,
-.aog-nation-red-column > * {
-  min-width: 0;
-  max-width: 100%;
-}
-.aog-nation-red-column {
-  align-items: stretch;
-}
-.aog-nation-red-votes .aog-nation-red-panel-body {
-  align-items: stretch;
+.aog-nation-sketch {
+  --nc: var(--aog-accent, #d62718);
+  --nation-bg: color-mix(in srgb, var(--nc) 7%, #050505);
   width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 14px 15px 10px;
+  background: #080808;
+  color: #fff;
 }
-.aog-nation-red-votes .aog-nation-elections,
-.aog-nation-red-votes .aog-nation-election-list {
-  width: 100%;
-  min-width: 0;
-}
-.aog-nation-red-votes .aog-nation-election-link {
+
+.aog-nation-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 3px 9px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'summary events'
+    'government events'
+    'parliament ministers'
+    'laws laws'
+    'stats history'
+    'resources resources'
+    'regions regions';
+  gap: 11px 10px;
+}
+
+.aog-nation-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 4px solid var(--nc);
+  border-radius: 13px;
+  background: var(--nation-bg);
+}
+
+.aog-nation-heading { flex: 0 0 44px; }
+
+.aog-nation-summary-panel { grid-area: summary; min-height: 188px; }
+.aog-nation-events-panel { grid-area: events; min-height: 392px; }
+.aog-nation-government-panel { grid-area: government; min-height: 194px; }
+.aog-nation-parliament-panel { grid-area: parliament; min-height: 285px; }
+.aog-nation-ministers-panel { grid-area: ministers; min-height: 285px; }
+.aog-nation-laws-panel { grid-area: laws; min-height: 285px; }
+.aog-nation-stats-panel { grid-area: stats; min-height: 292px; }
+.aog-nation-history-panel { grid-area: history; min-height: 292px; }
+.aog-nation-resources-panel { grid-area: resources; min-height: 238px; }
+.aog-nation-regions-panel { grid-area: regions; min-height: 236px; }
+
+.aog-nation-summary-body {
+  display: grid;
+  grid-template-columns: 1.02fr 1px 1fr;
   align-items: center;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
+  gap: 16px;
+  padding: 14px 18px 16px;
+  min-height: 0;
+  flex: 1;
 }
-.aog-nation-red-votes .aog-nation-election-link > span {
+
+.aog-nation-summary-flagbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   min-width: 0;
-  overflow-wrap: anywhere;
-  text-align: left;
 }
-.aog-nation-red-votes .aog-nation-election-link > strong {
-  min-width: 0;
-  text-align: right;
-  white-space: normal;
+
+.aog-nation-summary-flag {
+  width: 145px;
+  height: 97px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: rgba(255,255,255,.06);
 }
-.aog-nation-red-votes .aog-nation-election-link > small {
-  grid-column: 1 / -1;
+
+.aog-nation-summary-name {
   width: 100%;
   text-align: center;
-}
-.aog-nation-red-votes .aog-nation-red-parliamentary-pending {
-  width: 100%;
-  box-sizing: border-box;
-}
-.aog-nation-red-votes .aog-nation-modal-trigger {
-  width: 100%;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-@media(max-width:750px){
-  .aog-nation-red-layout {grid-template-columns:repeat(2,minmax(0,1fr));padding-right:0}
-}
-@media(max-width:480px){
-  .aog-nation-red-layout {display:flex;flex-direction:column}
+  color: #fff;
+  font-size: clamp(18px, 1.35vw, 27px);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
 }
 
-/* Íconos compartidos con Home, sin SVG provisionales */
-.aog-nation-redesign .aog-nation-svg-icon {
- display:inline-block; width:19px; height:19px; flex:0 0 19px;
- background:var(--home-accent); vertical-align:middle;
- -webkit-mask-position:center;mask-position:center;
- -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
- -webkit-mask-size:contain;mask-size:contain;
+.aog-nation-summary-divider,
+.aog-nation-government-splitter,
+.aog-nation-region-card + .aog-nation-region-card::before {
+  background: var(--nc);
 }
-.aog-nation-redesign .aog-nation-red-panel>h2 {display:flex;align-items:center;gap:8px;}
-.aog-nation-redesign .aog-nation-red-statistics>h2 .aog-nation-svg-icon {width:24px;height:24px;flex-basis:24px;}
-.aog-nation-redesign .aog-nation-red-hero-emoji.aog-nation-svg-icon {width:30px;height:30px;flex-basis:30px;}
-.aog-nation-redesign .aog-nation-icon-clubs,
-.aog-nation-redesign .aog-nation-stat-clubs {
- -webkit-mask-image:url('/assets/icons/icons/clubs.svg');
- mask-image:url('/assets/icons/icons/clubs.svg');
+
+.aog-nation-summary-divider {
+  width: 2px;
+  align-self: stretch;
+  opacity: .9;
 }
-.aog-nation-redesign .aog-nation-icon-events,
-.aog-nation-redesign .aog-nation-stat-events {
- -webkit-mask-image:url('/assets/icons/icons/events.svg');
- mask-image:url('/assets/icons/icons/events.svg');
+
+.aog-nation-summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
 }
-.aog-nation-redesign .aog-nation-icon-foundation,
-.aog-nation-redesign .aog-nation-stat-foundation {
- -webkit-mask-image:url('/assets/icons/icons/foundation.svg');
- mask-image:url('/assets/icons/icons/foundation.svg');
+
+.aog-nation-info-line {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
 }
-.aog-nation-redesign .aog-nation-icon-location,
-.aog-nation-redesign .aog-nation-stat-location {
- -webkit-mask-image:url('/assets/icons/icons/location.svg');
- mask-image:url('/assets/icons/icons/location.svg');
+
+.aog-nation-info-line .aog-home-icon {
+  width: 27px;
+  height: 27px;
+  flex-basis: 27px;
+  color: var(--nc);
 }
-.aog-nation-redesign .aog-nation-icon-news,
-.aog-nation-redesign .aog-nation-stat-news {
- -webkit-mask-image:url('/assets/icons/icons/news.svg');
- mask-image:url('/assets/icons/icons/news.svg');
+
+.aog-nation-info-line strong,
+.aog-nation-info-line span {
+  display: block;
+  min-width: 0;
 }
-.aog-nation-redesign .aog-nation-icon-organizations,
-.aog-nation-redesign .aog-nation-stat-organizations {
- -webkit-mask-image:url('/assets/icons/icons/organizations.svg');
- mask-image:url('/assets/icons/icons/organizations.svg');
+
+.aog-nation-info-line strong {
+  color: var(--nc);
+  font-size: clamp(15px, 1.1vw, 22px);
+  line-height: 1;
 }
-.aog-nation-redesign .aog-nation-icon-parliaments,
-.aog-nation-redesign .aog-nation-stat-parliaments {
- -webkit-mask-image:url('/assets/icons/icons/parliaments.svg');
- mask-image:url('/assets/icons/icons/parliaments.svg');
+
+.aog-nation-info-line span {
+  margin-top: 3px;
+  font-size: clamp(12px, .92vw, 18px);
+  line-height: 1.2;
+  color: #fff;
+  overflow-wrap: anywhere;
 }
-.aog-nation-redesign .aog-nation-icon-party,
-.aog-nation-redesign .aog-nation-stat-party {
- -webkit-mask-image:url('/assets/icons/icons/party.svg');
- mask-image:url('/assets/icons/icons/party.svg');
+
+.aog-nation-events-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 11px;
+  flex: 1;
 }
-.aog-nation-redesign .aog-nation-icon-players,
-.aog-nation-redesign .aog-nation-stat-players {
- -webkit-mask-image:url('/assets/icons/icons/players.svg');
- mask-image:url('/assets/icons/icons/players.svg');
+
+.aog-nation-event-block {
+  border: 2px solid var(--nc);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--nc) 12%, #050505);
+  padding: 10px;
 }
-.aog-nation-redesign .aog-nation-icon-region,
-.aog-nation-redesign .aog-nation-stat-region {
- -webkit-mask-image:url('/assets/icons/icons/region.svg');
- mask-image:url('/assets/icons/icons/region.svg');
+
+.aog-nation-event-title,
+.aog-nation-event-subtitle {
+  text-align: center;
+  overflow-wrap: anywhere;
 }
-.aog-nation-redesign .aog-nation-icon-statistics,
-.aog-nation-redesign .aog-nation-stat-statistics {
- -webkit-mask-image:url('/assets/icons/icons/statistics.svg');
- mask-image:url('/assets/icons/icons/statistics.svg');
+
+.aog-nation-event-title {
+  color: var(--nc);
+  font-size: clamp(14px, 1vw, 18px);
+  line-height: 1.1;
 }
-.aog-nation-redesign .aog-nation-icon-territory,
-.aog-nation-redesign .aog-nation-stat-territory {
- -webkit-mask-image:url('/assets/icons/icons/territory.svg');
- mask-image:url('/assets/icons/icons/territory.svg');
+
+.aog-nation-event-subtitle {
+  margin-top: 3px;
+  color: #fff;
+  font-size: clamp(11px, .85vw, 14px);
+  line-height: 1.2;
+}
+
+.aog-nation-event-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.aog-nation-event-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 78px;
+  padding: 8px 10px;
+  border: 2px solid var(--nc);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--nc) 8%, #050505);
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+}
+
+.aog-nation-event-mini-title {
+  color: #fff;
+  font-size: clamp(13px, .95vw, 18px);
+  line-height: 1.05;
+}
+
+.aog-nation-event-mini small {
+  margin-top: 2px;
+  color: var(--nc);
+  font-size: clamp(9px, .7vw, 11px);
+  line-height: 1.1;
+}
+
+.aog-nation-event-mini strong {
+  margin-top: 5px;
+  color: #fff;
+  font-size: clamp(20px, 1.45vw, 31px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.aog-nation-events-more {
+  margin-top: auto;
+  width: 100%;
+  min-height: 52px;
+  border: 2px solid var(--nc);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--nc) 10%, #050505);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.aog-nation-government-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2px minmax(0, 1fr);
+  align-items: stretch;
+  flex: 1;
+  padding: 11px 16px 13px;
+}
+
+.aog-nation-government-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.aog-nation-government-role {
+  color: var(--nc);
+  font-size: clamp(18px, 1.25vw, 25px);
+  line-height: 1;
+}
+
+.aog-nation-government-avatar {
+  width: 84px;
+  height: 84px;
+  margin-top: 11px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.aog-nation-government-name {
+  margin-top: 8px;
+  color: #fff;
+  font-size: clamp(16px, 1.15vw, 23px);
+  line-height: 1.1;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.aog-nation-government-party,
+.aog-nation-government-coalition,
+.aog-nation-government-empty {
+  margin-top: 4px;
+  color: var(--nc);
+  font-size: clamp(10px, .75vw, 13px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.aog-nation-government-coalition,
+.aog-nation-government-empty { color: color-mix(in srgb, var(--nc) 60%, #ffffff); }
+
+.aog-nation-placeholder-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(18px, 1.25vw, 26px);
+}
+
+.aog-nation-stats-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 11px 11px 14px;
+  flex: 1;
+}
+
+.aog-nation-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.aog-nation-stat-card,
+.aog-nation-date-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 8px 10px;
+  border: 2px solid var(--nc);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--nc) 10%, #050505);
+  text-align: center;
+}
+
+.aog-nation-stat-label,
+.aog-nation-date-card span {
+  color: var(--nc);
+  font-size: clamp(12px, .85vw, 15px);
+  line-height: 1.05;
+}
+
+.aog-nation-stat-value,
+.aog-nation-date-card strong {
+  margin-top: 6px;
+  color: #fff;
+  font-size: clamp(20px, 1.35vw, 31px);
+  line-height: 1.04;
+  overflow-wrap: anywhere;
+}
+
+.aog-nation-date-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.aog-nation-stats-note {
+  margin-top: auto;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(14px, .95vw, 18px);
+}
+
+.aog-nation-regions-body {
+  flex: 1;
+  padding: 11px 12px 14px;
+}
+
+.aog-nation-regions-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px 0;
+}
+
+.aog-nation-region-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  min-width: 0;
+  padding: 6px 14px 8px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.aog-nation-region-card + .aog-nation-region-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+}
+
+.aog-nation-region-flag {
+  width: 95px;
+  height: 63px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.aog-nation-region-name {
+  text-align: center;
+  color: #fff;
+  font-size: clamp(14px, .95vw, 20px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.aog-nation-region-type {
+  text-align: center;
+  color: var(--nc);
+  font-size: clamp(10px, .7vw, 12px);
+  line-height: 1.05;
+}
+
+.aog-nation-regions-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  color: #fff;
+  font-size: 22px;
+}
+
+.aog-nation-status {
+  text-align: center;
+  margin: 30px auto;
+  color: #fff;
+}
+
+@media (max-width: 1200px) {
+  .aog-nation-regions-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .aog-nation-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'summary'
+      'events'
+      'government'
+      'parliament'
+      'ministers'
+      'laws'
+      'stats'
+      'history'
+      'resources'
+      'regions';
+  }
+  .aog-nation-regions-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .aog-nation-summary-body,
+  .aog-nation-government-body,
+  .aog-nation-date-row,
+  .aog-nation-event-mini-grid { grid-template-columns: 1fr; }
+  .aog-nation-summary-divider,
+  .aog-nation-government-splitter { display: none; }
+  .aog-nation-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aog-nation-regions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aog-nation-region-card + .aog-nation-region-card::before { display: none; }
+}
+
+@media (max-width: 480px) {
+  .aog-nation-sketch { padding: 10px; }
+  .aog-nation-stats-grid,
+  .aog-nation-regions-grid { grid-template-columns: 1fr; }
+}
+
+/* Nation: las mismas etiquetas diagonales de Home (Home aplica sus reglas solo a .aog-home). */
+.aog-nation-sketch,
+.aog-nation-sketch *,
+.aog-nation-sketch *::before,
+.aog-nation-sketch *::after { box-sizing: border-box; }
+.aog-nation-sketch .aog-nation-panel { position: relative; }
+.aog-nation-sketch .aog-home-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  flex: 0 0 44px;
+  width: 100%;
+  height: 44px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--aog-label-color, #fff);
+  font-size: clamp(13px, 1.45vw, 19px);
+  font-weight: 400;
+  line-height: 1;
+  text-align: left;
+}
+.aog-nation-sketch .aog-home-heading-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: max-content;
+  max-width: 100%;
+  min-height: 43px;
+  padding: 6px 45px 7px 12px;
+  background: var(--nc);
+  color: var(--aog-label-color, #fff);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 41px) 100%, 0 100%);
+}
+.aog-nation-sketch .aog-home-heading-tab > span:last-child { min-width: 0; white-space: nowrap; }
+.aog-nation-sketch .aog-home-heading-tab .aog-home-icon {
+  display: inline-block;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  background: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+/* Nombre informativo: únicamente la fotografía abre el perfil. */
+.aog-nation-government-photo-link {
+  display: block;
+  flex: 0 0 auto;
+  width: 84px;
+  height: 84px;
+  margin-top: 11px;
+  overflow: hidden;
+  border-radius: 7px;
+}
+.aog-nation-government-photo-link .aog-nation-government-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+.aog-nation-government-name { display: block; cursor: default; }
+/* Los eventos solo existen cuando provienen de elecciones registradas. */
+.aog-nation-events-body { overflow-y: auto; min-height: 0; }
+.aog-nation-event-mini-grid:has(> :only-child) { grid-template-columns: 1fr; }
+.aog-nation-events-empty {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 150px;
+  text-align: center;
+  font-size: 16px;
+  color: #fff;
+}
+.aog-nation-event-mini strong { font-size: clamp(17px, 1.25vw, 26px); }
+.aog-nation-event-mini:hover { filter: brightness(1.12); }
+@media (max-width: 700px) {
+  .aog-nation-sketch .aog-home-panel-heading { height: 40px; flex-basis: 40px; font-size: 12px; }
+  .aog-nation-sketch .aog-home-heading-tab {
+    min-height: 39px;
+    gap: 6px;
+    padding: 5px 41px 5px 8px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 36px) 100%, 0 100%);
+  }
+  .aog-nation-sketch .aog-home-heading-tab .aog-home-icon { width: 21px; height: 21px; flex-basis: 21px; }
+}
+
+/* RECURSOS — un mismo panel en Nation y Region, con 4 tarjetas por fila.
+   No reutilizar CSS del almacén personal: son depósitos del mundo, no inventario. */
+.aog-nation-sketch .aog-nation-resources-panel {
+  min-width: 0;
+  min-height: 238px;
+}
+.aog-area-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  min-height: 0;
+  padding: 10px 12px 13px;
+}
+.aog-area-resource-card {
+  display: grid;
+  grid-template-columns: clamp(35px, 4vw, 65px) minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  min-height: 82px;
+  padding: 8px 9px;
+  border: 2px solid var(--resource-accent);
+  border-radius: 8px;
+  background: var(--resource-bg);
+  color: var(--resource-accent);
+}
+.aog-area-resource-symbol {
+  display: block;
+  width: 100%;
+  height: clamp(35px, 4vw, 61px);
+  background-color: var(--resource-accent);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.aog-area-resource-data {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+}
+.aog-area-resource-title {
+  display: block;
+  font-size: clamp(11px, 1vw, 18px);
+  line-height: 1.05;
+  color: var(--resource-accent);
+  font-weight: 400;
+}
+.aog-area-resource-amount {
+  display: block;
+  min-width: 0;
+  font-size: clamp(10px, .86vw, 15px);
+  line-height: 1.1;
+  color: var(--resource-accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.aog-area-resource-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--resource-accent) 35%, #050505);
+  overflow: hidden;
+}
+.aog-area-resource-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--resource-fill);
+  transition: width 260ms ease-out;
+}
+.aog-area-resources-message {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 18px;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(11px, 1.1vw, 17px);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .aog-area-resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aog-area-resource-card { grid-template-columns: 48px minmax(0, 1fr); }
+}
+@media (max-width: 430px) {
+  .aog-area-resource-grid { gap: 6px; padding: 8px; }
+  .aog-area-resource-card { grid-template-columns: 35px minmax(0,1fr); padding: 7px 6px; gap: 5px; }
+  .aog-area-resource-symbol { height: 35px; }
+  .aog-area-resource-title { font-size: 11px; }
+  .aog-area-resource-amount { font-size: 10px; }
 }

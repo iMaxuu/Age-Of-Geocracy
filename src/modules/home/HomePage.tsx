@@ -9,6 +9,9 @@ const counters = [
 
 const homeIcon = (name:string) => `/assets/icons/icons/${name}.svg?v=0.0.3-custom-2`;
 function HomeIcon({name,className=''}:{name:string,className?:string}) { return <span className={`aog-home-icon ${className}`} style={{maskImage:`url(${homeIcon(name)})`,WebkitMaskImage:`url(${homeIcon(name)})`}} aria-hidden="true"/>; }
+function PanelHeading({id,title,icon}:{id?:string;title:string;icon:string}) { return <h2 className="aog-home-panel-heading" id={id}><span className="aog-home-heading-tab"><HomeIcon name={icon}/><span>{title}</span></span></h2>; }
+
+type HomeLocation={territory_id:number;region_id:number|null;nation_id:number|null;nation_name:string|null;region_name:string|null;nation_flag:string|null;region_flag:string|null};
 type LocalEvent={key:string;label:string;stage:string;ends:string;href:string};
 const localClock=(ends:string,now:number)=>{const d=Math.max(0,Math.ceil((new Date(ends).getTime()-now)/1000));const days=Math.floor(d/86400);const h=Math.floor((d%86400)/3600);const m=Math.floor((d%3600)/60);const sec=d%60;return `${days?`${days}D `:''}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;};
 
@@ -41,7 +44,7 @@ function LanguageFlag({ code, src }: { code: ChatLanguage; src: string }) {
   const [broken, setBroken] = useState(false);
   useEffect(() => { setBroken(false); }, [src]);
   return broken ? (
-    <span className="aog-chat-language-flag" style={{ display:'grid', placeItems:'center', fontSize: '25px', lineHeight: 1 }} aria-hidden="true">
+    <span className="aog-chat-language-flag" aria-hidden="true">
       {FLAG_EMOJI[code]}
     </span>
   ) : (
@@ -54,13 +57,13 @@ function LanguageFlag({ code, src }: { code: ChatLanguage; src: string }) {
 export default function HomePage({onNavigate=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));}}:{onNavigate?:(path:string)=>void}={}) {
   const [draft, setDraft] = useState('');
   const [language, setLanguage] = useState<ChatLanguage>('es');
-  const messagesEnd = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
   const [messages,setMessages]=useState<ChatMessage[]>([]);
   const [myId,setMyId]=useState<number|null>(null);
-  const [location, setLocation] = useState<{territory_id:number;region_id:number|null;nation_id:number|null;nation_name:string|null;region_name:string|null}|null>(null);
+  const [location, setLocation] = useState<HomeLocation|null>(null);
   const [localEvents,setLocalEvents]=useState<LocalEvent[]>([]);
   const [clock,setClock]=useState(()=>Date.now());
   useEffect(()=>{const timer=window.setInterval(()=>setClock(Date.now()),1000);return()=>window.clearInterval(timer)},[]);
@@ -123,10 +126,10 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
         setMyId(data.id);
         if (data.territory_id != null) {
           const territoryId=Number(data.territory_id);
-          setLocation({territory_id:territoryId,region_id:null,nation_id:null,nation_name:null,region_name:null});
+          setLocation({territory_id:territoryId,region_id:null,nation_id:null,nation_name:null,region_name:null,nation_flag:null,region_flag:null});
           const {data:pol}=await supabase.from('map_territory_politics')
-            .select('region_id,nation_id,nation_name,region_name').eq('territory_id',territoryId).maybeSingle();
-          if(active && pol) setLocation({territory_id:territoryId,region_id:pol.region_id??null,nation_id:pol.nation_id??null,nation_name:pol.nation_name??null,region_name:pol.region_name??null});
+            .select('region_id,nation_id,nation_name,region_name,nation_flag,region_flag').eq('territory_id',territoryId).maybeSingle();
+          if(active && pol) setLocation({territory_id:territoryId,region_id:pol.region_id??null,nation_id:pol.nation_id??null,nation_name:pol.nation_name??null,region_name:pol.region_name??null,nation_flag:pol.nation_flag??null,region_flag:pol.region_flag??null});
         }
       }
     });
@@ -174,6 +177,7 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
       if(!active) return;
       if(error) { setNotice(error.message); return; }
       setMessages(((data ?? []) as unknown as ChatMessage[]).reverse());
+      requestAnimationFrame(() => { requestAnimationFrame(() => { const chat = chatScrollRef.current; if (chat) chat.scrollTop = chat.scrollHeight; }); });
     };
 
     void load();
@@ -204,9 +208,6 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
     };
   }, [languageMenuOpen]);
 
-  useEffect(() => {
-    messagesEnd.current?.scrollIntoView({block:'nearest'});
-  }, [messages]);
 
   async function handleMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -223,8 +224,8 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
     <main className="aog-home" aria-label="Inicio">
       <div className="aog-home-top">
         <section className="aog-home-panel aog-home-chat" aria-labelledby="aog-home-chat-label">
-          <h2 className="aog-home-panel-title" id="aog-home-chat-label">CHAT GLOBAL <small className="aog-home-chat-online">GLOBAL</small></h2>
-          <div className="aog-home-chat-messages" aria-live="polite">
+          <PanelHeading id="aog-home-chat-label" title="CHAT GLOBAL" icon="globe"/>
+          <div ref={chatScrollRef} className="aog-home-chat-messages" aria-live="polite">
             {messages.length ? messages.map(msg => (
               <article key={msg.id} className={`aog-chat-message ${msg.player_id===myId ? 'aog-chat-own' : ''}`}>
                 <button type="button" className="aog-chat-profile-link" onClick={()=>onNavigate(`/profile/${msg.player_id}`)}
@@ -233,50 +234,38 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
                 </button>
                 <div className="aog-chat-body">
                   <div className="aog-chat-name"><strong>{msg.players?.name || 'JUGADOR'}</strong><span>#{msg.player_id}</span></div>
+                  <time className="aog-chat-timestamp" dateTime={msg.created_at}>
+                    {new Date(msg.created_at).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})} · {new Date(msg.created_at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}
+                  </time>
                   <p>{msg.content}</p>
                 </div>
-                <time className="aog-chat-timestamp" dateTime={msg.created_at}><span>{new Date(msg.created_at).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})}</span><span>{new Date(msg.created_at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</span></time>
               </article>
-            )) : <p className="aog-home-empty">Sin mensajes en este canal</p>}
-            <div ref={messagesEnd} />
+            )) : <p className="aog-home-empty">SIN MENSAJES EN ESTE CANAL</p>}
           </div>
           <form className="aog-home-chat-compose" onSubmit={handleMessage}>
             <input
               aria-label="Mensaje para el chat global"
-              placeholder="ESCRIBIR..."
+              placeholder="ESCRIBE ALGO..."
               value={draft}
               onChange={event => {setDraft(event.target.value);setNotice('');}}
               maxLength={500}
             />
             <button className="aog-home-send" type="submit" disabled={sending} aria-label="Enviar mensaje" title="Enviar mensaje">➤</button>
             <div className="aog-chat-language-picker" ref={languageMenuRef}>
-              <button
-                className="aog-chat-language-button"
-                type="button"
+              <button className="aog-chat-language-button" type="button"
                 aria-label={`Canal de chat: ${LANGUAGES.find(item => item.code === language)?.name}. Cambiar idioma`}
                 title={`Idioma: ${LANGUAGES.find(item => item.code === language)?.name}`}
-                aria-haspopup="menu"
-                aria-expanded={languageMenuOpen}
-                onClick={() => setLanguageMenuOpen(value => !value)}
-              >
+                aria-haspopup="menu" aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen(value => !value)}>
                 <LanguageFlag code={language} src={LANGUAGES.find(item => item.code === language)!.flag} />
               </button>
               {languageMenuOpen && (
                 <div className="aog-chat-language-menu" role="menu" aria-label="Seleccionar idioma del chat">
                   {LANGUAGES.map(item => (
-                    <button
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={language === item.code}
+                    <button type="button" role="menuitemradio" aria-checked={language === item.code}
                       className={`aog-chat-language-option ${language === item.code ? 'is-active' : ''}`}
-                      key={item.code}
-                      title={item.name}
-                      aria-label={item.name}
-                      onClick={() => {
-                        setLanguage(item.code);
-                        setLanguageMenuOpen(false);
-                      }}
-                    >
+                      key={item.code} title={item.name} aria-label={item.name}
+                      onClick={() => {setLanguage(item.code);setLanguageMenuOpen(false);}}>
                       <LanguageFlag code={item.code} src={item.flag} />
                     </button>
                   ))}
@@ -287,7 +276,7 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
           {notice && <p className="aog-home-notice" role="status">{notice}</p>}
         </section>
         <section className="aog-home-panel aog-home-news" aria-labelledby="aog-home-news-label">
-          <h2 className="aog-home-panel-title" id="aog-home-news-label">NOTICIAS GLOBALES</h2>
+          <PanelHeading id="aog-home-news-label" title="NOTICIAS GLOBALES" icon="globe"/>
           <div className="aog-world-news-feed" aria-live="polite">
             {pinnedNews && <article className="aog-world-news-item aog-world-news-update aog-world-news-pinned" key={`pin-${pinnedNews.id}`}>
               <span className="aog-world-news-icon" aria-hidden="true"><HomeIcon name="update"/></span>
@@ -305,33 +294,47 @@ export default function HomePage({onNavigate=path=>{window.history.pushState({},
           </div>
         </section>
       </div>
-      <section className="aog-home-location aog-flat-panel" aria-label="Ubicación actual">
-        <h2>UBICACIÓN ACTUAL</h2>
-        <button className="aog-home-location-link" type="button" onClick={()=>onNavigate(location?`/territory?id=${location.territory_id}`:'/map')}>
-          <strong>{location?`TERRITORIO #${location.territory_id}`:'UBICACIÓN NO DISPONIBLE'}</strong>
-          <span>{location?.nation_name||'INDEPENDIENTE'}</span>
+      <section className="aog-home-location aog-flat-panel" aria-labelledby="aog-home-location-label">
+        <PanelHeading id="aog-home-location-label" title="UBICACIÓN ACTUAL" icon="location"/>
+        <div className="aog-home-location-grid">
+          <button className={`aog-home-location-country ${location?.nation_id ? '' : 'is-empty'}`} type="button" disabled={!location?.nation_id}
+            onClick={()=>{if(location?.nation_id)onNavigate(`/nation?id=${location.nation_id}`);}}>
+            <strong>NACIÓN</strong>
+            {location?.nation_id ? <img src={location.nation_flag||'/assets/photos/noflag.png'} alt="Bandera nacional" onError={e=>{if(!e.currentTarget.src.endsWith('/assets/photos/noflag.png'))e.currentTarget.src='/assets/photos/noflag.png';}}/> : null}
+            <span>{location?.nation_name || (location?.nation_id?`NACIÓN #${location.nation_id}`:'SIN NACIÓN')}</span>
+          </button>
+          <button className={`aog-home-location-country ${location?.region_id ? '' : 'is-empty'}`} type="button" disabled={!location?.region_id}
+            onClick={()=>{if(location?.region_id)onNavigate(`/region?id=${location.region_id}`);}}>
+            <strong>REGIÓN</strong>
+            {location?.region_id ? <img src={location.region_flag||'/assets/photos/noflag.png'} alt="Bandera regional" onError={e=>{if(!e.currentTarget.src.endsWith('/assets/photos/noflag.png'))e.currentTarget.src='/assets/photos/noflag.png';}}/> : null}
+            <span>{location?.region_name || (location?.region_id?`REGIÓN #${location.region_id}`:'SIN REGIÓN')}</span>
+          </button>
+        </div>
+        <button className="aog-home-location-territory" type="button" onClick={()=>onNavigate(location?`/territory?id=${location.territory_id}`:'/map')}>
+          {location?`TERRITORIO ${location.territory_id.toLocaleString('es-AR')}`:'UBICACIÓN NO DISPONIBLE'}
         </button>
       </section>
       <section className="aog-home-events aog-flat-panel" aria-labelledby="aog-home-events-label">
-        <h2 id="aog-home-events-label">EVENTOS ACTIVOS</h2>
+        <PanelHeading id="aog-home-events-label" title="EVENTOS ACTUALES" icon="events"/>
         <div className="aog-home-events-list">
           {localEvents.length?localEvents.map(item=><button key={item.key} type="button" className="aog-home-event-row" onClick={()=>onNavigate(item.href)}>
             <span>{item.label} <b>{item.stage}</b></span>
-            <time>{localClock(item.ends,clock)}</time><span className="aog-home-event-arrow">⟶</span>
-          </button>):<p className="aog-home-empty">SIN EVENTOS ACTIVOS EN TU TERRITORIO</p>}
+            <time>{localClock(item.ends,clock)}</time><span className="aog-home-event-arrow" aria-hidden="true">⟶</span>
+          </button>):<p className="aog-home-empty">SIN EVENTOS</p>}
         </div>
       </section>
-      <section className="aog-home-stats aog-flat-panel" aria-label="Estadísticas mundiales">
-        <h2>ESTADÍSTICAS MUNDIALES</h2>
+      <section className="aog-home-stats aog-flat-panel" aria-labelledby="aog-home-stats-label">
+        <PanelHeading id="aog-home-stats-label" title="ESTADÍSTICAS GLOBALES" icon="statistics"/>
         <div className="aog-home-stats-grid">
           {counters.map(([label,key])=>(
             <article className="aog-home-stat" key={key}>
-              <HomeIcon name={key} className="aog-home-stat-icon"/>
-              <div><strong>{key==='players'&&playerCount!==null?playerCount.toLocaleString('es-AR'):key==='party'&&partyCount!==null?partyCount.toLocaleString('es-AR'):worldCounts[key]!==undefined?worldCounts[key].toLocaleString('es-AR'):'—'}</strong><span>{label.charAt(0)+label.slice(1).toLowerCase()}</span></div>
+              <span>{label}</span>
+              <strong>{key==='players'&&playerCount!==null?playerCount.toLocaleString('es-AR'):key==='party'&&partyCount!==null?partyCount.toLocaleString('es-AR'):worldCounts[key]!==undefined?worldCounts[key].toLocaleString('es-AR'):'—'}</strong>
             </article>
           ))}
         </div>
       </section>
+      <p className="aog-home-beta-note">NOTA: USTED ESTÁ JUGANDO UNA PRUEBA DE BETA TESTERS, SUS DATOS PUEDEN SER MODIFICADOS O BORRADOS</p>
     </main>
   );
 }

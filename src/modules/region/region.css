@@ -1,71 +1,141 @@
-/* Region v0.0.3: mismo lenguaje visual y retícula que Nation, pero sin panel Regiones. */
-.aog-region-redesign .aog-region-red-layout{grid-template-columns:minmax(0,31fr) minmax(0,34fr) minmax(0,35fr);grid-template-rows:auto;gap:10px;padding-right:0}
-.aog-region-redesign .aog-region-red-layout>.aog-nation-red-government{grid-row:1;grid-column:1;min-height:352px}
-.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{grid-row:1;min-width:0}
-.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(2){grid-column:2}
-.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(3){grid-column:3}
-.aog-region-redesign .aog-nation-red-hero-info a{color:#fff;text-decoration:none}
-.aog-region-redesign .aog-nation-red-hero-info a:hover{text-decoration:underline}
-.aog-region-redesign .aog-nation-red-votes .aog-region-red-voting-body{display:flex;flex-direction:column;gap:7px;align-items:stretch}
-.aog-region-redesign .aog-region-red-election-list{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
-.aog-region-redesign .aog-region-red-election{border:1px solid var(--home-accent);border-radius:5px;padding:6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;color:var(--home-accent);text-decoration:none;font-size:10px;align-items:center}
-.aog-region-redesign .aog-region-red-election span{min-width:0;overflow-wrap:anywhere}
-.aog-region-redesign .aog-region-red-election span:nth-child(2){text-align:right}
-.aog-region-redesign .aog-region-red-election-clock{grid-column:1/-1;text-align:center;color:#fff}
-.aog-region-redesign .aog-region-red-parliament-pending{display:flex;justify-content:space-between;gap:5px;flex-wrap:wrap;color:var(--home-accent);font-size:10px;border:1px solid var(--home-accent);padding:6px;border-radius:5px}
-.aog-region-redesign .aog-region-red-parliament-pending span:last-child{color:#fff}
-.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
-.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:0}
-.aog-region-redesign .aog-nation-red-person-info{font-size:10px}
-.aog-region-redesign .aog-nation-red-person-info a{color:#fff;text-decoration:none}
-.aog-region-redesign .aog-nation-red-panel-body{min-width:0}
-@media(max-width:750px){.aog-region-redesign .aog-region-red-layout{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-government{grid-column:1/-1;grid-row:auto;min-height:240px}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{grid-row:auto}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(2){grid-column:1}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column:nth-child(3){grid-column:2}.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:2px solid var(--home-accent)}}
-@media(max-width:480px){.aog-region-redesign .aog-region-red-layout{display:flex;flex-direction:column}.aog-region-redesign .aog-region-red-layout>.aog-nation-red-column{display:flex;flex-direction:column}.aog-region-redesign .aog-nation-red-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-region-redesign .aog-nation-red-stat:nth-child(even){border-right:0}.aog-region-redesign .aog-nation-red-stat:nth-child(5){border-right:2px solid var(--home-accent)}}
+/* Región: misma base visual de Nation, con la retícula exacta del boceto regional.
+   Se importan home.css y nation.css desde RegionPage.tsx, sin modificar Nation. */
+.aog-region-sketch {
+  --nc: var(--aog-accent, #d62718);
+  --nation-bg: color-mix(in srgb, var(--nc) 7%, #050505);
+}
 
-/* Region — corregir el selector de avatar del diseño compartido con Nation.
-   El JSX usa .aog-nation-red-person-photo, NO .aog-nation-avatar. */
-.aog-region-redesign .aog-nation-red-person > a {
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  display: block;
-  overflow: hidden;
-  border-radius: 6px;
+.aog-region-sketch .aog-region-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: 220px 228px 330px 234px 330px 238px;
+  grid-template-areas: none;
+  gap: 11px 10px;
 }
-.aog-region-redesign .aog-nation-red-person-photo {
-  display: block;
-  width: 48px !important;
-  height: 48px !important;
-  max-width: 48px;
-  max-height: 48px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-.aog-region-redesign .aog-nation-red-person {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+
+/* Nation define áreas para su propia página: aquí se neutralizan todas ellas. */
+.aog-region-grid > .aog-nation-panel {
+  grid-area: auto;
   min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
-.aog-region-redesign .aog-nation-red-person-info {
-  flex: 1 1 0;
-  min-width: 0;
-  overflow-wrap: anywhere;
+.aog-region-sketch .aog-region-summary-panel { grid-row: 1; grid-column: 1 / span 5; }
+.aog-region-sketch .aog-region-events-panel { grid-row: 1 / span 2; grid-column: 6 / span 5; }
+.aog-region-sketch .aog-region-government-panel { grid-row: 2; grid-column: 1 / span 5; }
+.aog-region-sketch .aog-region-parliament-panel { grid-row: 3; grid-column: 1 / span 5; }
+.aog-region-sketch .aog-region-ministers-panel { grid-row: 3; grid-column: 6 / span 5; }
+.aog-region-sketch .aog-region-nation-panel { grid-row: 4; grid-column: 1 / span 6; }
+.aog-region-sketch .aog-region-stats-panel { grid-row: 5; grid-column: 1 / span 6; }
+.aog-region-sketch .aog-region-history-panel { grid-row: 4 / span 2; grid-column: 7 / span 4; }
+.aog-region-sketch .aog-nation-resources-panel { grid-row: 6; grid-column: 1 / -1; }
+
+.aog-region-sketch .aog-nation-summary-body { padding: 10px 15px 14px; }
+.aog-region-sketch .aog-nation-summary-info { gap: 9px; }
+.aog-region-sketch .aog-nation-summary-name { font-size: clamp(14px, 1.35vw, 25px); }
+.aog-region-sketch .aog-nation-government-body { padding: 11px 12px 14px; }
+.aog-region-sketch .aog-nation-government-role { font-size: clamp(14px, 1.5vw, 22px); }
+.aog-region-sketch .aog-nation-government-party,
+.aog-region-sketch .aog-nation-government-coalition { max-width: 100%; }
+.aog-region-authority-empty {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  padding: 12px;
+  min-height: 96px;
+  font-size: clamp(10px, .9vw, 15px);
   line-height: 1.25;
+  color: #fff;
+  text-align: center;
 }
-.aog-region-redesign .aog-nation-red-official {
-  min-height: 75px;
-}
-.aog-region-redesign .aog-region-red-layout > .aog-nation-red-government {
+
+/* Sólo se crean tarjetas de eventos que existen realmente en Supabase. */
+.aog-region-sketch .aog-nation-events-body { overflow-y: auto; min-height: 0; }
+.aog-region-sketch .aog-nation-event-mini-grid { grid-template-columns: 1fr; }
+.aog-region-sketch .aog-nation-event-block { flex: 0 0 auto; }
+.aog-region-sketch .aog-nation-events-more { flex-shrink: 0; }
+
+/* Nación: bandera y nombre centrados, clickeables, sin contenido inventado. */
+.aog-region-nation-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   min-width: 0;
+  padding: 14px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
 }
-@media(max-width: 480px) {
-  .aog-region-redesign .aog-nation-red-person > a,
-  .aog-region-redesign .aog-nation-red-person-photo {
-    width: 42px !important;
-    height: 42px !important;
-    max-width: 42px;
-    max-height: 42px;
-    flex-basis: 42px;
+.aog-region-nation-link:hover .aog-region-nation-name { text-decoration: underline; }
+.aog-region-nation-flag {
+  display: block;
+  width: clamp(100px, 11vw, 165px);
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .05);
+}
+.aog-region-nation-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(14px, 1.25vw, 23px);
+  line-height: 1.16;
+}
+
+/* Estadísticas: 3 x 2, dos fechas abajo, texto limitado a su tarjeta. */
+.aog-region-sketch .aog-nation-stats-body { gap: 9px; }
+.aog-region-sketch .aog-nation-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.aog-region-sketch .aog-nation-stat-card { min-height: 70px; }
+.aog-region-sketch .aog-nation-date-card { min-height: 70px; }
+.aog-region-sketch .aog-nation-stat-value,
+.aog-region-sketch .aog-nation-date-card strong {
+  max-width: 100%;
+  font-size: clamp(14px, 1.35vw, 24px);
+  overflow-wrap: anywhere;
+}
+.aog-region-sketch .aog-nation-date-card span { overflow-wrap: anywhere; }
+.aog-region-sketch .aog-nation-stats-note { font-size: clamp(11px, 1vw, 16px); }
+
+@media (max-width: 900px) {
+  .aog-region-sketch .aog-region-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    grid-template-areas: none;
   }
+  .aog-region-sketch .aog-region-grid > .aog-nation-panel {
+    grid-column: auto;
+    grid-row: auto;
+    height: auto;
+    min-height: 220px;
+  }
+  .aog-region-sketch .aog-nation-resources-panel,
+  .aog-region-sketch .aog-region-summary-panel,
+  .aog-region-sketch .aog-region-events-panel,
+  .aog-region-sketch .aog-region-government-panel,
+  .aog-region-sketch .aog-region-nation-panel,
+  .aog-region-sketch .aog-region-stats-panel,
+  .aog-region-sketch .aog-region-history-panel { grid-column: 1 / -1 !important; }
+  .aog-region-sketch .aog-region-events-panel { min-height: 360px; }
+  .aog-region-sketch .aog-region-parliament-panel,
+  .aog-region-sketch .aog-region-ministers-panel { min-height: 270px; }
+  .aog-region-sketch .aog-region-stats-panel { min-height: 325px; }
+  .aog-region-sketch .aog-region-history-panel { min-height: 240px; }
+}
+
+@media (max-width: 600px) {
+  .aog-region-sketch .aog-region-grid { grid-template-columns: minmax(0, 1fr); }
+  .aog-region-sketch .aog-region-grid > .aog-nation-panel { grid-column: 1 / -1 !important; }
+  .aog-region-sketch .aog-nation-summary-body { grid-template-columns: minmax(0,1fr); }
+  .aog-region-sketch .aog-nation-summary-divider { display: none; }
+  .aog-region-sketch .aog-nation-summary-info { padding-top: 9px; }
+  .aog-region-sketch .aog-nation-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aog-region-sketch .aog-nation-date-row { grid-template-columns: minmax(0,1fr); }
+  .aog-region-sketch .aog-nation-government-body { grid-template-columns: minmax(0,1fr) 2px minmax(0,1fr); }
+  .aog-region-sketch .aog-nation-government-splitter { display: block; }
+  .aog-region-sketch .aog-nation-government-avatar,
+  .aog-region-sketch .aog-nation-government-photo-link { width: 67px; height: 67px; }
 }

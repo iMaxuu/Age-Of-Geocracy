@@ -10,6 +10,7 @@ const FLAG = '/assets/photos/noflag.png';
 const formatter = new Intl.NumberFormat('es-AR');
 const countryNames = new Intl.DisplayNames(['es'], { type: 'region' });
 const SPECIAL_FLAG_NAMES: Record<string, string> = {
+  FK: 'Islas Malvinas',
   ARAB: 'Liga Árabe', ASEAN: 'ASEAN', CEFTA: 'CEFTA', EAC: 'Comunidad de África Oriental',
   'ES-CT': 'Cataluña', 'ES-GA': 'Galicia', 'ES-PV': 'País Vasco',
   'GB-ENG': 'Inglaterra', 'GB-NIR': 'Irlanda del Norte', 'GB-SCT': 'Escocia', 'GB-WLS': 'Gales',
@@ -96,7 +97,7 @@ function InformationCard({ title, children, href }: {
   children: ReactNode;
   href?: string;
 }) {
-  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong>{children}</strong><small>{title}</small></span></>;
+  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong className={(() => { const length = String(children ?? '').length; return length > 20 ? 'pr-value-very-long' : length > 13 ? 'pr-value-long' : length > 8 ? 'pr-value-medium' : ''; })()}>{children}</strong><small>{title}</small></span></>;
   return href
     ? <a className="pr-card pr-info-card pr-info-link" href={href}>{contents}</a>
     : <section className="pr-card pr-info-card">{contents}</section>;
@@ -181,13 +182,13 @@ export default function PublicProfilePage({ playerId, onNavigate }: { playerId: 
               {code ? <img src={`/assets/flags/${code}.svg`} alt={countryLabel || code} /> : 'SIN PAÍS DE ORIGEN'}
             </div>
           </div>
-          <div className="pr-actions pr-public-actions"><div className="pr-action-group">
-            <button type="button" onClick={() => onNavigate(`/messages/${profile.id}`)}>ENVIAR MENSAJE</button>
-          </div></div>
         </div>
         <div className="pr-biography-area" aria-label="Biografía">
           <div className="pr-biography">{profile.biography || 'SIN BIOGRAFÍA'}</div>
         </div>
+          <div className="pr-actions pr-public-actions"><div className="pr-action-group">
+            <button type="button" onClick={() => onNavigate(`/messages/${profile.id}`)}>ENVIAR MENSAJE</button>
+          </div></div>
       </section>
     </section>
 
@@ -212,7 +213,7 @@ export default function PublicProfilePage({ playerId, onNavigate }: { playerId: 
       </div>
     </section>
 
-    <section className="pr-section pr-statistics-section" aria-label="Estadísticas">
+    <section className="pr-section pr-statistics-section pr-card" aria-label="Estadísticas"><h2><ProfileIcon name="statistics"/>HABILIDADES</h2>
       <div className="pr-stats">
         {(Object.keys(STAT_LABELS) as (keyof typeof STAT_LABELS)[]).map(key => (
           <section className="pr-card pr-stat-card" key={key}>
@@ -222,5 +223,6 @@ export default function PublicProfilePage({ playerId, onNavigate }: { playerId: 
         ))}
       </div>
     </section>
+    <section className="pr-card pr-positions"><h2><ProfileIcon name="parliaments"/>CARGOS</h2><div className="pr-positions-empty">PRÓXIMAMENTE</div></section>
   </main>;
 }

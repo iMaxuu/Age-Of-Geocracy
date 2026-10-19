@@ -27,7 +27,7 @@ export default function App() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError,setAuthError] = useState('');
-  const { accentColor, setAccentColor, resetAccentColor } = useTheme();
+  const { accentColor, setAccentColor, resetAccentColor, labelColor, setLabelColor, resetLabelColor } = useTheme();
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [messageFlashKey, setMessageFlashKey] = useState(0);
   const [incomingMessageSignal, setIncomingMessageSignal] = useState(0);
@@ -199,6 +199,7 @@ export default function App() {
             <section className="rounded-lg bg-[#242424] p-6"><label htmlFor="theme-color" className="mr-4 text-sm">COLOR DE INTERFAZ</label>
               <input id="theme-color" aria-label="Color de interfaz" type="color" value={accentColor} onChange={(e)=>setAccentColor(e.target.value)}/>
               <button type="button" onClick={resetAccentColor} className="ml-4 border border-current px-3 py-2 text-xs">RESTABLECER</button>
+              <div className="mt-5 flex flex-wrap items-center gap-4"><label htmlFor="label-color" className="text-sm">COLOR DE ÍCONOS Y NOMBRES DE ETIQUETAS</label><input id="label-color" aria-label="Color de íconos y nombres de etiquetas" type="color" value={labelColor} onChange={(e)=>setLabelColor(e.target.value)}/><button type="button" onClick={resetLabelColor} className="border border-current px-3 py-2 text-xs">RESTABLECER</button></div>
               <p className="mt-6 text-xs text-neutral-400">Más opciones de configuración se migrarán después.</p>
             </section>
           </main>

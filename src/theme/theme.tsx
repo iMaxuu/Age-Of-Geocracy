@@ -9,11 +9,16 @@ import {
 
 const DEFAULT_ACCENT = '#d62718';
 const STORAGE_KEY = 'aog.ui.accentColor';
+const LABEL_STORAGE_KEY = 'aog.ui.labelColor';
+export const DEFAULT_LABEL_COLOR = '#ffffff';
 
 type ThemeContextValue = {
   accentColor: string;
   setAccentColor: (color: string) => void;
   resetAccentColor: () => void;
+  labelColor: string;
+  setLabelColor: (color: string) => void;
+  resetLabelColor: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -29,6 +34,16 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     return stored && normalizeHexColor(stored) ? stored : DEFAULT_ACCENT;
   });
 
+  const [labelColor, setLabelColorState] = useState(() => {
+    const stored = localStorage.getItem(LABEL_STORAGE_KEY);
+    return stored && normalizeHexColor(stored) ? stored : DEFAULT_LABEL_COLOR;
+  });
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--aog-label-color', labelColor);
+    localStorage.setItem(LABEL_STORAGE_KEY, labelColor);
+  }, [labelColor]);
+
   useEffect(() => {
     document.documentElement.style.setProperty('--aog-accent', accentColor);
     document.documentElement.style.setProperty('--aog-accent-dark', `color-mix(in srgb, ${accentColor} 15%, black)`);
@@ -38,6 +53,12 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       accentColor,
+      labelColor,
+      setLabelColor(color) {
+        const normalized = normalizeHexColor(color);
+        if (normalized) setLabelColorState(normalized);
+      },
+      resetLabelColor() { setLabelColorState(DEFAULT_LABEL_COLOR); },
       setAccentColor(color) {
         const normalized = normalizeHexColor(color);
         if (!normalized) return;
@@ -47,7 +68,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
         setAccentColorState(DEFAULT_ACCENT);
       },
     }),
-    [accentColor],
+    [accentColor, labelColor],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

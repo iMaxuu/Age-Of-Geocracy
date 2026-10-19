@@ -17,6 +17,7 @@ const STAT_LABELS = {
 const formatter = new Intl.NumberFormat('es-AR');
 const countryNames = new Intl.DisplayNames(['es'], { type: 'region' });
 const SPECIAL_FLAG_NAMES: Record<string, string> = {
+  FK: 'Islas Malvinas',
   ARAB: 'Liga Árabe', ASEAN: 'ASEAN', CEFTA: 'CEFTA', EAC: 'Comunidad de África Oriental',
   'ES-CT': 'Cataluña', 'ES-GA': 'Galicia', 'ES-PV': 'País Vasco',
   'GB-ENG': 'Inglaterra', 'GB-NIR': 'Irlanda del Norte', 'GB-SCT': 'Escocia', 'GB-WLS': 'Gales',
@@ -115,7 +116,7 @@ function EntityPanel({
 function InformationCard({ title, children, href }: {
   title: string; children: ReactNode; href?: string;
 }) {
-  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong>{children}</strong><small>{title}</small></span></>;
+  const contents = <><ProfileIcon name={PROFILE_INFO_ICONS[title] || 'statistics'}/><span className="pr-info-copy"><strong className={(() => { const length = String(children ?? '').length; return length > 20 ? 'pr-value-very-long' : length > 13 ? 'pr-value-long' : length > 8 ? 'pr-value-medium' : ''; })()}>{children}</strong><small>{title}</small></span></>;
   return href
     ? <a className="pr-card pr-info-card pr-info-link" href={href}>{contents}</a>
     : <section className="pr-card pr-info-card">{contents}</section>;
@@ -363,11 +364,7 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
                   : 'SIN PAÍS DE ORIGEN'}
             </div>
           </div>
-          <div className="pr-actions">
-            {editing
-              ? <div className="pr-action-group"><button type="button" className="pr-green" onClick={save}>GUARDAR</button><button type="button" onClick={cancelEdit}>CANCELAR</button></div>
-              : <div className="pr-action-group"><button type="button" className="pr-red" onClick={onLogout}>CERRAR SESIÓN</button><button type="button" onClick={beginEdit}>EDITAR</button></div>}
-          </div>
+          <div className="pr-balance"><strong>$ {formatter.format(player.money)}</strong><strong>G {formatter.format(player.gold)}</strong></div>
         </div>
         <div className="pr-biography-area" aria-label="Biografía">
           {editing
@@ -375,6 +372,11 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
             : <div className="pr-biography">{player.biography || 'SIN BIOGRAFÍA'}</div>}
           {editing && <small className="pr-character-count">{biography.length}/500</small>}
         </div>
+          <div className="pr-actions">
+            {editing
+              ? <div className="pr-action-group"><button type="button" className="pr-green" onClick={save}>GUARDAR</button><button type="button" onClick={cancelEdit}>CANCELAR</button></div>
+              : <div className="pr-action-group"><button type="button" className="pr-red" onClick={onLogout}>CERRAR SESIÓN</button><button type="button" onClick={beginEdit}>EDITAR</button></div>}
+          </div>
         <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={choosePhoto} />
       </section>
     </section>
@@ -424,7 +426,7 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
       </div>
     </section>
 
-    <section className="pr-section pr-statistics-section" aria-label="Estadísticas y entrenamiento">
+    <section className="pr-section pr-statistics-section pr-card" aria-label="Estadísticas y entrenamiento"><h2><ProfileIcon name="statistics"/>HABILIDADES</h2>
       <div className="pr-stats">
         {(Object.keys(STAT_LABELS) as StatKey[]).map(key => {
           const currentLevel = Math.max(1, numeric(stat[key], 1));
@@ -454,5 +456,6 @@ export function ProfilePage({ player, onPlayerChange, onLogout }: ProfileProps) 
       </div>
       {trainingError && <p className="pr-job-status" role="alert">{trainingError}</p>}
     </section>
+    <section className="pr-card pr-positions"><h2><ProfileIcon name="parliaments"/>CARGOS</h2><div className="pr-positions-empty">PRÓXIMAMENTE</div></section>
   </main>;
 }

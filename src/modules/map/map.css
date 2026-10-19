@@ -123,248 +123,141 @@ button.aog-map-card:hover{background:var(--map-dark)}
   mask-image: url('/assets/icons/icons/territory.svg');
 }
 
-/* Pestaña lateral discreta, con chevrón en vez de flecha textual. */
-.aog-map-panel-toggle {
-  align-self: flex-start;
-  margin-left: -2px;
-  width: 27px;
-  height: 46px;
-  border: 2px solid var(--map-accent);
-  border-left: 0;
-  border-radius: 0 9px 9px 0;
-  background: #080808;
-  font-size: inherit;
-  transition: background-color .15s ease;
+/* Panel lateral definitivo: tarjeta fija, sin desplegable.
+   Diseño fiel al boceto de Map: Nación / Región / Territorio / Viajar. */
+.aog-map-root .aog-map-panel-wrap {
+  position:absolute;
+  z-index:4;
+  top:20px;
+  left:20px;
+  width:234px;
+  max-width:calc(100% - 40px);
+  display:block;
+  transform:none;
+  animation:none;
+  max-height:calc(100% - 40px);
+  pointer-events:none;
 }
-.aog-map-panel-toggle:hover {
-  background: color-mix(in srgb, var(--map-accent) 12%, #080808);
-}
-.aog-map-panel-wrap.is-collapsed .aog-map-panel-toggle { margin-left: 0; }
-.aog-map-chevron {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid var(--map-accent);
-  border-right: 2px solid var(--map-accent);
-  transform: rotate(-135deg);
-  transition: transform .15s ease;
-}
-.aog-map-panel-wrap.is-collapsed .aog-map-chevron { transform: rotate(45deg); }
-@media (max-width:720px) {
-  .aog-map-shared-icon { width: 13px; height: 13px; flex-basis: 13px; }
-  .aog-map-panel-toggle { width: 24px; height: 36px; margin-left: -2px; }
-  .aog-map-panel-wrap.is-collapsed .aog-map-panel-toggle { margin-left: 0; }
-  .aog-map-chevron { width: 8px; height: 8px; }
-}
-
-/* Corrección de proporciones y márgenes: referencia del boceto Map */
-.aog-map-panel-wrap{left:0;}
-.aog-map-sidebar{
+.aog-map-root .aog-map-sidebar {
+  position:relative;
+  top:auto;
+  left:auto;
   box-sizing:border-box;
-  width:278px;
-  padding:13px 10px 12px 8px;
-  gap:0;
-  border-width:3px;
-  border-radius:0 10px 10px 0;
-}
-.aog-map-sidebar>.aog-map-card{
-  box-sizing:border-box;
-  padding:2px 0 12px;
-  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
   width:100%;
-  align-items:flex-start;
-  gap:4px;
-}
-.aog-map-card .aog-map-tab{margin:0 0 2px;font-size:12px;min-height:17px;}
-.aog-map-card .aog-map-card-flag{
-  width:98px;height:61px;
+  max-width:none;
+  max-height:calc(100dvh - 175px);
   margin:0;
-  object-fit:contain;
-  align-self:flex-start;
+  padding:10px 10px 9px;
+  gap:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  border:4px solid var(--map-accent);
+  border-radius:14px;
+  background:color-mix(in srgb,var(--map-accent) 6%,#050505);
+  transform:none;
+  scrollbar-width:thin;
+  scrollbar-color:var(--map-accent) transparent;
+  pointer-events:auto;
 }
-.aog-map-card strong,.aog-map-card .aog-map-card-small{
-  font-size:11px;
-  line-height:1.2;
-  font-weight:400;
-  margin:0;
-}
-.aog-map-sidebar>.aog-map-travel{
+.aog-map-root .aog-map-sidebar > .aog-map-card {
   box-sizing:border-box;
-  width:calc(100% + 17px);
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  padding:3px 2px 9px;
+  margin:0;
+  gap:3px;
+  border:0;
+  border-bottom:1px solid var(--map-accent);
+  border-radius:0;
+  background:transparent;
+  text-align:center;
+  color:#fff;
+}
+.aog-map-root .aog-map-sidebar button.aog-map-card { cursor:pointer; }
+.aog-map-root .aog-map-sidebar button.aog-map-card:hover {background:color-mix(in srgb,var(--map-accent) 10%,transparent)}
+.aog-map-root .aog-map-sidebar .aog-map-card-heading {
+  display:block;
+  font:400 23px/1.12 'Black Ops One',system-ui,sans-serif;
+  color:var(--map-accent);
+  text-align:center;
+}
+.aog-map-root .aog-map-sidebar .aog-map-card-flag {
+  display:block;
+  width:106px;
+  height:70px;
+  margin:0 auto;
+  object-fit:contain;
   align-self:center;
-  margin:3px 0 0 -17px;
-  height:63px;
-  padding:6px;
-  border-radius:9px;
-  flex:none;
 }
-.aog-map-sidebar>.aog-map-travel .aog-map-travel-heading{font-size:15px;line-height:1.1;}
-.aog-map-sidebar>.aog-map-travel .aog-map-travel-time{font-size:16px;line-height:1.1;}
-.aog-map-panel-toggle{margin-left:0;}
-@media(max-width:720px){
-  .aog-map-sidebar{width:182px;padding:9px 7px 8px 6px;max-width:calc(100vw - 54px);}
-  .aog-map-sidebar>.aog-map-card{padding-bottom:8px;gap:3px;}
-  .aog-map-card .aog-map-tab{font-size:9px;min-height:13px;margin-bottom:1px;}
-  .aog-map-card .aog-map-card-flag{width:68px;height:40px;}
-  .aog-map-card strong,.aog-map-card .aog-map-card-small{font-size:9px;}
-  .aog-map-sidebar>.aog-map-travel{width:calc(100% + 10px);margin-left:-10px;height:52px;}
-  .aog-map-sidebar>.aog-map-travel .aog-map-travel-heading{font-size:11px;}
-  .aog-map-sidebar>.aog-map-travel .aog-map-travel-time{font-size:12px;}
+.aog-map-root .aog-map-sidebar .aog-map-card strong {
+  display:block;
+  width:100%;
+  max-width:100%;
+  font:400 12px/1.2 'Black Ops One',system-ui,sans-serif;
+  color:#fff;
+  text-align:center;
+  overflow-wrap:anywhere;
 }
-
-/* Alinear contenido con el TEXTO del título (no con el ícono). */
-.aog-map-sidebar > .aog-map-card {
-  --aog-map-icon-size: 17px;
-  --aog-map-icon-gap: 7px;
+.aog-map-root .aog-map-territory {
+  width:100%;
+  min-height:40px;
+  margin:0;
+  padding:8px 1px 6px;
+  border:0;
+  background:transparent;
+  font:400 19px/1.15 'Black Ops One',system-ui,sans-serif;
+  color:var(--map-accent);
+  text-align:center;
+  cursor:pointer;
+  overflow-wrap:anywhere;
 }
-.aog-map-sidebar > .aog-map-card .aog-map-card-flag,
-.aog-map-sidebar > .aog-map-card strong,
-.aog-map-sidebar > .aog-map-card .aog-map-card-small {
-  margin-left: calc(var(--aog-map-icon-size) + var(--aog-map-icon-gap));
+.aog-map-root .aog-map-territory:disabled {cursor:default;opacity:.7}
+.aog-map-root .aog-map-sidebar > .aog-map-travel {
+  box-sizing:border-box;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:69px;
+  min-height:0;
+  margin:0;
+  padding:7px 5px;
+  gap:3px;
+  border:2px solid var(--map-accent);
+  border-radius:10px;
+  background:color-mix(in srgb,var(--map-accent) 9%,#060606);
+  color:var(--map-accent);
 }
-.aog-map-sidebar > .aog-map-card .aog-map-card-flag {
-  border-radius: 9px;
-  overflow: hidden;
-  object-fit: cover;
+.aog-map-root .aog-map-sidebar .aog-map-travel-heading,
+.aog-map-root .aog-map-sidebar .aog-map-travel-time {
+  font:400 14px/1.15 'Black Ops One',system-ui,sans-serif;
+  color:inherit;
+  text-align:center;
 }
-@media (max-width:720px) {
-  .aog-map-sidebar > .aog-map-card { --aog-map-icon-size:13px; }
-  .aog-map-sidebar > .aog-map-card .aog-map-card-flag { border-radius:7px; }
-}
-
-
-/* Botón VIAJAR: respetar los márgenes internos del panel.
-   Anula los márgenes negativos usados en una versión anterior. */
-.aog-map-sidebar > .aog-map-travel {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  margin: 10px 0 0;
-  align-self: stretch;
-}
-@media (max-width: 720px) {
-  .aog-map-sidebar > .aog-map-travel {
-    width: 100%;
-    max-width: 100%;
-    margin: 8px 0 0;
-  }
-}
-
-
-/* MAP v0.0.3 — Panel lateral y pestaña en un mismo contorno.
-   Se reemplazaron todas las versiones previas de la animación. */
-.aog-map-panel-wrap {
-  --map-panel-width: 278px;
-  --map-tab-width: 38px;
-  --map-tab-height: 55px;
-  position: absolute;
-  left: 0;
-  top: clamp(38px,9vh,78px);
-  z-index: 4;
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
-  width: calc(var(--map-panel-width) + var(--map-tab-width));
-  max-width: none;
-  max-height: calc(100% - 110px);
-  pointer-events: none;
-  transform: translate3d(0,0,0);
-  animation: aog-map-panel-open 480ms ease-in-out both;
-  will-change: transform;
-}
-.aog-map-panel-wrap.is-collapsed {
-  transform: translate3d(calc(3px - var(--map-panel-width)),0,0);
-  animation: aog-map-panel-close 480ms ease-in-out both;
-}
-.aog-map-panel-wrap > .aog-map-sidebar {
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-  top: auto;
-  left: auto;
-  flex: 0 0 var(--map-panel-width);
-  width: var(--map-panel-width);
-  max-width: none;
-  margin: 0;
-  padding: 14px 14px 12px 12px;
-  max-height: calc(100dvh - 190px);
-  transform: none;
-  opacity: 1;
-  border: 3px solid var(--map-accent);
-  border-left: 0;
-  border-radius: 0 0 14px 0;
-  background: #080808;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--map-accent) transparent;
-  pointer-events: auto;
-  transition: none;
-}
-.aog-map-panel-wrap.is-collapsed > .aog-map-sidebar { pointer-events: none; }
-.aog-map-panel-wrap > .aog-map-panel-toggle,
-.aog-map-panel-wrap.is-collapsed > .aog-map-panel-toggle {
-  box-sizing: border-box;
-  position: relative;
-  z-index: 3;
-  flex: 0 0 var(--map-tab-width);
-  width: var(--map-tab-width);
-  min-width: var(--map-tab-width);
-  height: var(--map-tab-height);
-  margin: 0 0 0 -3px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  border: 3px solid var(--map-accent);
-  border-left: 0;
-  border-radius: 0 13px 13px 0;
-  background: #080808;
-  color: var(--map-accent);
-  pointer-events: auto;
-  cursor: pointer;
-  transform: none;
-}
-/* Tapar SOLO el segmento de borde compartido: sin tocar la línea superior.
-   Se dibuja sobre el contenedor, no sobre la sidebar con scroll. */
-.aog-map-panel-wrap::after {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  left: calc(var(--map-panel-width) - 4px);
-  top: 3px;
-  width: 5px;
-  height: calc(var(--map-tab-height) - 6px);
-  background: #080808;
-  pointer-events: none;
-}
-.aog-map-panel-wrap > .aog-map-panel-toggle::before { content: none; display: none; }
-.aog-map-panel-wrap > .aog-map-panel-toggle .aog-map-chevron { position: relative; z-index: 4; }
-.aog-map-panel-wrap > .aog-map-sidebar > .aog-map-travel {
-  width: 100%;
-  max-width: 100%;
-  margin: 12px 0 0;
-  align-self: stretch;
-}
-@media (max-width:720px) {
-  .aog-map-panel-wrap {
-    --map-panel-width: 182px;
-    --map-tab-width: 30px;
-    --map-tab-height: 43px;
-    top: 55px;
-    max-height: calc(100% - 135px);
-  }
-  .aog-map-panel-wrap > .aog-map-sidebar {
-    padding: 9px 8px 8px 7px;
-    max-height: calc(100dvh - 220px);
-  }
-}
-/* Dos animaciones distintas: React cambia is-collapsed sin desmontar el panel. */
-@keyframes aog-map-panel-close {
-  from { transform: translate3d(0,0,0); }
-  to { transform: translate3d(calc(3px - var(--map-panel-width)),0,0); }
-}
-@keyframes aog-map-panel-open {
-  from { transform: translate3d(calc(3px - var(--map-panel-width)),0,0); }
-  to { transform: translate3d(0,0,0); }
+@media(max-width:720px) {
+  .aog-map-root .aog-map-panel-wrap {left:8px;top:10px;width:178px;max-width:calc(100% - 16px)}
+  .aog-map-root .aog-map-sidebar {padding:6px;border-width:2px;border-radius:10px;max-height:calc(100dvh - 135px)}
+  .aog-map-root .aog-map-sidebar > .aog-map-card {padding:3px 1px 7px;gap:2px}
+  .aog-map-root .aog-map-sidebar .aog-map-card-heading {font-size:16px}
+  .aog-map-root .aog-map-sidebar .aog-map-card-flag {width:76px;height:45px}
+  .aog-map-root .aog-map-sidebar .aog-map-card strong {font-size:10px}
+  .aog-map-root .aog-map-territory {font-size:14px;min-height:30px;padding:6px 1px}
+  .aog-map-root .aog-map-sidebar > .aog-map-travel {height:54px;padding:4px;border-width:1px}
+  .aog-map-root .aog-map-sidebar .aog-map-travel-heading,
+  .aog-map-root .aog-map-sidebar .aog-map-travel-time {font-size:11px}
 }
 
+/* Reservar la misma altura de bandera para naciones/regiones sin bandera. */
+.aog-map-root .aog-map-sidebar .aog-map-card-flag-placeholder {flex:0 0 70px;visibility:hidden;pointer-events:none;}
+@media(max-width:720px){.aog-map-root .aog-map-sidebar .aog-map-card-flag-placeholder{flex-basis:45px;}}

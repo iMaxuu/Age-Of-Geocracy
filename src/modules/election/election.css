@@ -143,3 +143,47 @@
   .aog-election-metric .aog-election-icon{width:23px;height:23px;flex-basis:23px;}
   .aog-election-metric .aog-election-timer{font-size:9px!important;}
 }
+
+/* Nueva base visual: mismos paneles, fondos y pestañas de Nation/Region. */
+.aog-election-page {
+  --el-accent:var(--aog-accent,#d62718);
+  --el-background:color-mix(in srgb,var(--el-accent) 6%,#030303);
+  max-width:1600px;
+  padding:14px 15px 25px;
+  background:#080808;
+}
+.aog-election-page .aog-election-panel {
+  position:relative;
+  border:4px solid var(--el-accent);
+  border-radius:13px;
+  background:var(--el-background);
+  margin-bottom:11px;
+  min-width:0;
+}
+.aog-election-page .aog-election-overview-heading {display:flex;align-items:start;justify-content:space-between;position:relative;min-width:0;min-height:44px;}
+.aog-election-page .aog-election-overview-heading > .aog-geo-heading {min-width:0;flex:1 1 auto;}
+.aog-election-page .aog-election-stage {margin:8px 12px 0 5px; flex:0 0 auto; font-size:clamp(9px,.85vw,12px);}
+.aog-election-overview-body {padding:14px 17px;}
+.aog-election-page .aog-election-metrics {gap:10px;margin:8px 13px 12px;}
+.aog-election-page .aog-election-metric {
+  display:flex; flex-direction:column; gap:5px; min-height:82px; padding:9px 8px;
+  border:2px solid var(--el-accent);border-radius:9px;
+  background:color-mix(in srgb,var(--el-accent) 17%,#030303);
+}
+.aog-election-page .aog-election-metric .aog-election-icon {display:none;}
+.aog-election-page .aog-election-metric > div {width:100%;display:flex;flex-direction:column-reverse;gap:6px;}
+.aog-election-page .aog-election-metric strong {font-size:clamp(12px,1.15vw,18px);font-variant-numeric:tabular-nums;}
+.aog-election-page .aog-election-metric span:not(.aog-election-icon) {font-size:clamp(10px,.9vw,13px);color:var(--el-accent);}
+.aog-election-page .aog-election-notice {background:color-mix(in srgb,var(--el-accent) 8%,#050505);}
+.aog-election-page .aog-election-candidate {background:color-mix(in srgb,var(--el-accent) 11%,#050505);}
+.aog-election-page .aog-election-office-photo img {border-radius:7px;}
+.aog-election-page .aog-election-vote-area {padding-top:5px;}
+.aog-election-page .aog-election-stage-curso {background:var(--el-accent); color:#080808;}
+@media(max-width:1100px) {.aog-election-page .aog-election-metrics {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:620px) {
+  .aog-election-page {padding:10px;}
+  .aog-election-page .aog-election-panel {border-width:3px;}
+  .aog-election-page .aog-election-overview-heading {flex-wrap:wrap;}
+  .aog-election-page .aog-election-stage {margin:4px 9px 6px;}
+  .aog-election-page .aog-election-metrics {gap:8px;}
+}

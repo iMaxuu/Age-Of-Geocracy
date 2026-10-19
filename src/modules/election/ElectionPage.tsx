@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode, type KeyboardEvent } 
 import { supabase } from '../../lib/supabase';
 import type { Player } from '../auth/player';
 import '../home/home.css';
+import GeocracyHeading from '../shared/GeocracyHeading';
 import './election.css';
 
 type Eligible = { id: number; name: string; photo: string | null; party_id: number; party: string };
@@ -40,7 +41,7 @@ function ElectionIcon({ name, className = '' }: { name: string; className?: stri
 }
 function Panel({ title, icon, children, className = '' }: { title: string; icon: string; children: ReactNode; className?: string }) {
   return <section className={`aog-election-panel ${className}`}>
-    <h2 className="aog-election-panel-title"><ElectionIcon name={icon} />{title}</h2>
+    <GeocracyHeading title={title} icon={icon} />
     {children}
   </section>;
 }
@@ -193,8 +194,8 @@ export default function ElectionPage({ player, onNavigate }: { player: Player; o
     {error && <p className="aog-election-feedback" role="alert">{error}</p>}
     {data && <>
       <section className="aog-election-panel aog-election-overview">
-        <div className="aog-election-panel-title aog-election-title-row">
-          <span className="aog-election-title-text"><ElectionIcon name="parliaments" />{regionalElection ? 'ELECCIÓN DE GOBERNADOR' : 'ELECCIÓN PRESIDENCIAL'}</span>
+        <div className="aog-election-overview-heading">
+          <GeocracyHeading title={regionalElection ? 'ELECCIÓN DE GOBERNADOR' : 'ELECCIÓN PRESIDENCIAL'} icon="events" />
           <span className={`aog-election-stage aog-election-stage-${stage?.toLowerCase()}`}>{stageLabel}</span>
         </div>
         <div className="aog-election-overview-body">

@@ -1,0 +1,342 @@
+/* AGE OF GEOCRACY · Organización política: Partido y Coalición.
+   Estilo coherente con Home, Nation, Region y Territory.
+   Se carga DESPUÉS de party.css / coalition.css para conservar sus controles y RPC. */
+.aog-party.aog-org-modern {
+  --org-accent: var(--aog-accent, #d62718);
+  --org-label: var(--aog-label-color, #fff);
+  --org-bg: color-mix(in srgb, var(--org-accent) 6%, #030303);
+  --org-card-bg: color-mix(in srgb, var(--org-accent) 17%, #030303);
+  --home-accent: var(--org-accent);
+  --home-dark: var(--org-card-bg);
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 14px 15px 16px;
+  background: #080808;
+  color: #fff;
+  min-width: 0;
+}
+.aog-org-modern *,
+.aog-org-modern *::before,
+.aog-org-modern *::after {box-sizing:border-box;}
+.aog-party.aog-org-modern .aog-org-directory-panel,
+.aog-party.aog-org-modern .aog-org-hero,
+.aog-party.aog-org-modern .aog-org-panel {
+  position: relative;
+  min-width: 0;
+  border: 4px solid var(--org-accent);
+  border-radius: 13px;
+  background: var(--org-bg);
+  color: #fff;
+  overflow: hidden;
+}
+/* La etiqueta no reserva padding lateral: comienza al borde interior del panel. */
+.aog-org-modern .aog-org-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex: 0 0 44px;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  font: 400 clamp(13px, 1.45vw, 19px)/1 'Black Ops One',system-ui,sans-serif;
+  color: var(--org-label);
+  text-align: left;
+}
+.aog-org-modern .aog-org-heading-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 1 auto;
+  width: max-content;
+  max-width: 100%;
+  min-height: 43px;
+  padding: 6px 45px 7px 12px;
+  background: var(--org-accent);
+  color: var(--org-label);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 41px) 100%, 0 100%);
+}
+.aog-org-modern .aog-org-heading-icon {
+  display: inline-block;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  background: currentColor;
+  vertical-align: middle;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.aog-org-modern .aog-org-heading-tab > span:last-child {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aog-org-modern .aog-org-leader-star {
+  margin: 12px 13px 0 6px;
+  flex: 0 0 auto;
+  font: 400 19px/1 system-ui,sans-serif;
+  color: #e8b82b;
+  transform: none;
+}
+/* Identificación del partido / coalición. */
+.aog-party.aog-org-modern .aog-org-hero {
+  display: grid;
+  grid-template-columns: minmax(148px, 220px) minmax(0, 1fr);
+  gap: 0 17px;
+  min-height: 298px;
+  padding: 0;
+  align-items: start;
+}
+.aog-org-modern .aog-org-hero > .aog-org-heading {
+  grid-column: 1 / -1;
+}
+.aog-party.aog-org-modern .aog-org-logo,
+.aog-party.aog-org-modern .aog-org-logo-edit {
+  width: calc(100% - 16px);
+  height: 192px;
+  margin: 13px 0 14px 16px;
+  max-width: 100%;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  align-self: center;
+}
+.aog-org-modern .aog-org-hero-main {
+  min-width: 0;
+  width: 100%;
+  padding: 14px 16px 16px 0;
+  gap: 6px;
+  align-self: stretch;
+}
+.aog-party.aog-org-modern .aog-org-hero h1 {
+  margin: 0;
+  color: var(--org-accent);
+  font-size: clamp(24px, 2.6vw, 40px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.aog-org-modern .aog-org-ideology {
+  color: #fff;
+  font-size: clamp(11px, 1.15vw, 15px);
+  line-height: 1.18;
+}
+.aog-org-modern .aog-org-description {
+  height: 105px;
+  min-height: 70px;
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--org-card-bg);
+  border: 2px solid var(--org-accent);
+  border-radius: 9px;
+  color: #fff;
+  font-size: clamp(11px, .97vw, 14px);
+  line-height: 1.35;
+  overflow: auto;
+}
+.aog-org-modern .aog-org-description-edit { height: 110px; }
+.aog-org-modern .aog-party-inline-control {
+  background: var(--org-card-bg);
+  color: #fff;
+  border: 2px solid var(--org-accent);
+  border-radius: 8px;
+}
+.aog-org-modern .aog-org-hero-facts {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 9px;
+  min-height: 65px;
+  margin-top: auto;
+}
+.aog-org-modern .aog-org-hero-facts > div,
+.aog-org-modern .aog-org-rep {
+  min-width: 0;
+  border: 2px solid var(--org-accent);
+  border-radius: 9px;
+  background: var(--org-card-bg);
+}
+.aog-org-modern .aog-org-hero-facts > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 5px;
+}
+.aog-org-modern .aog-org-hero-facts .aog-org-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+}
+.aog-org-modern .aog-org-hero-facts strong {
+  color: #fff;
+  font-size: clamp(11px, 1.2vw, 18px);
+  white-space: nowrap;
+}
+.aog-org-modern .aog-org-hero-facts small { color: var(--org-accent);font-size: clamp(9px, .76vw, 11px); }
+/* Autoridades, representación, acciones, miembros e historial. */
+.aog-org-modern .aog-org-leaders {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 11px;
+}
+.aog-org-modern .aog-org-leader-panel {min-height: 185px;}
+.aog-org-modern .aog-org-person-row,
+.aog-org-modern .aog-org-affiliation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 125px;
+  padding: 14px 14px;
+  width: 100%;
+}
+.aog-org-modern .aog-org-person-row .aog-party-person-photo,
+.aog-org-modern .aog-org-affiliation > img {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
+  object-fit: contain;
+  border-radius: 7px;
+  background: transparent;
+}
+.aog-org-modern .aog-org-person-row > div > button,
+.aog-org-modern .aog-org-affiliation > span {
+  color: #fff;
+  font-size: clamp(13px, 1.65vw, 23px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.aog-org-modern .aog-org-person-row > div > small {color: var(--org-accent);font-size: 12px;}
+.aog-org-modern .aog-org-affiliation-empty {min-height: 125px;color:#fff;}
+.aog-org-modern .aog-org-middle {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:11px;}
+.aog-org-modern .aog-org-representation,
+.aog-org-modern .aog-org-actions {min-height: 255px;}
+.aog-org-modern .aog-org-rep-grid {gap:9px;padding:12px;}
+.aog-org-modern .aog-org-rep {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 78px;
+  padding: 8px;
+}
+.aog-org-modern .aog-org-rep > span {color:var(--org-accent);font-size:clamp(10px,.9vw,14px);}
+.aog-org-modern .aog-org-rep > strong {font-size:19px;}
+.aog-org-modern .aog-org-rep-bar {height: 10px;border-radius:6px;background:color-mix(in srgb,var(--org-accent) 15%,#111);}
+.aog-org-modern .aog-org-action-grid {gap:9px;padding:12px;}
+.aog-org-modern .aog-org-action-grid button,
+.aog-org-modern .aog-org-list-button {
+  min-height: 51px;
+  border: 2px solid var(--org-accent);
+  border-radius: 9px;
+  background: var(--org-card-bg);
+  color: #fff;
+  font-size: clamp(11px,1.05vw,15px);
+  line-height: 1.2;
+}
+.aog-org-modern .aog-org-action-grid button:hover,
+.aog-org-modern .aog-org-list-button:hover {background:color-mix(in srgb,var(--org-accent) 27%,#030303);}
+.aog-org-modern .aog-org-bottom {grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-top:11px;}
+.aog-org-modern .aog-org-members-panel,
+.aog-org-modern .aog-org-history {min-height:280px;}
+.aog-org-modern .aog-org-preview-list {padding:12px 15px;}
+.aog-org-modern .aog-org-member-row {
+  min-height: 47px;
+  border-bottom:1px solid color-mix(in srgb,var(--org-accent) 35%,transparent);
+}
+.aog-org-modern .aog-org-member-row:last-child {border-bottom:0;}
+.aog-org-modern .aog-org-history > div {height:auto;flex:1;min-height:200px;font-size:17px;}
+.aog-org-modern .aog-org-list-button {min-height:41px;margin:0 12px 12px;width:calc(100% - 24px);}
+/* Directorios y formularios con los mismos radios, sin perder búsqueda/paginación. */
+.aog-org-modern .aog-org-directory-panel {padding:0 14px 18px;}
+.aog-org-modern .aog-org-directory-panel > .aog-org-heading {margin-left:-14px;width:calc(100% + 28px);}
+.aog-org-modern .aog-party-findbar {margin:12px 0 17px;gap:10px;}
+.aog-org-modern .aog-party-findbar input,
+.aog-org-modern .aog-party-members-section > input {
+  background:var(--org-card-bg);
+  border:2px solid var(--org-accent);
+  border-radius:9px;
+  color:#fff;
+  height:46px;
+}
+.aog-org-modern .aog-party-findbar > button,
+.aog-org-modern .aog-party-actions button,
+.aog-org-modern .aog-party-footer-actions button {
+  background:var(--org-card-bg);
+  border:2px solid var(--org-accent);
+  border-radius:9px;
+  color:#fff;
+}
+.aog-org-modern .aog-party-directory {gap:10px;}
+.aog-org-modern .aog-party-tile {
+  height:235px;
+  gap:7px;
+  padding:13px 10px;
+  border:2px solid var(--org-accent);
+  border-radius:11px;
+  background:var(--org-card-bg);
+  color:#fff;
+}
+.aog-org-modern .aog-party-tile img {width:110px;height:110px;border-radius:8px;object-fit:contain;background:transparent;}
+.aog-org-modern .aog-party-tile b {font-size:clamp(14px,1.4vw,19px);line-height:1.15;}
+.aog-org-modern .aog-party-tile span {color:var(--org-accent);font-size:12px;}
+.aog-org-modern .aog-party-tile small {color:#fff;font-size:11px;}
+.aog-org-modern .aog-party-editor,
+.aog-org-modern .aog-party-requests,
+.aog-org-modern .aog-party-crop-dialog,
+.aog-org-modern .aog-org-modal {
+  border-color:var(--org-accent);
+  background:var(--org-bg);
+  border-radius:13px;
+}
+.aog-org-modern .aog-party-editor > label > input,
+.aog-org-modern .aog-party-editor > label > textarea,
+.aog-org-modern .aog-party-editor > label > select {
+  border-color:var(--org-accent);
+  background:var(--org-card-bg);
+  color:#fff;
+  border-radius:9px;
+}
+@media (max-width:950px) {
+  .aog-org-modern .aog-org-leaders {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .aog-org-modern .aog-org-leaders > :last-child {grid-column:1 / -1;}
+  .aog-org-modern .aog-org-hero-facts {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .aog-org-modern .aog-org-middle {grid-template-columns:1fr;}
+}
+@media (max-width:650px) {
+  .aog-party.aog-org-modern {padding:10px 9px 17px;}
+  .aog-org-modern .aog-org-heading {height:40px;flex-basis:40px;font-size:12px;}
+  .aog-org-modern .aog-org-heading-tab {
+    min-height:39px;gap:6px;padding:5px 41px 5px 8px;
+    clip-path:polygon(0 0,100% 0,calc(100% - 36px) 100%,0 100%);
+  }
+  .aog-org-modern .aog-org-heading-icon {width:21px;height:21px;flex-basis:21px;}
+  .aog-party.aog-org-modern .aog-org-hero {display:grid;grid-template-columns:95px minmax(0,1fr);gap:0 10px;}
+  .aog-party.aog-org-modern .aog-org-logo,
+  .aog-party.aog-org-modern .aog-org-logo-edit {width:calc(100% - 10px);height:92px;margin:10px 0 0 10px;align-self:start;}
+  .aog-org-modern .aog-org-hero-main {padding:10px 10px 12px 0;}
+  .aog-org-modern .aog-org-description {height:93px;}
+  .aog-org-modern .aog-org-hero-facts {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .aog-org-modern .aog-org-leaders {grid-template-columns:1fr;}
+  .aog-org-modern .aog-org-leaders > :last-child {grid-column:auto;}
+  .aog-org-modern .aog-org-person-row,
+  .aog-org-modern .aog-org-affiliation {min-height:100px;}
+  .aog-org-modern .aog-org-person-row .aog-party-person-photo,
+  .aog-org-modern .aog-org-affiliation > img {width:68px;height:68px;flex-basis:68px;}
+  .aog-org-modern .aog-org-bottom {grid-template-columns:1fr;}
+  .aog-org-modern .aog-party-directory {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:390px) {
+  .aog-org-modern .aog-org-hero-facts {grid-template-columns:1fr;}
+  .aog-org-modern .aog-org-rep-grid {grid-template-columns:1fr;}
+  .aog-org-modern .aog-party-directory {grid-template-columns:1fr;}
+  .aog-org-modern .aog-party-findbar > button {min-width:0;}
+}

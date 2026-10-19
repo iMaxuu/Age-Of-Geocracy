@@ -8,8 +8,10 @@ import {
 } from './partyApi';
 import { IDEOLOGIES } from '../profile/ideologies';
 import { coalitionForParty, type PartyCoalition } from '../coalition/coalitionApi';
+import OrganizationHeading from '../party/OrganizationHeading';
 import '../home/home.css'; // Misma pestaña, curvas y proporciones que Home: NO redibujarla.
 import './party.css';
+import './organization-redesign.css';
 
 const DEFAULT_PHOTO='/assets/photos/nophoto.png';
 const PAGE_SIZE=8;
@@ -279,12 +281,13 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
   const displayed=members.slice(0,visibleMemberCount);
   const isEditing=mode==='edit'&&isLeader;
 
-  return <main className="aog-party" aria-label="Partidos políticos">
+  return <main className="aog-party aog-org-modern" aria-label="Partidos políticos">
     {error&&<p className="aog-party-feedback" role="alert">{error}</p>}
     {notice&&<p className="aog-party-feedback aog-party-notice" role="status">{notice}</p>}
     {loading&&!detail&&<p className="aog-party-loading">CARGANDO PARTIDOS...</p>}
     {!selectedId&&mode==='create'&&createEditor()}
-    {!selectedId&&mode!=='create'&&<>
+    {!selectedId&&mode!=='create'&&<section className="aog-org-directory-panel">
+      <OrganizationHeading title="PARTIDOS" icon="party"/>
       <div className="aog-party-findbar">
         <input value={query} onChange={e=>{loader.current++;setHasMore(false);setLoadingList(false);setQuery(e.target.value);}} placeholder="BUSCAR POR NOMBRE O ID..." aria-label="Buscar partidos" />
         {!my.party_id&&<button disabled={busy} onClick={startCreate}>CREAR PARTIDO <span>G 500</span></button>}
@@ -301,9 +304,10 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
       {!loading&&parties.length===0&&<p className="aog-party-empty">NO SE ENCONTRARON PARTIDOS.</p>}
       {loadingList&&<p className="aog-party-loading" role="status">CARGANDO PARTIDOS...</p>}
       {hasMore&&<div ref={loadMoreRef} className="aog-party-load-marker" aria-hidden="true"/>}
-    </>}
+    </section>}
     {selectedId&&detail&&<>
       <section className="aog-org-hero" aria-label="Datos del partido">
+        <OrganizationHeading title="PARTIDO" icon="party"/>
         {isEditing
           ? <button className="aog-org-logo-edit" type="button" title="Cambiar logo" onClick={()=>photoInput.current?.click()}><img src={photo||DEFAULT_PHOTO} alt="Logo del partido" /></button>
           : <img className="aog-org-logo" src={detail.photo_url||DEFAULT_PHOTO} alt={`Logo de ${detail.name}`} />}
@@ -343,15 +347,15 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
       </div>}
       <div className="aog-org-leaders">
         <section className="aog-org-panel aog-org-leader-panel">
-          <h2><i className="aog-org-icon aog-org-icon-players"/> LÍDER <span className="aog-org-leader-star" aria-hidden="true">★</span></h2>
+          <OrganizationHeading title="LÍDER" icon="players" star/>
           <div className="aog-org-person-row"><PlayerAvatar person={detail.leader} onNavigate={onNavigate}/><div><button type="button" onClick={()=>onNavigate(`/profile/${detail.leader_id}`)}>{detail.leader?.name||'VACANTE'}</button><small>{detail.leader?.political_ideology||'SIN IDEOLOGÍA'}</small></div></div>
         </section>
         <section className="aog-org-panel aog-org-leader-panel">
-          <h2><i className="aog-org-icon aog-org-icon-players"/> FUNDADOR</h2>
+          <OrganizationHeading title="FUNDADOR" icon="players"/>
           <div className="aog-org-person-row"><PlayerAvatar person={detail.founder} onNavigate={onNavigate}/><div><button type="button" onClick={()=>onNavigate(`/profile/${detail.founder_id}`)}>{detail.founder?.name||'VACANTE'}</button><small>{detail.founder?.political_ideology||'SIN IDEOLOGÍA'}</small></div></div>
         </section>
         <section className="aog-org-panel aog-org-leader-panel">
-          <h2><i className="aog-org-icon aog-org-icon-coalition"/> COALICIÓN</h2>
+          <OrganizationHeading title="COALICIÓN" icon="coalition"/>
           {partyCoalition
             ? <button type="button" className="aog-org-affiliation" onClick={()=>onNavigate(`/coalition/${partyCoalition.id}`)}><img src={partyCoalition.photo_url||DEFAULT_PHOTO} alt=""/><span>{partyCoalition.name}</span></button>
             : <div className="aog-org-affiliation-empty">SIN COALICIÓN</div>}
@@ -359,13 +363,13 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
       </div>
       <div className="aog-org-middle">
         <section className="aog-org-panel aog-org-representation">
-          <h2><i className="aog-org-icon aog-org-icon-parliaments"/> REPRESENTACIÓN POLÍTICA</h2>
+          <OrganizationHeading title="REPRESENTACIÓN POLÍTICA" icon="parliaments"/>
           <div className="aog-org-rep-grid">
             {['PRESIDENCIAS','PARLAMENTARIOS NACIONALES','GOBERNACIONES','PARLAMENTARIOS REGIONALES'].map(item=><div className="aog-org-rep" key={item}><span>{item}</span><strong>—</strong><div className="aog-org-rep-bar"><span/></div></div>)}
           </div>
         </section>
         <section className="aog-org-panel aog-org-actions">
-          <h2><i className="aog-org-icon aog-org-icon-party"/> ACCIONES</h2>
+          <OrganizationHeading title="ACCIONES" icon="party"/>
           <div className="aog-org-action-grid">
             {isEditing ? <>
               <button disabled={busy||name.trim().length<3} onClick={saveEdit}>{busy?'GUARDANDO...':'GUARDAR CAMBIOS'}</button>
@@ -385,7 +389,7 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
       </div>
       <div className="aog-org-bottom">
         <section className="aog-org-panel aog-org-members-panel">
-          <h2><i className="aog-org-icon aog-org-icon-players"/> MIEMBROS</h2>
+          <OrganizationHeading title="MIEMBROS" icon="players"/>
           <div className="aog-org-preview-list">{detail.members.slice(0,4).map(m=><div className="aog-org-member-row" key={m.id}>
             <PlayerAvatar person={m} onNavigate={onNavigate}/>
             <button type="button" className="aog-org-member-name" onClick={()=>onNavigate(`/profile/${m.id}`)}>{m.name}</button>
@@ -395,7 +399,7 @@ export default function PartyPage({player,onPlayerChange,onNavigate}:Props){
           <button className="aog-org-list-button" onClick={()=>{setMemberQuery('');setMembersOpen(true);}}>VER TODOS LOS MIEMBROS</button>
         </section>
         <section className="aog-org-panel aog-org-history">
-          <h2><i className="aog-org-icon aog-org-icon-news"/> HISTORIAL</h2>
+          <OrganizationHeading title="HISTORIAL" icon="news"/>
           <div>PRÓXIMAMENTE</div>
         </section>
       </div>

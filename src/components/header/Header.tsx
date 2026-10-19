@@ -41,7 +41,7 @@ function AssetIcon({file,fallback,className=''}:{file:string;fallback:string;cla
       <img className="aog-topbar-svg-preload" src={url} alt="" onError={()=>setBroken(true)} draggable={false}/>
     </span>;
 }
-export function Header({activeSection='home',level=1,money=25_000,geocracy=5_000,playerName='JUGADOR',profileImageUrl=null,xp=0,xpRequired=100,energy=0,energyMax=100,version='PRE-ALPHA v0.0.3',unreadMessages=0,messageFlashKey=0,onNavigate,onLink,onMail,onProfile,onShop,onSettings}:HeaderProps){
+export function Header({activeSection='home',level=1,money=25_000,geocracy=5_000,playerName='JUGADOR',profileImageUrl=null,xp=0,xpRequired=100,energy=0,energyMax=100,version='PRE-ALPHA v0.0.4',unreadMessages=0,messageFlashKey=0,onNavigate,onLink,onMail,onProfile,onShop,onSettings}:HeaderProps){
   const xpPct = xpRequired>0 ? Math.max(0,Math.min(100,xp/xpRequired*100)) : 0;
   const energyPct = energyMax>0 ? Math.max(0,Math.min(100,energy/energyMax*100)) : 0;
   const follow=(path:string,event:React.MouseEvent<HTMLAnchorElement>,fn?:()=>void,key?:HeaderSection)=>{

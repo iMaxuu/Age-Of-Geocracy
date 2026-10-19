@@ -1,29 +1,36 @@
-import { useEffect, useState, useCallback, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, type CSSProperties, type MouseEvent } from 'react';
 import type { Player } from '../auth/player';
 import { supabase } from '../../lib/supabase';
 import type { ResourceName } from '../map/world';
 import type { MapOwnership } from '../map/mapApi';
 import { getResourceStatus, type ResourceStatus } from '../map/resourcesApi';
-import '../home/home.css';
 import IndependentFoundation from './IndependentFoundation';
 import './territory.css';
 
 type Props = { player?: Player; onNavigate?: (path: string) => void };
-type ResourceInfo = { key: ResourceName; name: string; icon: string; abbreviation: string; color: string };
-// Primera fila: madera, mineral, petróleo y oro. Segunda: diamante, uranio, geocracyum y aurexium.
+type ResourceInfo = { key: ResourceName; name: string; icon: string; color: string; bg: string; fill: string };
 const RESOURCES: ResourceInfo[] = [
-  { key: 'wood', name: 'MADERA', icon: 'wood', abbreviation: 'MAD', color: '#9b390f' },
-  { key: 'mineral', name: 'MINERAL', icon: 'ore', abbreviation: 'MIN', color: '#c8d2db' },
-  { key: 'oil', name: 'PETRÓLEO', icon: 'oil', abbreviation: 'PET', color: '#846483' },
-  { key: 'gold', name: 'ORO', icon: 'gold', abbreviation: 'ORO', color: '#ffdf53' },
-  { key: 'diamond', name: 'DIAMANTE', icon: 'diamond', abbreviation: 'DIA', color: '#79b5e5' },
-  { key: 'uranium', name: 'URANIO', icon: 'uranium', abbreviation: 'URA', color: '#159800' },
-  { key: 'geocracyum', name: 'GEOCRACYUM', icon: 'geocracyum', abbreviation: 'GEO', color: '#ff50bd' },
-  { key: 'aurexium', name: 'AUREXIUM', icon: 'aurexium', abbreviation: 'AUR', color: '#0647bd' },
+  { key: 'wood', name: 'MADERA', icon: 'wood', color: '#99502a', bg: '#271109', fill: '#ad5429' },
+  { key: 'mineral', name: 'MINERAL', icon: 'ore', color: '#d0d6dc', bg: '#353638', fill: '#d0d6dc' },
+  { key: 'oil', name: 'PETRÓLEO', icon: 'oil', color: '#6f6f6f', bg: '#080808', fill: '#a8a8a8' },
+  { key: 'gold', name: 'ORO', icon: 'gold', color: '#ffe167', bg: '#625518', fill: '#ffe167' },
+  { key: 'diamond', name: 'DIAMANTE', icon: 'diamond', color: '#81b4e0', bg: '#294f70', fill: '#81b4e0' },
+  { key: 'uranium', name: 'URANIO', icon: 'uranium', color: '#81e25f', bg: '#03590b', fill: '#81e25f' },
+  { key: 'geocracyum', name: 'GEOCRACYUM', icon: 'geocracyum', color: '#f267bb', bg: '#591037', fill: '#f267bb' },
+  { key: 'aurexium', name: 'AUREXIUM', icon: 'aurexium', color: '#1279e8', bg: '#06112d', fill: '#137cec' },
 ];
 const format = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
-const compact = new Intl.NumberFormat('es-AR', { notation: 'compact', maximumFractionDigits: 1 });
+const iconUrl = (name: string) => `/assets/icons/icons/${name}.svg?v=0.0.3-custom-2`;
 
+function Icon({ name, className = '' }: { name: string; className?: string }) {
+  return <span className={`aog-territory-icon ${className}`} aria-hidden="true" style={{maskImage:`url(${iconUrl(name)})`,WebkitMaskImage:`url(${iconUrl(name)})`}}/>;
+}
+function PanelHeading({ title, icon }: {title: string; icon: string}) {
+  return <h2 className="aog-territory-panel-heading"><span className="aog-territory-heading-tab"><Icon name={icon}/><span>{title}</span></span></h2>;
+}
+function Panel({ title, icon, className = '', children }: {title: string; icon: string; className?: string; children: React.ReactNode}) {
+  return <section className={`aog-territory-panel ${className}`}><PanelHeading title={title} icon={icon}/>{children}</section>;
+}
 function territoryId(fallback?: number): number | null {
   const pathId = window.location.pathname.match(/^\/territory\/(\d+)/i)?.[1];
   const raw = new URLSearchParams(window.location.search).get('id') ?? pathId;
@@ -36,29 +43,6 @@ function flagUrl(raw: string | null): string | null {
   if (/^\/assets\/flags\/[a-z0-9-]+\.svg$/i.test(raw)) return raw;
   return /^[a-z]{2,3}(?:-[a-z]{2,3})?$/i.test(raw) ? `/assets/flags/${raw.toLowerCase()}.svg` : null;
 }
-function ResourceIcon({ name, abbreviation }: { name: string; abbreviation: string }) {
-  const [missing, setMissing] = useState(false);
-  return missing ? <span className="aog-territory-icon-fallback" aria-hidden="true">{abbreviation}</span>
-    : <span className="aog-territory-resource-glyph" aria-hidden="true"
-        style={{ WebkitMaskImage: `url(/assets/icons/${name}.svg)`, maskImage: `url(/assets/icons/${name}.svg)` }}>
-        <img src={`/assets/icons/${name}.svg`} alt="" onError={() => setMissing(true)} />
-      </span>;
-}
-function Panel({ title, children, className = '' }: { title: string; children: ReactNode; className?: string }) {
-  return <section className={`aog-territory-panel ${className}`}>
-    <h2 className="aog-home-panel-title aog-territory-tab">{title}</h2>{children}
-  </section>;
-}
-type PublicAuthority = {
-  id: number;
-  name: string;
-  photo_url: string | null;
-  country_code: string | null;
-  political_ideology: string | null;
-  party_name: string | null;
-};
-
-// Los nombres provisionales de la fundación no reemplazan los futuros nombres elegidos por jugadores.
 function entityName(raw: string | null, id: number | null, kind: 'region' | 'nation'): string {
   if (!id) return kind === 'region' ? 'SIN REGIÓN' : 'SIN NACIÓN';
   const value = raw?.trim() || '';
@@ -66,10 +50,14 @@ function entityName(raw: string | null, id: number | null, kind: 'region' | 'nat
     ? /^(?:CAPITAL|REGI[ÓO]N|REGION)\s*#\s*\d+$/i
     : /^(?:NACI[ÓO]N|NATION)\s*#\s*\d+$/i;
   if (!value || placeholder.test(value) || /^(?:REGIÓN CAPITAL|NACIÓN EN ORGANIZACIÓN)$/i.test(value))
-    return `${kind === 'region' ? 'REGION' : 'NATION'} #${id}`;
+    return `${kind === 'region' ? 'REGIÓN' : 'NACIÓN'} #${id}`;
   return value;
 }
 
+type PublicAuthority = {
+  id: number; name: string; photo_url: string | null;
+  country_code: string | null; political_ideology: string | null; party_name: string | null;
+};
 async function publicAuthority(playerId: number | null): Promise<PublicAuthority | null> {
   if (!playerId) return null;
   const { data, error } = await supabase.rpc('aog_public_player_profile', { p_player_id: playerId });
@@ -86,50 +74,36 @@ async function publicAuthority(playerId: number | null): Promise<PublicAuthority
   };
 }
 
-function EntityPanel({ title, name, flag, id, path, onNavigate }: {
-  title: string; name: string; flag: string | null; id: number | null; path: 'region' | 'nation'; onNavigate?: (path: string) => void;
+function EntityCard({ kind, id, name, flag, onNavigate }: {
+  kind: 'nation' | 'region'; id: number | null; name: string; flag: string | null;
+  onNavigate?: (path: string) => void;
 }) {
-  const image = flagUrl(flag) ?? '/assets/photos/noflag.png';
-  const destination = id ? `/${path}?id=${id}` : null;
-  const content = <>
-    <img className="aog-territory-flag" src={image} alt="" onError={event => {
-      if (!event.currentTarget.src.endsWith('/assets/photos/noflag.png'))
-        event.currentTarget.src = '/assets/photos/noflag.png';
-    }} />
+  const destination = id ? `/${kind}?id=${id}` : null;
+  const image = flagUrl(flag);
+  const body = <>
+    {id && image ? <img className="aog-territory-entity-flag" src={image} alt="" onError={event=>{event.currentTarget.style.visibility='hidden';}}/> : null}
     <strong>{name}</strong>
   </>;
-  return <Panel title={title} className="aog-territory-entity">
-    {destination ? <a className="aog-territory-entity-link" href={destination} onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-      if (!onNavigate || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
-      event.preventDefault(); onNavigate(destination);
-    }}>{content}</a> : <div className="aog-territory-entity-link">{content}</div>}
-  </Panel>;
+  return destination ? <a className="aog-territory-entity-card" href={destination} onClick={event=>{
+    if (!onNavigate || event.button!==0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();onNavigate(destination);
+  }}>{body}</a> : <div className="aog-territory-entity-card is-empty">{body}</div>;
 }
-function AuthorityPanel({ title, authority, onNavigate }: {
-  title: 'PRESIDENTE' | 'GOBERNADOR'; authority: PublicAuthority | null; onNavigate?: (path: string) => void;
+function AuthorityCard({ title, person, onNavigate }: {
+  title: string; person: PublicAuthority | null; onNavigate?: (path: string) => void;
 }) {
-  const destination = authority ? `/profile/${authority.id}` : null;
-  const image = authority?.photo_url || '/assets/photos/nouser.png';
-  const countryFlag = authority?.country_code ? flagUrl(authority.country_code) : null;
-  const content = <>
-    <img className="aog-territory-authority-photo" src={image} alt="" onError={event => {
-      if (!event.currentTarget.src.endsWith('/assets/photos/nouser.png'))
-        event.currentTarget.src = '/assets/photos/nouser.png';
-    }} />
-    <div className="aog-territory-authority-description">
-      <strong>{authority?.name ?? 'VACANTE'}</strong>
-      {authority?.political_ideology && <span>{authority.political_ideology.toUpperCase()}</span>}
-      {countryFlag && <img className="aog-territory-authority-flag" src={countryFlag} alt="" />}
-    </div>
-  </>;
-  return <Panel title={title} className="aog-territory-authority">
-    {destination ? <a className="aog-territory-authority-link" href={destination} onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-      if (!onNavigate || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
-      event.preventDefault(); onNavigate(destination);
-    }}>{content}</a> : <div className="aog-territory-authority-link">{content}</div>}
-  </Panel>;
+  const profile = person ? `/profile/${person.id}` : null;
+  return <div className="aog-territory-authority-card">
+    <strong className="aog-territory-authority-role">{title}</strong>
+    {profile ? <a className="aog-territory-authority-picture" href={profile} aria-label={`Ver perfil de ${person!.name}`} onClick={event=>{
+      if (!onNavigate || event.button!==0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();onNavigate(profile);
+    }}><img src={person!.photo_url || '/assets/photos/nouser.png'} alt={person!.name} onError={event=>{event.currentTarget.src='/assets/photos/nouser.png';}}/></a>
+      : <img className="aog-territory-authority-photo" src="/assets/photos/nouser.png" alt="Autoridad vacante"/>}
+    <span className="aog-territory-authority-name">{person?.name ?? 'VACANTE'}</span>
+    {person && <small>{person.party_name ? `PARTIDO ${person.party_name}` : 'SIN PARTIDO'}</small>}
+  </div>;
 }
-
 export default function TerritoryPage({ player, onNavigate }: Props) {
   const id = territoryId(player?.territoryId);
   const [ownership, setOwnership] = useState<MapOwnership | null>(null);
@@ -235,83 +209,89 @@ export default function TerritoryPage({ player, onNavigate }: Props) {
   }, []);
 
   const independent = ownershipLoaded && !ownership?.region_id && !ownership?.nation_id;
+  const nationId = Number(ownership?.nation_id) || null;
+  const regionId = Number(ownership?.region_id) || null;
+  const capitalLabel = isCapital && regionId ? 'CAPITAL NACIONAL' : nationId ? 'TERRITORIO NACIONAL' : 'INDEPENDIENTE';
+  const navigate = (path: string) => onNavigate ? onNavigate(path) : (window.location.href = path);
+  if (!id) return <main className="aog-territory-redesign"><p className="aog-territory-loading">SELECCIONÁ UN TERRITORIO</p></main>;
 
-  if (!id) return <main className="aog-territory-page"><h1>SELECCIONÁ UN TERRITORIO</h1></main>;
-  const blocks = [
-    {kind: 'NACIÓN', name: entityName(ownership?.nation_name ?? null, ownership?.nation_id ?? null, 'nation'),
-      flag: ownership?.nation_flag ?? null, id: ownership?.nation_id ?? null, route: 'nation', role: 'PRESIDENTE', authority: president},
-    {kind: 'REGIÓN', name: entityName(ownership?.region_name ?? null, ownership?.region_id ?? null, 'region'),
-      flag: ownership?.region_flag ?? null, id: ownership?.region_id ?? null, route: 'region', role: isCapital ? 'ADMINISTRACIÓN NACIONAL' : 'GOBERNADOR',
-      authority: isCapital ? president : governor},
-  ] as const;
-  const linked = (path: string) => (event: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate || event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
-    event.preventDefault(); onNavigate(path);
-  };
-  return <main className="aog-territory-page aog-territory-redesign"><div className="aog-territory-container">
+  const stats = [
+    {name:'JUGADORES',value:players===null?'—':format.format(players)},
+    {name:'PARTIDOS',value:partyCount===null?'—':format.format(partyCount)},
+    {name:'CIUDADANOS',value:'—'},
+    {name:'CLUBES',value:'—'},
+    {name:'TAMAÑO',value:'—'},
+  ];
+  const regionalStock = Array.from(resources?.values() ?? []).some(item=>item.scope_kind==='region');
+  return <main className="aog-territory-redesign">
     {warning && <p className="aog-territory-warning" role="status">{warning}</p>}
-    {independent ? <div className="aog-territory-founding"><h1>TERRITORIO #{format.format(id)}</h1><IndependentFoundation territory={id} onFounded={handleFounded} onNavigate={onNavigate}/></div>
-    : <div className="aog-territory-overview">
-        {blocks.map(block => {
-          const path = `/${block.route}?id=${block.id}`;
-          const picture = flagUrl(block.flag) || '/assets/photos/noflag.png';
-          return <section className="aog-territory-banner" key={block.kind}>
-            <a className="aog-territory-banner-flag" href={block.id ? path : undefined} onClick={block.id ? linked(path) : undefined}>
-              <img src={picture} alt={`Bandera de ${block.name}`} onError={event => {event.currentTarget.src='/assets/photos/noflag.png';}}/>
-            </a>
-            <div className="aog-territory-banner-title"><div className="aog-territory-banner-type">{block.kind}</div>
-              {block.id ? <a href={path} onClick={linked(path)}>{block.name}</a> : <span>{block.name}</span>}
-            </div>
-            <div className="aog-territory-banner-authority">
-              <div className="aog-territory-banner-role">{block.role}</div>
-              {block.authority ? <a className="aog-territory-banner-person" href={`/profile/${block.authority.id}`} onClick={linked(`/profile/${block.authority.id}`)}>
-                <img src={block.authority.photo_url || '/assets/photos/nouser.png'} alt="" onError={event=>{event.currentTarget.src='/assets/photos/nouser.png';}} />
-                <span><span className="aog-territory-banner-person-name">{block.authority.name}</span>
-                  <small>{block.authority.party_name ? `PARTIDO ${block.authority.party_name}` : 'SIN PARTIDO'}</small></span>
-              </a> : <div className="aog-territory-banner-person"><img src="/assets/photos/nouser.png" alt=""/><span>VACANTE</span></div>}
-            </div>
-          </section>;
-        })}
-      </div>}
-    <div className="aog-territory-dashboard">
-      <section className="aog-territory-box aog-territory-resource-box">
-        <h2 className="aog-territory-box-head"><span className="aog-territory-shared-icon" style={{WebkitMaskImage:"url('/assets/icons/icons/location.svg')",maskImage:"url('/assets/icons/icons/location.svg')"}}/> RECURSOS</h2>
-        {resourceError && <p className="aog-territory-warning" role="alert">{resourceError}</p>}
-        <div className="aog-territory-resource-grid">{RESOURCES.map(resource=>{
-          const entry=resources?.get(resource.key);
-          const amount=entry?.current_amount ?? null; const maximum=entry?.max_amount ?? null;
-          const display=(n: number|null)=>n===null?'—':format.format(n);
-          const percent=amount!==null && maximum && maximum>0?Math.min(100,Math.max(0,amount/maximum*100)):0;
-          return <div className="aog-territory-resource-card" key={resource.key} style={{'--territory-resource-color':resource.color} as CSSProperties}>
-            <ResourceIcon name={resource.icon} abbreviation={resource.abbreviation}/>
-            <div className="aog-territory-resource-info"><span>{resource.name}</span>
-              {amount!==null && maximum!==null && <><small>{display(amount)}/{display(maximum)}</small><div className="aog-territory-resource-bar"><span style={{width:`${percent}%`}}/></div></>}
-              {amount===null && <small>—</small>}
-            </div>
-          </div>;
-        })}</div>
-      </section>
-      <div className="aog-territory-dashboard-right">
-        <section className="aog-territory-box aog-territory-stats-box">
-          <h2 className="aog-territory-box-head"><span className="aog-territory-shared-icon" style={{WebkitMaskImage:"url('/assets/icons/icons/statistics.svg')",maskImage:"url('/assets/icons/icons/statistics.svg')"}}/> ESTADÍSTICAS TERRITORIALES</h2>
-          <div className="aog-territory-stat-grid">
-            {[
-              {key:'players',name:'JUGADORES',value:players===null?'—':format.format(players)},
-              {key:'players',name:'CIUDADANOS',value:'—'},
-              {key:'party',name:'PARTIDOS',value:partyCount===null?'—':format.format(partyCount)},
-              {key:'clubs',name:'CLUBES',value:'—'},
-              {key:'territory',name:'TAMAÑO',value:'—'},
-            ].map(stat=><div className="aog-territory-stat-item" key={stat.name}>
-              <span className="aog-territory-stat-icon" style={{WebkitMaskImage:`url('/assets/icons/icons/${stat.key}.svg')`,maskImage:`url('/assets/icons/icons/${stat.key}.svg')`}}/>
-              <div><span className="aog-territory-stat-value">{stat.value}</span><span>{stat.name}</span></div>
-            </div>)}
+    <div className="aog-territory-layout">
+      <Panel title="TERRITORIO" icon="territory" className="aog-territory-summary-panel">
+        <div className="aog-territory-summary-body">
+          <div className="aog-territory-identity">
+            <span className="aog-territory-large-id">#{format.format(id)}</span>
+            <strong>{capitalLabel}</strong>
+            <span>{player?.territoryId===id?'TU UBICACIÓN ACTUAL':'TERRITORIO DEL MAPA MUNDIAL'}</span>
           </div>
-        </section>
-        <section className="aog-territory-box aog-territory-history-box">
-          <h2 className="aog-territory-box-head"><span className="aog-territory-shared-icon" style={{WebkitMaskImage:"url('/assets/icons/icons/news.svg')",maskImage:"url('/assets/icons/icons/news.svg')"}}/> HISTORIAL TERRITORIAL</h2>
-          <div className="aog-territory-placeholder">PRÓXIMAMENTE</div>
-        </section>
-      </div>
+          <div className="aog-territory-summary-divider"/>
+          <div className="aog-territory-summary-facts">
+            <div><Icon name="players"/><span><b>JUGADORES</b><strong>{players===null?'—':format.format(players)}</strong></span></div>
+            <div><Icon name="party"/><span><b>PARTIDOS</b><strong>{partyCount===null?'—':format.format(partyCount)}</strong></span></div>
+            <button type="button" className="aog-territory-map-link" onClick={()=>navigate('/map')}>VER EN MAPA</button>
+          </div>
+        </div>
+      </Panel>
+      <Panel title="ORGANIZACIÓN POLÍTICA" icon="nation" className="aog-territory-political-panel">
+        <div className="aog-territory-political-grid">
+          <div className="aog-territory-political-item">
+            <span>NACIÓN</span>
+            <EntityCard kind="nation" id={nationId} name={entityName(ownership?.nation_name??null,nationId,'nation')} flag={ownership?.nation_flag??null} onNavigate={onNavigate}/>
+          </div>
+          <div className="aog-territory-political-item">
+            <span>REGIÓN</span>
+            <EntityCard kind="region" id={regionId} name={entityName(ownership?.region_name??null,regionId,'region')} flag={ownership?.region_flag??null} onNavigate={onNavigate}/>
+          </div>
+        </div>
+      </Panel>
+      {!independent && <Panel title="AUTORIDADES" icon="players" className="aog-territory-government-panel">
+        <div className="aog-territory-government-grid">
+          <AuthorityCard title="PRESIDENTE" person={president} onNavigate={onNavigate}/>
+          <AuthorityCard title={isCapital?'ADMINISTRACIÓN NACIONAL':'GOBERNADOR'} person={isCapital?president:governor} onNavigate={onNavigate}/>
+        </div>
+      </Panel>}
+      <Panel title="ESTADÍSTICAS TERRITORIALES" icon="statistics" className="aog-territory-stats-panel">
+        <div className="aog-territory-stats-grid">
+          {stats.map(stat=><div className="aog-territory-stat-card" key={stat.name}>
+            <span>{stat.name}</span><strong>{stat.value}</strong>
+          </div>)}
+        </div>
+      </Panel>
+      {independent && <Panel title="FUNDACIÓN Y CIUDADANÍA" icon="foundation" className="aog-territory-foundation-panel">
+        <div className="aog-territory-foundation-inner"><IndependentFoundation territory={id} onFounded={handleFounded} onNavigate={onNavigate}/></div>
+      </Panel>}
+      <Panel title="RECURSOS" icon="statistics" className="aog-territory-resources-panel">
+        {resourceError && <p className="aog-territory-resource-error" role="alert">{resourceError}</p>}
+        {!resources && !resourceError && <p className="aog-territory-resource-loading">CARGANDO RECURSOS...</p>}
+        {resources && <>
+          {regionalStock && <p className="aog-territory-stock-note">DEPÓSITOS COMPARTIDOS DE LA REGIÓN</p>}
+          <div className="aog-territory-resource-grid">{RESOURCES.map(resource=>{
+            const entry=resources.get(resource.key);
+            const amount=entry?.current_amount??null, max=entry?.max_amount??null;
+            const percent=amount!==null&&max!==null&&max>0?Math.max(0,Math.min(100,amount/max*100)):0;
+            const style={'--resource-color':resource.color,'--resource-bg':resource.bg,'--resource-fill':resource.fill} as CSSProperties;
+            return <div className="aog-territory-resource-card" key={resource.key} style={style}>
+              <span className="aog-territory-resource-icon" style={{maskImage:`url('/assets/icons/${resource.icon}.svg')`,WebkitMaskImage:`url('/assets/icons/${resource.icon}.svg')`}} aria-hidden="true"/>
+              <div className="aog-territory-resource-detail"><strong>{resource.name}</strong>
+                <span>{amount!==null&&max!==null?`${format.format(amount)}/${format.format(max)}`:'—'}</span>
+                <div className="aog-territory-resource-track" role="progressbar" aria-label={`Disponibilidad de ${resource.name}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent)}><span style={{width:`${percent}%`}}/></div>
+              </div>
+            </div>;
+          })}</div>
+        </>}
+      </Panel>
+      <Panel title="HISTORIAL TERRITORIAL" icon="news" className="aog-territory-history-panel">
+        <div className="aog-territory-placeholder">PRÓXIMAMENTE</div>
+      </Panel>
     </div>
-  </div></main>;
+  </main>;
 }

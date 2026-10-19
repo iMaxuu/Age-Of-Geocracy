@@ -1,134 +1,442 @@
-/* Home — boceto clasico, sin sombras. Iconos SVG reutilizables de /assets/icons/icons/ */
-.aog-home{--hc:var(--aog-accent,#e62c22);display:grid;grid-template-columns:minmax(0,42%) minmax(0,58%);gap:16px 18px;width:100%;max-width:1500px;min-width:0;margin:0 auto;padding:20px;background:#080808;color:#fff;font-family:inherit;font-size:14px;font-weight:400;line-height:1.35;box-sizing:border-box;overflow-x:clip}
-.aog-home *,.aog-home *::before,.aog-home *::after{box-sizing:border-box}
-.aog-home .aog-flat-panel,.aog-home .aog-home-panel{border:3px solid var(--hc);border-radius:9px;background:#080808;box-shadow:none;min-width:0}
-.aog-home .aog-home-top{display:contents}
-.aog-home-chat{grid-column:1;grid-row:1}.aog-home-news{grid-column:2;grid-row:1}.aog-home-location{grid-column:1;grid-row:2}.aog-home-events{grid-column:2;grid-row:2}.aog-home-stats{grid-column:1/-1;grid-row:3}
-.aog-home-chat,.aog-home-news{height:375px;display:flex;flex-direction:column;min-height:0;padding:10px 10px 9px;overflow:hidden}
-.aog-home-icon{display:inline-block;width:28px;height:28px;flex:0 0 28px;vertical-align:middle;background:currentColor;mask-repeat:no-repeat;mask-position:center;mask-size:contain;-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:contain}
-.aog-home-panel-title,.aog-home-location h2,.aog-home-events h2,.aog-home-stats h2{display:flex;align-items:center;gap:10px;margin:0;color:var(--hc);font-size:16px;font-weight:400;line-height:1.2;background:transparent;box-shadow:none;text-align:left;letter-spacing:0}
-.aog-home .aog-home-panel-title{position:static;transform:none;max-width:none;width:auto;padding:0 0 6px;min-height:30px;border:0;border-radius:0;white-space:normal}
-.aog-home .aog-home-panel-title::before,.aog-home .aog-home-panel-title::after{display:none}
-.aog-home-chat-online{display:none}
-.aog-home-chat-messages{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:7px 0;scrollbar-width:thin;scrollbar-color:var(--hc) transparent}
-.aog-chat-message{display:flex;flex:0 0 auto;gap:8px;align-items:flex-start;min-width:0;background:transparent;border:0;padding:0;color:white}
-.aog-chat-profile-link{flex:0 0 40px;width:40px;height:40px;border:0;padding:0;cursor:pointer;background:transparent}
-.aog-chat-profile-link img{width:100%;height:100%;object-fit:cover;border-radius:3px}
-.aog-chat-body{flex:1;min-width:0}.aog-chat-name{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;line-height:1.1}
-.aog-chat-name strong{font-size:17px;color:var(--hc);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%}.aog-chat-name span{font-size:10px;color:color-mix(in srgb,var(--hc),#000 45%)}
-.aog-chat-message p{margin:4px 0 0;font-size:12px;line-height:1.25;color:#fff;overflow-wrap:anywhere}.aog-chat-message time{font-size:11px;white-space:nowrap;margin-left:auto;padding-top:3px}
-.aog-home-chat-compose{display:flex;align-items:center;gap:7px;flex:0 0 auto;padding-top:6px;margin-top:auto}
-.aog-home-chat-compose input{flex:1;min-width:0;height:39px;padding:0 9px;border:2px solid var(--hc);border-radius:14px;background:transparent;color:#fff;outline:none;font-size:12px}
-.aog-home-chat-compose input::placeholder{color:var(--hc)}.aog-home-send{height:39px;width:40px;flex:0 0 40px;border:2px solid var(--hc);border-radius:13px;background:transparent;color:var(--hc);cursor:pointer;font-size:20px}
-.aog-chat-language-picker{position:relative;flex:0 0 54px;height:39px}.aog-chat-language-button{padding:0;width:100%;height:100%;border:2px solid var(--hc);border-radius:13px;background:transparent;overflow:hidden;cursor:pointer}.aog-chat-language-flag{width:100%;height:100%;object-fit:cover}
-.aog-chat-language-menu{position:absolute;bottom:calc(100% + 5px);right:0;z-index:10;display:grid;grid-template-columns:repeat(2,48px);gap:5px;padding:6px;background:#090909;border:1px solid var(--hc);border-radius:8px}.aog-chat-language-option{width:48px;height:32px;padding:0;overflow:hidden;border:1px solid transparent;background:#090909;cursor:pointer}.aog-chat-language-option.is-active{border-color:var(--hc)}.aog-home-notice{font-size:12px;color:#dfb55b;margin:3px 0}
-.aog-world-news-feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;padding:12px 0 6px;scrollbar-width:thin;scrollbar-color:var(--hc) transparent}
-.aog-world-news-item{display:flex;gap:12px;align-items:center;min-width:0;padding:2px 0;border:0;background:transparent}.aog-world-news-icon{display:flex;align-items:center;justify-content:center;flex:0 0 48px;color:var(--hc)}.aog-world-news-icon .aog-home-icon{width:39px;height:39px;flex-basis:39px}
-.aog-world-news-content{flex:1;min-width:0;overflow-wrap:anywhere}.aog-world-news-content strong{display:block;color:var(--hc);font-size:19px;font-weight:400;line-height:1.1}.aog-world-news-content p{margin:3px 0 0;font-size:11px;color:white}.aog-world-news-item time{margin-left:auto;white-space:nowrap;font-size:11px;align-self:center}
-.aog-world-news-update .aog-world-news-icon,.aog-world-news-update .aog-world-news-content strong{color:#ffd34d}.aog-home-empty{margin:auto;color:var(--hc);text-align:center;font-size:13px}
-.aog-home-location,.aog-home-events{height:245px;padding:11px 12px;min-width:0}.aog-home-location-link{display:flex;flex-direction:column;align-items:flex-start;margin:20px 0 0 32px;text-align:left;padding:0;border:0;background:none;color:#fff;cursor:pointer;max-width:calc(100% - 35px)}.aog-home-location-link strong{font-size:30px;font-weight:400;line-height:1.05;overflow-wrap:anywhere}.aog-home-location-link span{font-size:15px;font-weight:400;margin-top:5px}
-.aog-home-events-list{height:calc(100% - 35px);display:flex;flex-direction:column;justify-content:flex-start;gap:0;overflow-y:auto;padding:10px 0}.aog-home-event-row{display:flex;align-items:center;gap:10px;width:100%;min-width:0;min-height:48px;padding:4px 0 4px 30px;background:transparent;border:0;color:#fff;text-align:left;cursor:pointer;font-weight:400;font-size:12px}.aog-home-event-row:hover{color:var(--hc)}.aog-home-event-row>span:first-child{flex:1;min-width:0}.aog-home-event-row b{color:var(--hc)}.aog-home-event-row time{color:var(--hc);white-space:nowrap}.aog-home-event-arrow{color:var(--hc);font-size:26px;line-height:1;flex:0 0 36px}
-.aog-home-stats{padding:13px 13px 26px;min-height:170px}.aog-home-stats-grid{display:flex;flex-wrap:wrap;align-content:flex-start;gap:10px 0;margin-top:26px}.aog-home-stat{display:flex;align-items:center;justify-content:center;min-width:0;flex:0 0 14.28%;gap:7px;padding:6px 7px;border-right:3px solid var(--hc);color:#fff}.aog-home-stat:nth-child(7),.aog-home-stat:last-child{border-right:0}.aog-home-stat-icon{width:33px;height:33px;flex-basis:33px;color:var(--hc)}.aog-home-stat div{text-align:center;min-width:0}.aog-home-stat strong{display:block;font-size:16px;color:#fff;line-height:1.2}.aog-home-stat div span{display:block;font-size:12px;color:#fff;overflow-wrap:anywhere}
-@media(max-width:850px){.aog-home{grid-template-columns:minmax(0,1fr);gap:12px;padding:12px}.aog-home-chat,.aog-home-news,.aog-home-location,.aog-home-events,.aog-home-stats{grid-column:1;grid-row:auto}.aog-home-chat,.aog-home-news{height:340px}.aog-home-location,.aog-home-events{height:auto;min-height:185px}.aog-home-stats-grid{margin-top:15px}.aog-home-stat{flex-basis:25%}.aog-home-stat:nth-child(7){border-right:3px solid var(--hc)}.aog-home-stat:nth-child(4),.aog-home-stat:nth-child(8){border-right:0}}
-@media(max-width:520px){.aog-home{padding:8px;gap:10px}.aog-home .aog-flat-panel,.aog-home .aog-home-panel{border-width:2px}.aog-home-panel-title,.aog-home-location h2,.aog-home-events h2,.aog-home-stats h2{font-size:13px}.aog-home-icon{width:22px;height:22px;flex-basis:22px}.aog-home-location-link{margin-left:20px}.aog-home-location-link strong{font-size:25px}.aog-home-stat{flex-basis:50%}.aog-home-stat:nth-child(even){border-right:0}.aog-home-stat:nth-child(odd){border-right:2px solid var(--hc)}.aog-home-stat:last-child{border-right:2px solid var(--hc)}.aog-world-news-content strong{font-size:15px}.aog-world-news-item time{font-size:9px}.aog-chat-name strong{font-size:14px}}
-
-/* Evitar el peso negrita predeterminado de strong/b en esta tipografia. */
-.aog-home strong,.aog-home b{font-weight:400}
-
-/* Estadísticas: posición fija del icono; el texto se adapta sin desplazarlo. */
-.aog-home .aog-home-stats-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px 0;align-items:start}
-.aog-home .aog-home-stat{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;justify-content:initial;column-gap:8px;min-width:0;width:100%;padding:6px 10px;}
-.aog-home .aog-home-stat .aog-home-icon{display:block;width:36px;height:36px;min-width:36px;min-height:36px;flex:none;justify-self:start}
-.aog-home .aog-home-stat > div{min-width:0;width:100%;text-align:center}
-.aog-home .aog-home-stat > div strong{font-size:clamp(11px,0.9vw,16px);font-weight:400;line-height:1.2}
-.aog-home .aog-home-stat > div span{font-size:clamp(9px,0.69vw,12px);font-weight:400;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none}
-@media(max-width:1100px){.aog-home .aog-home-stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.aog-home .aog-home-stat:nth-child(7){border-right:3px solid var(--hc)}.aog-home .aog-home-stat:nth-child(4),.aog-home .aog-home-stat:nth-child(8){border-right:0}.aog-home .aog-home-stat > div span{font-size:11px}}
-@media(max-width:520px){.aog-home .aog-home-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.aog-home .aog-home-stat:nth-child(odd){border-right:2px solid var(--hc)}.aog-home .aog-home-stat:nth-child(even){border-right:0}.aog-home .aog-home-stat .aog-home-icon{width:32px;height:32px;min-width:32px;min-height:32px}.aog-home .aog-home-stat{grid-template-columns:32px minmax(0,1fr);column-gap:6px;padding-inline:6px}.aog-home .aog-home-stat > div span{font-size:10px}}
-
-
-/* HOME v0.0.3 · Boceto 19 — encabezados y separadores planos, sin sombras */
-.aog-home {grid-template-columns:minmax(0,42%) minmax(0,58%);gap:18px 18px;}
-.aog-home .aog-home-panel,.aog-home .aog-flat-panel{border-radius:9px;box-shadow:none;}
-.aog-home-chat,.aog-home-news{padding:0 10px 9px;height:375px;}
-.aog-home .aog-home-panel-title,
-.aog-home .aog-home-location h2,
-.aog-home .aog-home-events h2,
-.aog-home .aog-home-stats h2 {
-  display:flex;align-items:center;min-height:44px;line-height:1.25;
-  padding:7px 10px;margin:0 -10px 0;border-bottom:1px solid var(--hc);
-  font-size:15px;font-weight:400;letter-spacing:0;
+/* AGE OF GEOCRACY · HOME — adaptación del boceto PRE-ALPHA (23).
+   La misma pestaña recortada se reutiliza en los cinco paneles. */
+.aog-home {
+  --hc: var(--aog-accent, #d62718);
+  --home-bg: color-mix(in srgb, var(--hc) 5%, #030303);
+  --home-own-bg: color-mix(in srgb, var(--hc) 17%, #030303);
+  --home-other-bg: var(--home-bg);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 424px 326px auto auto;
+  gap: 11px 10px;
+  width: 100%;
+  max-width: 1600px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 14px 15px 7px;
+  color: #fff;
+  background: #080808;
+  font-family: inherit;
+  line-height: 1.28;
+  overflow-x: clip;
 }
-.aog-home .aog-home-panel-title{width:calc(100% + 20px);padding:7px 10px;min-height:44px;}
-.aog-home-location,.aog-home-events{padding:0 10px 12px;height:285px;}
-.aog-home .aog-home-location h2,.aog-home .aog-home-events h2{margin:0 -10px;}
-.aog-home-stats{padding:0 12px 32px;min-height:235px;}
-.aog-home .aog-home-stats h2{margin:0 -12px;padding-left:12px;}
-.aog-home-chat-messages {gap:0;padding-top:0;padding-bottom:0;}
-.aog-chat-message{min-height:54px;padding:5px 0;border-bottom:1px solid var(--hc);align-items:center;}
-.aog-chat-message:last-of-type{border-bottom:0;}
-.aog-chat-profile-link{width:39px;height:39px;flex-basis:39px;}
-.aog-chat-body{align-self:center;}
-.aog-chat-message p{margin-top:3px;}
-.aog-home-chat-compose{padding-top:8px;}
-.aog-world-news-feed{gap:0;padding:10px 0 0;justify-content:flex-end;}
-.aog-world-news-item{flex:0 0 auto;min-height:72px;gap:10px;padding:10px 0;border-bottom:1px solid var(--hc);}
-.aog-world-news-item:last-of-type{border-bottom:0;}
-.aog-world-news-content strong{font-size:18px;font-weight:400;}
-.aog-world-news-icon{flex-basis:42px;}
-.aog-world-news-icon .aog-home-icon{width:38px;height:38px;flex-basis:38px;}
-.aog-home-location-link{margin:12px 0 0 0;max-width:100%;}
-.aog-home-location-link strong{font-size:30px;}
-.aog-home-events-list{height:calc(100% - 44px);padding:0;}
-.aog-home-event-row{min-height:57px;padding:5px 0 5px 9px;}
-.aog-home-event-row b{font-weight:400;}
-.aog-home-event-arrow{font-size:27px;}
-.aog-home-stats-grid{margin-top:21px;}
-.aog-home .aog-home-stat{padding:6px 8px;}
-@media(max-width:850px){
-  .aog-home{grid-template-columns:minmax(0,1fr);gap:12px;}
-  .aog-home-chat,.aog-home-news,.aog-home-location,.aog-home-events,.aog-home-stats{grid-column:1;grid-row:auto;}
-  .aog-home-chat,.aog-home-news{height:340px;}
-  .aog-home-location,.aog-home-events{height:auto;min-height:185px;}
-}
-@media(max-width:520px){
-  .aog-home .aog-home-panel-title,.aog-home .aog-home-location h2,
-  .aog-home .aog-home-events h2,.aog-home .aog-home-stats h2{font-size:13px;min-height:38px;}
-  .aog-home-events-list{height:auto;min-height:130px;}
-  .aog-home-event-row{gap:5px;padding-left:3px;font-size:11px;}
-  .aog-home-location-link strong{font-size:25px;}
-  .aog-world-news-content strong{font-size:15px;}
-  .aog-home-stat{min-width:0;}
-}
-
-/* Estadísticas compactas: solo el alto necesario para las filas reales. */
-.aog-home .aog-home-stats {
+.aog-home *, .aog-home *::before, .aog-home *::after { box-sizing: border-box; }
+.aog-home button { font-family: inherit; }
+.aog-home strong, .aog-home b { font-weight: 400; }
+.aog-home .aog-home-top { display: contents; }
+.aog-home .aog-home-panel, .aog-home .aog-flat-panel {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
   min-height: 0;
-  height: auto;
-  align-self: start;
-  padding: 0 12px 12px;
+  overflow: hidden;
+  border: 4px solid var(--hc);
+  border-radius: 13px;
+  box-shadow: none;
+  background: var(--home-bg);
 }
-.aog-home .aog-home-stats-grid {
-  margin-top: 10px;
-  row-gap: 5px;
-  align-content: start;
-  grid-auto-rows: minmax(54px, auto);
+.aog-home-chat { grid-column: 1; grid-row: 1; }
+.aog-home-news { grid-column: 2; grid-row: 1; }
+.aog-home-location { grid-column: 1; grid-row: 2; }
+.aog-home-events { grid-column: 2; grid-row: 2; }
+.aog-home-stats { grid-column: 1 / -1; grid-row: 3; }
+
+/* Pestaña sólida integrada en el borde, con el recorte diagonal del boceto.
+   El corte NO depende del ancho de la pantalla: se adapta al contenido. */
+.aog-home .aog-home-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  flex: 0 0 44px;
+  height: 44px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  border: 0;
+  color: #fff;
+  font-size: clamp(13px, 1.45vw, 19px);
+  font-weight: 400;
+  text-align: left;
 }
-.aog-home .aog-home-stats .aog-home-stat {
-  padding: 4px 8px;
+.aog-home-heading-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 43px;
+  max-width: 100%;
+  width: max-content;
+  padding: 6px 45px 7px 12px;
+  background: var(--hc);
+  color: #fff;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 41px) 100%, 0 100%);
+}
+.aog-home-heading-tab > span:last-child { min-width: 0; white-space: nowrap; }
+.aog-home-icon {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  vertical-align: middle;
+  background: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+.aog-home .aog-home-heading-tab .aog-home-icon { width: 27px; height: 27px; flex-basis: 27px; }
+.aog-home-empty { margin: auto; color: #fff; text-align: center; font-size: 18px; }
+
+/* Chat: mensajes con burbuja y alineación propia/ajena, sobre el formulario. */
+.aog-home-chat-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 0;
+  padding: 10px 14px 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: var(--hc) transparent;
+  scrollbar-width: thin;
+}
+.aog-home-chat-messages > :first-child { margin-top: 0; }
+.aog-chat-message {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  column-gap: 6px;
+  row-gap: 0;
+  width: fit-content;
+  max-width: min(92%, 540px);
+  min-width: 0;
+  padding: 5px 6px 6px;
+  border: 1.5px solid var(--hc);
+  border-radius: 9px;
+  background: var(--home-other-bg);
+  color: #fff;
+}
+.aog-chat-own {
+  align-self: flex-end;
+  background: var(--home-own-bg);
+}
+.aog-chat-profile-link {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+}
+.aog-chat-profile-link img { display: block; width: 100%; height: 100%; border-radius: 5px; object-fit: cover; }
+.aog-chat-body { display: contents; }
+.aog-chat-name, .aog-chat-timestamp { grid-column: 2; min-width: 0; }
+.aog-chat-name { grid-row: 1; align-self: end; }
+.aog-chat-timestamp { grid-row: 2; align-self: start; }
+.aog-chat-profile-link { grid-column: 1; grid-row: 1 / 3; }
+.aog-chat-body p { grid-column: 1 / -1; grid-row: 3; }
+.aog-chat-name { display: flex; align-items: baseline; gap: 3px; min-width: 0; line-height: 1.1; }
+.aog-chat-name strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--hc); font-size: 16px; }
+.aog-chat-name span { white-space: nowrap; color: color-mix(in srgb, var(--hc) 32%, #000); font-size: 9px; }
+.aog-chat-timestamp { display: block; margin-top: 1px; color: #dedede; font-size: 9px; line-height: 1.1; }
+.aog-chat-message p { margin: 5px 0 0; color: #fff; font-size: 12px; line-height: 1.36; overflow-wrap: anywhere; }
+.aog-home-chat-compose {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 5px;
+  margin-top: auto;
+  padding: 6px 14px 7px;
+  border-top: 2px solid var(--hc);
+}
+.aog-home-chat-compose input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 9px;
+  border: 2px solid var(--hc);
+  border-radius: 9px;
+  background: var(--home-bg);
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+}
+.aog-home-chat-compose input::placeholder { color: #fff; opacity: 1; }
+.aog-home-chat-compose input:focus-visible { box-shadow: inset 0 0 0 1px var(--hc); }
+.aog-home-send {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 38px;
+  border: 2px solid var(--hc);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--hc);
+  font-size: 24px;
+  cursor: pointer;
+}
+.aog-home-send:disabled { opacity: .5; cursor: not-allowed; }
+.aog-chat-language-picker { position: relative; width: 58px; height: 44px; flex: 0 0 58px; }
+.aog-chat-language-button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid var(--hc);
+  border-radius: 10px;
+  background: var(--home-other-bg);
+  cursor: pointer;
+}
+.aog-chat-language-flag { display:block; width:100%; max-width:none; height:100%; object-fit:cover; object-position:center; border-radius:7px; }
+.aog-chat-language-flag:not(img) { display:grid; place-items:center; font:22px/1 system-ui,sans-serif; }
+.aog-chat-language-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 5px);
+  z-index: 15;
+  display: grid;
+  grid-template-columns: repeat(2, 48px);
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid var(--hc);
+  border-radius: 8px;
+  background: var(--home-bg);
+}
+.aog-chat-language-option { display:grid;place-items:center;width:48px;height:34px;overflow:hidden;padding:0;border:1px solid transparent;border-radius:5px;background:var(--home-other-bg);cursor:pointer; }
+.aog-chat-language-option.is-active { border-color: var(--hc); }
+.aog-home-notice { margin: 0 12px 6px; color: var(--hc); font-size: 11px; }
+
+/* Últimas noticias del mundo (anuncios oficiales y fundaciones existentes). */
+.aog-world-news-feed {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-height: 0;
+  padding: 10px 14px 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: var(--hc) transparent;
+  scrollbar-width: thin;
+}
+.aog-world-news-feed > :first-child { margin-top: auto; }
+.aog-world-news-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 55px;
+  padding: 7px 9px;
+  border: 1.5px solid var(--hc);
+  border-radius: 8px;
+  background: var(--home-own-bg);
+}
+.aog-world-news-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 33px; color: var(--hc); }
+.aog-world-news-icon .aog-home-icon { width: 31px; height: 31px; flex-basis: 31px; }
+.aog-world-news-content { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.aog-world-news-content strong { display: block; color: var(--hc); font-size: 13px; line-height: 1.15; }
+.aog-world-news-content p { margin: 4px 0 0; font-size: 11px; line-height: 1.3; color: #fff; }
+.aog-world-news-item time { align-self: flex-end; flex: 0 0 auto; margin-left: 3px; white-space: nowrap; color: #fff; font-size: 10px; }
+.aog-world-news-update .aog-world-news-icon, .aog-world-news-update .aog-world-news-content strong { color: var(--hc); }
+
+/* Nación y región con banderas reales y acceso al territorio actual. */
+.aog-home-location-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1;
+  min-height: 0;
+  margin: 16px 10px 0;
+}
+.aog-home-location-country {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  min-width: 0;
+  padding: 2px 10px 4px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+.aog-home-location-country:first-child { border-right: 2px solid var(--hc); }
+.aog-home-location-country > strong { color: var(--hc); font-size: clamp(18px, 2.5vw, 29px); line-height: 1.08; }
+.aog-home-location-country > img {
+  display: block;
+  flex: 0 0 auto;
+  width: min(170px, 74%);
+  height: 106px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.aog-home-location-country.is-empty { justify-content:center; gap:12px; }
+.aog-home-location-country > span:last-child { min-width: 0; color: #fff; font-size: clamp(10px, 1.3vw, 16px); line-height: 1.15; overflow-wrap: anywhere; }
+.aog-home-location-country:hover:not(:disabled) > span:last-child { text-decoration: underline; }
+.aog-home-location-country:disabled { cursor: default; }
+.aog-home-location-territory {
+  display: block;
+  align-self: center;
+  max-width: 100%;
+  margin: 6px auto 9px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--hc);
+  font-size: clamp(18px, 2.5vw, 27px);
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+}
+.aog-home-location-territory:hover { text-decoration: underline; }
+
+/* Eventos locales, sin inventar eventos cuando no existen. */
+.aog-home-events-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 15px;
+}
+.aog-home-events-list .aog-home-empty { font-size: clamp(19px, 2.3vw, 30px); }
+.aog-home-event-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
   min-height: 54px;
+  padding: 8px 7px;
+  border: 0;
+  border-bottom: 1px solid var(--hc);
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
 }
-@media (max-width: 520px) {
-  .aog-home .aog-home-stats { padding-bottom: 10px; }
-  .aog-home .aog-home-stats-grid { margin-top: 8px; row-gap: 4px; }
+.aog-home-event-row:hover, .aog-home-event-row b, .aog-home-event-row time, .aog-home-event-arrow { color: var(--hc); }
+.aog-home-event-row > span:first-child { min-width: 0; flex: 1; }
+.aog-home-event-row time { flex: 0 0 auto; white-space: nowrap; }
+.aog-home-event-arrow { font-size: 24px; }
+
+/* Tarjetas de estadísticas: 5 por fila, 4 en la segunda, sin los antiguos iconos. */
+.aog-home-stats { min-height: 255px; }
+.aog-home-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: 82px;
+  gap: 12px;
+  padding: 16px 20px 18px;
+}
+.aog-home-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 7px 5px;
+  border: 2px solid var(--hc);
+  border-radius: 9px;
+  background: var(--home-own-bg);
+  color: #fff;
+  text-align: center;
+}
+.aog-home-stat > span { color: var(--hc); font-size: clamp(10px, 1.1vw, 15px); line-height: 1.12; overflow-wrap: anywhere; }
+.aog-home-stat > strong { color: #fff; font-size: clamp(18px, 2.4vw, 30px); line-height: 1.1; }
+.aog-home-beta-note {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  margin: 0 auto;
+  padding: 3px 8px 4px;
+  color: var(--hc);
+  font-size: clamp(10px, 1.15vw, 15px);
+  text-align: center;
 }
 
-/* Fecha sobre la hora, sin mover las fotos ni el cuerpo de los mensajes. */
-.aog-home .aog-chat-message .aog-chat-timestamp {
-  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
-  gap:3px;flex:0 0 auto;min-width:88px;margin-left:auto;padding-top:0;
-  font-size:11px;font-weight:400;white-space:nowrap;line-height:1.15;text-align:right;
+@media (max-width: 900px) {
+  .aog-home { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 11px; padding: 12px; }
+  .aog-home-chat, .aog-home-news, .aog-home-location, .aog-home-events, .aog-home-stats, .aog-home-beta-note { grid-column: 1; grid-row: auto; }
+  .aog-home-chat, .aog-home-news { height: 365px; }
+  .aog-home-location { height: 326px; }
+  .aog-home-events { height: 245px; }
+  .aog-home-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .aog-home-location-country > strong { font-size: 27px; }
+  .aog-home-location-country > span:last-child { font-size: 15px; }
 }
-.aog-home .aog-chat-message .aog-chat-timestamp span {display:block;font-weight:400;}
-@media(max-width:520px){
-  .aog-home .aog-chat-message .aog-chat-timestamp{min-width:68px;font-size:9px;gap:2px;}
+@media (max-width: 540px) {
+  .aog-home { padding: 8px; gap: 9px; }
+  .aog-home .aog-home-panel, .aog-home .aog-flat-panel { border-width: 3px; border-radius: 10px; }
+  .aog-home .aog-home-panel-heading { flex-basis: 40px; height: 40px; font-size: 12px; }
+  .aog-home-heading-tab { min-height: 39px; gap: 6px; padding: 5px 41px 5px 8px; clip-path: polygon(0 0, 100% 0, calc(100% - 36px) 100%, 0 100%); }
+  .aog-home .aog-home-heading-tab .aog-home-icon { width: 21px; height: 21px; flex-basis: 21px; }
+  .aog-home-chat, .aog-home-news { height: 330px; }
+  .aog-chat-message { max-width: 91%; }
+  .aog-home-chat-messages, .aog-world-news-feed { padding-inline: 8px; }
+  .aog-home-chat-compose { padding-inline: 7px; }
+  .aog-home-location { height: 290px; }
+  .aog-home-location-grid { margin: 12px 5px 0; }
+  .aog-home-location-country { padding-inline: 4px; }
+  .aog-home-location-country > strong { font-size: 19px; }
+  .aog-home-location-country > img { height: 80px; width: min(125px, 85%); }
+  .aog-home-location-country > span:last-child { font-size: 11px; }
+  .aog-home-location-territory { font-size: 20px; }
+  .aog-home-events { height: 220px; }
+  .aog-world-news-content strong { font-size: 12px; }
+  .aog-world-news-item time { font-size: 9px; }
+  .aog-home-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; grid-auto-rows: 70px; padding: 12px; }
+  .aog-home-stat > span { font-size: 11px; }
+  .aog-home-stat > strong { font-size: 23px; }
+  .aog-home-beta-note { font-size: 10px; }
+}
+
+/* Chat: área de lectura debajo del encabezado, sin solapamientos. */
+.aog-home-chat > .aog-home-panel-heading { position: relative; z-index: 2; flex-shrink: 0; }
+.aog-home-chat-messages { position: relative; z-index: 1; flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-anchor: none; justify-content: flex-start; align-content: start; padding-top: 12px; scroll-padding-top: 12px; }
+.aog-home-chat-compose { flex-shrink: 0; }
+.aog-chat-message { flex-shrink: 0; }
+.aog-chat-body p { grid-column: 1 / -1; grid-row: 3; margin-left: 0; }
+
+/* Respeta el color independiente de iconos y textos de etiquetas configurado por el jugador. */
+.aog-home .aog-home-heading-tab { color: var(--aog-label-color, #ffffff); }
+
+/* Altura uniforme para los tres controles de escritura del chat. */
+.aog-home-chat-compose { --aog-chat-control-height: 46px; }
+.aog-home-chat-compose input,
+.aog-home-chat-compose .aog-home-send,
+.aog-home-chat-compose .aog-chat-language-picker {
+  box-sizing: border-box;
+  height: var(--aog-chat-control-height);
+  min-height: var(--aog-chat-control-height);
+}
+.aog-home-chat-compose .aog-chat-language-button { box-sizing: border-box; height: 100%; }
+
+/* Encabezado flotante: el corte diagonal no bloquea toda la fila del chat. */
+.aog-home .aog-home-chat > .aog-home-panel-heading {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: auto;
+  height: 44px;
+  z-index: 5;
+  pointer-events: none;
+}
+.aog-home .aog-home-chat > .aog-home-chat-messages {
+  flex: 1 1 0;
+  padding-top: 8px;
+  scroll-padding-top: 8px;
+}
+/* Si el primer mensaje está a la izquierda, dejar libre la pestaña;
+   los mensajes propios a la derecha sí aprovechan la franja superior. */
+.aog-home .aog-home-chat-messages > .aog-chat-message:first-child:not(.aog-chat-own) {
+  margin-top: 44px;
 }

@@ -13,15 +13,26 @@ export type Conversation = {
   other_name: string;
   other_photo_url: string | null;
   last_content: string;
+  last_sender_id?: number | null;
   last_at: string;
   unread_count: number;
 };
 export type ChatContact = { id: number; name: string; photo_url: string | null };
 
-export async function loadConversations(): Promise<Conversation[]> {
+export async function loadConversations(selfId?: number): Promise<Conversation[]> {
   const { data, error } = await supabase.rpc('aog_dm_inbox');
   if (error) throw new Error(error.message);
-  return (data ?? []) as Conversation[];
+  const inbox = (data ?? []) as Conversation[];
+  // La bandeja RPC entrega el texto, pero no el remitente: consultar solo el último
+  // mensaje de cada conversación para colorear la vista previa correctamente.
+  if (!selfId) return inbox;
+  return Promise.all(inbox.map(async item => {
+    const { data: last, error: lastError } = await supabase.from('aog_direct_messages')
+      .select('sender_id')
+      .or(`and(sender_id.eq.${selfId},recipient_id.eq.${item.other_id}),and(sender_id.eq.${item.other_id},recipient_id.eq.${selfId})`)
+      .order('id', { ascending: false }).limit(1);
+    return { ...item, last_sender_id: lastError ? null : (last?.[0]?.sender_id ?? null) };
+  }));
 }
 
 export async function loadContact(id: number): Promise<ChatContact> {

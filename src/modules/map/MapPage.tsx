@@ -18,10 +18,7 @@ function flagSrc(raw:string|null|undefined):string{
   return '/assets/photos/noflag.png';
 }
 function MapCard({title,body,flag,showFlag=false,onClick,disabled=false,small=false}:{title:string;body:string;flag?:string|null;showFlag?:boolean;onClick?:()=>void;disabled?:boolean;small?:boolean}){
-  const content=<><span className="aog-home-panel-title aog-map-tab">
-    <span className={`aog-map-shared-icon aog-map-shared-${title === 'NACIÓN' ? 'nation' : title === 'REGIÓN' ? 'region' : 'territory'}`} aria-hidden="true"/>
-    {title}
-  </span>{showFlag?<img className="aog-map-card-flag" src={flagSrc(flag)} alt="Bandera" onError={e=>{if(!e.currentTarget.src.endsWith('/assets/photos/noflag.png'))e.currentTarget.src='/assets/photos/noflag.png';}}/>:null}<strong className={small?'aog-map-card-small':''}>{body}</strong></>;
+  const content=<><span className="aog-map-card-heading">{title}</span>{showFlag?<img className="aog-map-card-flag" src={flagSrc(flag)} alt="Bandera" onError={e=>{if(!e.currentTarget.src.endsWith('/assets/photos/noflag.png'))e.currentTarget.src='/assets/photos/noflag.png';}}/>:<span className="aog-map-card-flag aog-map-card-flag-placeholder" aria-hidden="true"/>}<strong className={small?'aog-map-card-small':''}>{body}</strong></>;
   return onClick&&!disabled?<button type="button" className="aog-map-card" onClick={onClick}>{content}</button>:<div className="aog-map-card" aria-disabled="true">{content}</div>;
 }
 export default function MapPage({player,onPlayerChange,onNavigate}:Props){
@@ -45,7 +42,6 @@ export default function MapPage({player,onPlayerChange,onNavigate}:Props){
   const [serverOffset,setServerOffset]=useState(0);
   const [tick,setTick]=useState(Date.now());
   const [showControls,setShowControls]=useState(false);
-  const [sidebarOpen,setSidebarOpen]=useState(true);
   const mounted=useRef(true);
   const syncStatus=useCallback(async()=>{
     try{const result=await travelStatus();if(!mounted.current)return;
@@ -119,18 +115,17 @@ export default function MapPage({player,onPlayerChange,onNavigate}:Props){
   const canTravel=selected!=null&&selected!==home&&!trip;
   return <main className="aog-map-root">
     {ready?<MapCanvas ref={renderer} mode={mode} selectedId={selected} homeId={home} onSelect={setSelected} onError={setMessage} showBorders={borders} playerCounts={counts} partyCounts={partyCounts} showPlayerPosition={showPlayerPosition} ownership={ownership} resourcePools={resourcePools}/>:<div className="aog-map-loading">{error||'CARGANDO MAPA MUNDIAL…'}</div>}
-    <div className={`aog-map-panel-wrap${sidebarOpen?'':' is-collapsed'}`}>
-      <aside className="aog-map-sidebar" aria-label="Datos del territorio seleccionado" aria-hidden={!sidebarOpen} inert={!sidebarOpen}>
+    <div className="aog-map-panel-wrap">
+      <aside className="aog-map-sidebar" aria-label="Datos del territorio seleccionado">
         <MapCard title="NACIÓN" body={owner?.nation_id != null ? (owner.nation_name || `NATION #${owner.nation_id}`) : 'SIN NACIÓN'} flag={owner?.nation_flag} showFlag={owner?.nation_id != null} disabled={!owner?.nation_id} onClick={()=>onNavigate(`/nation?id=${owner?.nation_id}`)}/>
         <MapCard title="REGIÓN" body={owner?.region_id != null ? (owner.region_name || `REGION #${owner.region_id}`) : 'SIN REGIÓN'} flag={owner?.region_flag} showFlag={owner?.region_id != null} disabled={!owner?.region_id} onClick={()=>onNavigate(`/region?id=${owner?.region_id}`)}/>
-        <MapCard title="TERRITORIO" body={selected?`TERRITORIO #${nfmt.format(selected)}`:'—'} onClick={selected?()=>onNavigate(`/territory?id=${selected}`):undefined} small/>
+        <button type="button" className="aog-map-territory" disabled={!selected} onClick={()=>{if(selected)onNavigate(`/territory?id=${selected}`);}}>TERRITORIO {selected?nfmt.format(selected):'—'}</button>
         <button type="button" className="aog-map-travel" disabled={busy||(!canTravel&&!trip)||trip?.state==='returning'} onClick={()=>void runAction(trip?cancelTravel:()=>startTravel(selected!))}>
           <span className="aog-map-travel-heading">{trip?trip.state==='returning'?'REGRESANDO':'CANCELAR VIAJE':`VIAJAR ${territory&&current&&selected!==home?formatKm(fromTo):''}`}</span>
           <span className="aog-map-travel-time">{trip?clock(remaining):clock(duration)}</span>
           {trip?<i className="aog-map-progress" style={{width:`${(trip.state==='returning'?1-progress:progress)*100}%`}}/>:null}
         </button>
       </aside>
-      <button type="button" className="aog-map-panel-toggle" aria-label={sidebarOpen?'Ocultar panel de territorio':'Mostrar panel de territorio'} aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(v=>!v)}><span className="aog-map-chevron" aria-hidden="true" /></button>
     </div>
     <div className="aog-map-controls">
       <button type="button" onClick={()=>renderer.current?.zoom(true)} aria-label="Acercar">+</button>

@@ -12,14 +12,27 @@ export const INVENTORY_RESOURCES = [
 ] as const;
 export type InventoryCode = typeof INVENTORY_RESOURCES[number]['code'];
 export type Inventory = Record<InventoryCode, number>;
+export type InventorySnapshot = {amounts:Inventory;limits:Inventory;strength:number};
 export const formatUnits = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 
-export async function getMyInventory(): Promise<Inventory> {
+export async function getMyInventory(): Promise<InventorySnapshot> {
   const { data, error } = await supabase.rpc('aog_my_inventory');
   if (error) throw new Error(`No se pudo cargar el almacén: ${error.message}`);
   const response = data && typeof data === 'object' && !Array.isArray(data) ? data as Record<string, unknown> : {};
-  return Object.fromEntries(INVENTORY_RESOURCES.map(({code}) => {
+  const capacityData = response._limits;
+  if (!capacityData || typeof capacityData !== 'object' || Array.isArray(capacityData)) {
+    throw new Error('Falta actualizar la función aog_my_inventory en Supabase (SQL de capacidad del Almacén).');
+  }
+  const capacity = capacityData as Record<string,unknown>;
+  const limits = Object.fromEntries(INVENTORY_RESOURCES.map(({code}) => {
+    const n = Number(capacity[code]);
+    if (!Number.isSafeInteger(n) || n <= 0) throw new Error(`Capacidad inválida para ${code}.`);
+    return [code,n];
+  })) as Inventory;
+  const amounts = Object.fromEntries(INVENTORY_RESOURCES.map(({code}) => {
     const n = Number(response[code]);
     return [code, Number.isFinite(n) && n > 0 ? Math.floor(n) : 0];
   })) as Inventory;
+  const strength = Math.max(1,Math.floor(Number(response._strength) || 1));
+  return {amounts,limits,strength};
 }

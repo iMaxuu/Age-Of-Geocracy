@@ -7,6 +7,7 @@ import {
 } from './newsApi';
 import {safeRichText,textLength} from './richText';
 import './news.css';
+import GeocracyHeading from '../shared/GeocracyHeading';
 
 const DEFAULT_AVATAR='/assets/photos/nophoto.png';
 const formatter=new Intl.DateTimeFormat('es-AR',{day:'2-digit',month:'short',year:'numeric'});
@@ -175,16 +176,16 @@ export default function NewsPage({player,onNavigate}:{player:Player;onNavigate:(
   const displayedNew=useMemo(()=>newImages.map((file,index)=>({file,index})),[newImages]);
 
   return <main className="aog-news-page">
-    <header className="aog-news-top">
+    <section className="aog-news-panel aog-news-top-panel"><GeocracyHeading title="NOTICIAS" icon="news"/><header className="aog-news-top">
       <div><h1><Icon name="news"/> NOTICIAS</h1><p>PUBLICACIONES DE LA COMUNIDAD Y ANUNCIOS OFICIALES</p></div>
       {draft?<button className="aog-news-secondary" type="button" disabled={busy} onClick={()=>{setDraft(null);setError('');}}>CANCELAR</button>
         :<button className="aog-news-primary" type="button" onClick={beginCreate}>+ CREAR ARTÍCULO</button>}
-    </header>
+    </header></section>
     {notice&&<div className="aog-news-notice" role="status">{notice}<button type="button" onClick={()=>setNotice('')}>×</button></div>}
     {error&&<div className="aog-news-error" role="alert">{error}<button type="button" onClick={()=>setError('')}>×</button></div>}
 
     {draft?<form className="aog-news-compose aog-news-panel" onSubmit={event=>void save(event)}>
-      <h2><Icon name="news"/> {editingId?'EDITAR ARTÍCULO':'NUEVA PUBLICACIÓN'}</h2>
+      <GeocracyHeading title={editingId?'EDITAR ARTÍCULO':'NUEVA PUBLICACIÓN'} icon="news"/>
       <div className="aog-news-form">
         <div className="aog-news-form-line">
           <label>TÍTULO<input type="text" maxLength={120} value={draft.title} onChange={event=>updateDraft({title:event.target.value})} placeholder="Escribí un título..." required/></label>
@@ -219,7 +220,7 @@ export default function NewsPage({player,onNavigate}:{player:Player;onNavigate:(
     </form>:reading?<>
       <button className="aog-news-back" type="button" onClick={backToNews}>← VOLVER A NOTICIAS</button>
       <article className="aog-news-reading aog-news-panel">
-        <h2><Icon name={reading.is_official?'update':'news'}/> {reading.is_official?'ANUNCIO OFICIAL':'ARTÍCULO DE LA COMUNIDAD'}</h2>
+        <GeocracyHeading title={reading.is_official?'ANUNCIO OFICIAL':'ARTÍCULO DE LA COMUNIDAD'} icon={reading.is_official?'news':'news'}/>
         {reading.cover_path&&<div className="aog-news-reading-cover"><img src={imageUrl(reading.cover_path)??''} alt="Portada"/></div>}
         <div className="aog-news-reading-inner">
           <div className="aog-news-reading-head"><h1>{reading.title}</h1><span>{NEWS_LANGUAGES.find(item=>item.code===reading.language_code)?.flag} {reading.language_code.toUpperCase()}</span></div>
@@ -234,10 +235,10 @@ export default function NewsPage({player,onNavigate}:{player:Player;onNavigate:(
         </div>
       </article>
     </>:<>
-      <section className="aog-news-panel aog-news-official"><h2><Icon name="update"/> ANUNCIOS OFICIALES <span>ADMINISTRACIÓN</span></h2>
+      <section className="aog-news-panel aog-news-official"><GeocracyHeading title="ANUNCIOS OFICIALES" icon="news"/><span className="aog-news-section-note">ADMINISTRACIÓN</span>
         <div className="aog-news-features">{official.length?official.map(article=><ArticleTile key={article.id} article={article} onOpen={openArticle} compact/>):<p className="aog-news-empty">TODAVÍA NO HAY ANUNCIOS OFICIALES EN ESTE IDIOMA.</p>}</div>
       </section>
-      <section className="aog-news-panel aog-news-feed"><h2><Icon name="news"/> FORO DE NOTICIAS</h2>
+      <section className="aog-news-panel aog-news-feed"><GeocracyHeading title="FORO DE NOTICIAS" icon="news"/>
         <div className="aog-news-filters">
           <label>IDIOMA<select value={language} onChange={event=>{setLanguage(event.target.value as NewsLanguage);setPage(0);}}>{NEWS_LANGUAGES.map(item=><option key={item.code} value={item.code}>{item.flag} {item.name}</option>)}</select></label>
           <label>VER<select value={section} onChange={event=>{setSection(event.target.value as NewsSection);setPage(0);}}><option value="all">TODOS LOS ARTÍCULOS</option><option value="community">COMUNIDAD</option><option value="official">OFICIALES</option><option value="mine">MIS ARTÍCULOS</option></select></label>

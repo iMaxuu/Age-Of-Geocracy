@@ -44,7 +44,7 @@ export default function MessagesPage({player, peerId, onNavigate, incomingSignal
   onReadRef.current = onRead;
 
   const refreshInbox = useCallback(async () => {
-    const inbox = await loadConversations();
+    const inbox = await loadConversations(player.id);
     setConversations(inbox);
     return inbox;
   }, []);
@@ -52,7 +52,7 @@ export default function MessagesPage({player, peerId, onNavigate, incomingSignal
   useEffect(() => {
     let active = true;
     setLoading(true);
-    void loadConversations().then(inbox => { if (active) setConversations(inbox); })
+    void loadConversations(player.id).then(inbox => { if (active) setConversations(inbox); })
       .catch(err => {if (active) setError(err instanceof Error ? err.message : 'No se pudieron cargar las conversaciones.');})
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -171,40 +171,47 @@ export default function MessagesPage({player, peerId, onNavigate, incomingSignal
   };
 
   return <main className="aog-dm-page">
-    <div className="aog-dm-heading"><h1>MENSAJES PRIVADOS</h1><span>CONVERSACIONES ENTRE JUGADORES · SOLO TEXTO</span></div>
     <div className={`aog-dm-layout ${peerId ? 'aog-dm-has-peer' : ''}`}>
       <aside className="aog-dm-sidebar">
-        <h2>CONVERSACIONES</h2>
+        <h2 className="aog-dm-tab"><span className="aog-dm-tab-fill"><span className="aog-dm-globe" aria-hidden="true"/> MENSAJES</span></h2>
         <div className="aog-dm-conversation-list">
           {loading && <p className="aog-dm-hint">CARGANDO...</p>}
           {!loading && conversations.length === 0 && <p className="aog-dm-hint">TODAVÍA NO TENÉS CONVERSACIONES. ENTRÁ AL PERFIL DE OTRO JUGADOR Y ELEGÍ ENVIAR MENSAJE.</p>}
           {conversations.map(item => <button type="button" key={item.other_id} className={`aog-dm-conversation ${peerId === Number(item.other_id) ? 'is-selected' : ''}`} onClick={()=>openChat(Number(item.other_id))}>
             <img src={item.other_photo_url || DEFAULT_AVATAR} alt="" />
-            <span className="aog-dm-conversation-info"><strong>{item.other_name}</strong><small>{item.last_content}</small></span>
+            <span className="aog-dm-conversation-info"><strong>{item.other_name}</strong><small className={`aog-dm-last-preview ${item.last_sender_id === player.id ? 'is-own' : 'is-peer'}`} title={item.last_content || ''}>{item.last_content || 'SIN MENSAJES'}</small></span>
             {Number(item.unread_count) > 0 && <b className="aog-dm-unread">{item.unread_count}</b>}
           </button>)}
         </div>
       </aside>
       <section className="aog-dm-chat" aria-label="Chat privado">
         {peerId && peerId !== player.id ? <>
-          <header className="aog-dm-chat-head">
-            <button type="button" className="aog-dm-back" onClick={()=>onNavigate('/messages')} aria-label="Volver a conversaciones">←</button>
-            <img src={contact?.photo_url || DEFAULT_AVATAR} alt="" />
-            <div><strong>{contact?.name || `JUGADOR #${peerId}`}</strong><a href={`/profile/${peerId}`} onClick={e=>{e.preventDefault();onNavigate(`/profile/${peerId}`);}}>VER PERFIL</a></div>
+          <header className="aog-dm-chat-head aog-dm-tab">
+            <span className="aog-dm-tab-fill">
+              <button type="button" className="aog-dm-back" onClick={()=>onNavigate('/messages')} aria-label="Volver a conversaciones">←</button>
+              <button type="button" className="aog-dm-peer-name" onClick={()=>onNavigate(`/profile/${peerId}`)}>{contact?.name || `JUGADOR #${peerId}`}</button>
+            </span>
           </header>
           <div className="aog-dm-history">
             {chatLoading ? <p className="aog-dm-hint">CARGANDO MENSAJES...</p> : <>
               {!oldestEnd && messages.length > 0 && <button type="button" className="aog-dm-older" onClick={()=>void older()}>CARGAR MENSAJES ANTERIORES</button>}
               {messages.length === 0 && <p className="aog-dm-hint">TODAVÍA NO HAY MENSAJES. ¡ESCRIBÍ EL PRIMERO!</p>}
-              {messages.map(msg => <div key={msg.id} className={`aog-dm-bubble ${msg.sender_id === player.id ? 'is-self' : 'is-other'}`}>
-                <p>{msg.content}</p><time dateTime={msg.created_at}>{formatStamp(msg.created_at)}</time>
-              </div>)}
+              {messages.map(msg => {
+                const own = msg.sender_id === player.id;
+                return <div key={msg.id} className={`aog-dm-bubble ${own ? 'is-self' : 'is-other'}`}>
+                  <div className="aog-dm-bubble-meta">
+                    <button type="button" className="aog-dm-avatar-link" onClick={()=>onNavigate(`/profile/${msg.sender_id}`)} aria-label="Ver perfil del remitente"><img src={(own ? player.photo_url : contact?.photo_url) || DEFAULT_AVATAR} alt="" /></button>
+                    <div className="aog-dm-bubble-info"><span className="aog-dm-author">{own ? player.name : contact?.name || `JUGADOR #${peerId}`} <small>#{msg.sender_id}</small></span><time dateTime={msg.created_at}>{formatStamp(msg.created_at)}</time></div>
+                  </div>
+                  <p>{msg.content}</p>
+                </div>;
+              })}
               <div ref={bottomRef} />
             </>}
           </div>
           <form className="aog-dm-compose" onSubmit={event=>{event.preventDefault();void sendMessage();}}>
             <textarea value={draft} maxLength={2000} rows={2} aria-label="Escribir mensaje" placeholder="ESCRIBÍ TU MENSAJE..." onChange={event=>setDraft(event.target.value)} onKeyDown={event=>{if(event.key === 'Enter' && !event.shiftKey){event.preventDefault();void sendMessage();}}} disabled={sending || chatLoading} />
-            <button type="submit" disabled={!draft.trim() || sending || chatLoading}>{sending?'ENVIANDO...':'ENVIAR'}</button>
+            <button type="submit" aria-label="Enviar mensaje" title="Enviar mensaje" disabled={!draft.trim() || sending || chatLoading}><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
           </form>
           <small className="aog-dm-counter">{draft.length}/2.000 · ENTER PARA ENVIAR · SHIFT+ENTER PARA OTRA LÍNEA</small>
         </> : <div className="aog-dm-empty">{peerId === player.id ? 'NO PODÉS ENVIARTE MENSAJES A VOS MISMO.' : 'SELECCIONÁ UNA CONVERSACIÓN O ABRÍ EL PERFIL DE OTRO JUGADOR.'}</div>}
